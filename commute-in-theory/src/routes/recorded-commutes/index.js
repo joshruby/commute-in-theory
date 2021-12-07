@@ -18,7 +18,7 @@ export async function get(request) {
         return {
             status: 500,
             body: {
-                error: 'Server error'
+                error: 'GET server error'
             }
         }
     }
@@ -30,7 +30,7 @@ export async function post(request) {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
         
-        // The commute objecte was stringified on the client side before being transmitted
+        // The commute object was stringified on the client side before being transmitted
         const commute = JSON.parse(request.body);
 
         await collection.insertOne(commute)
@@ -59,6 +59,7 @@ export async function put(request) {
         return {
             status: 200,
             body: {
+                status: 'Successful PUT'
             }
         }
     } catch(err) {
@@ -80,6 +81,7 @@ export async function del(request) {
         return {
             status: 200,
             body: {
+                status: 'Successful DEL'
             }
         }
     } catch(err) {

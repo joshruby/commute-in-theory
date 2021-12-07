@@ -1,24 +1,27 @@
 <script>
-    async function postCommute() {
+    async function postRecordedCommute() {
         try {
             const commute = {
-                origin: 'Mountain View',
-                destination: 'San Francisco, Mission District',
-                departureTime: "2021-12-04T08:00:00.000-08:00",
-                duration: 57,
-                minutesInTraffic: 12
-            }
-            
-            await fetch('/commutes', {
+                status: 200,
+                body: {
+                    origin: 'test',
+                    destination: 'test',
+                    departureTime: 'some time',
+                    travelTimeInSeconds: 22
+                } 
+            };
+
+            // POST commute info to mongodb
+            await fetch('/recorded-commutes', {
                 method: 'POST',
-                body: JSON.stringify(commute)
-            })
+                body: JSON.stringify(commute.body)
+            });
         } catch (err) {
-            alert('Error');
+            alert('postRecordedCommute error');
         }
     }
 </script>
 
 <h1>Commute in Theory</h1>
 
-<button name="POST" on:click={postCommute}>POST</button>
+<button name="Handle New Commute" on:click={postRecordedCommute}>Handle new commute</button>
