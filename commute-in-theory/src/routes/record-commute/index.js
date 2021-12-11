@@ -1,23 +1,10 @@
-export async function get() {
+export async function post(request) {
     try {
-        const locations = {
-            HOME_MTNVW: {
-                name: 'Home, Mountain View',
-                lat_lon: '37.403712687363814,-122.07814772790742'
-            },
-            WORK_CUP: {
-                name: 'Work, Cupertino',
-                lat_lon: '37.330227595678146,-122.03281591229046'
-            },
-        }
-
-        const request = {
-            origin: locations.HOME_MTNVW,
-            destination: locations.WORK_CUP
-        }     
+        // Parse the request
+        const commuteRequest = JSON.parse(request.body);
 
         // Build the URL
-        const url = new URL(`${process.env['TOMTOM_BASE_URI']}/${request.origin.lat_lon}:${request.destination.lat_lon}/json?`);
+        const url = new URL(`https://api.tomtom.com/routing/1/calculateRoute/${commuteRequest.origin.lat_lon}:${commuteRequest.destination.lat_lon}/json?`);
         url.searchParams.append('sectionType', 'traffic');
         url.searchParams.append('traffic', true);
         url.searchParams.append('travelMode', 'car');
@@ -26,14 +13,14 @@ export async function get() {
         url.searchParams.append('report', 'effectiveSettings'); 
         url.searchParams.append('key', process.env['TOMTOM_KEY']);
 
-        // Query the API
+        // Query the TomTom API
         const res = await fetch(url);
         const data = await res.json();
 
         // Keep only the relevant information
         const commute = {
-            origin: request.origin,
-            destination: request.destination,
+            origin: commuteRequest.origin,
+            destination: commuteRequest.destination,
             departureTime: data.routes[0].summary.departureTime,
             travelTimeInSeconds: data.routes[0].summary.travelTimeInSeconds
         }

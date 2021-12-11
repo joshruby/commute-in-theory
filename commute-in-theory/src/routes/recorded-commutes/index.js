@@ -1,11 +1,14 @@
 import clientPromise from '$lib/db'
 import { ObjectId } from 'mongodb'
 
-export async function get(request) {
+export async function get() {
     try {
+        // Connect to the db
         const connectedClient = await clientPromise;
         const db = connectedClient.db();
         const collection = db.collection('commutes');
+
+        // Retrieve db items and put into an array
         const commutes = await collection.find().toArray();
 
         return {
@@ -26,14 +29,17 @@ export async function get(request) {
 
 export async function post(request) {
     try {
+        // Parse the request
+        const commute = JSON.parse(request.body);
+
+        // Connect to the db
         const connectedClient = await clientPromise;
         const db = connectedClient.db();
         const collection = db.collection('commutes');
-        
-        // The commute object was stringified on the client side before being transmitted
-        const commute = JSON.parse(request.body);
 
+        // POST the new item
         await collection.insertOne(commute)
+
         return {
             status: 200,
             body: {
@@ -45,50 +51,6 @@ export async function post(request) {
             status: 500,
             body: {
                 error: 'POST server error'
-            }
-        }
-    }
-}
-
-export async function put(request) {
-    try {
-        const connectedClient = await clientPromise;
-        const db = connectedClient.db();
-        const collection = db.collection('commutes');
-
-        return {
-            status: 200,
-            body: {
-                status: 'Successful PUT'
-            }
-        }
-    } catch(err) {
-        return {
-            status: 500,
-            body: {
-                error: 'PUT server error'
-            }
-        }
-    }
-}
-
-export async function del(request) {
-    try {
-        const connectedClient = await clientPromise;
-        const db = connectedClient.db();
-        const collection = db.collection('commutes');
-
-        return {
-            status: 200,
-            body: {
-                status: 'Successful DEL'
-            }
-        }
-    } catch(err) {
-        return {
-            status: 500,
-            body: {
-                error: 'DEL server error'
             }
         }
     }
