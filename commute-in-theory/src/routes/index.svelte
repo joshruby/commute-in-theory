@@ -4,21 +4,37 @@
     async function handleCommuteRequests(commuteRequest) {
         const commuteRequests = [
             {
-                origin: $LocationStore.HOME_MTV,
-                destination: $LocationStore.WORK_CUP
+                origin: $LocationStore.MTV,
+                destination: $LocationStore.CUP
             },
+            // {
+            //     origin: $LocationStore.MTV,
+            //     destination: $LocationStore.STA
+            // },
+            // {
+            //     origin: $LocationStore.SCZ,
+            //     destination: $LocationStore.CUP
+            // },
+            // {
+            //     origin: $LocationStore.SCZ,
+            //     destination: $LocationStore.STA
+            // },
             {
-                origin: $LocationStore.HOME_MTV,
-                destination: $LocationStore.WORK_STA
+                origin: $LocationStore.CUP,
+                destination: $LocationStore.MTV
             },
-            {
-                origin: $LocationStore.WORK_CUP,
-                destination: $LocationStore.HOME_MTV
-            },
-            {
-                origin: $LocationStore.WORK_STA,
-                destination: $LocationStore.HOME_MTV
-            },
+            // {
+            //     origin: $LocationStore.CUP,
+            //     destination: $LocationStore.SCZ
+            // },
+            // {
+            //     origin: $LocationStore.STA,
+            //     destination: $LocationStore.MTV
+            // },
+            // {
+            //     origin: $LocationStore.STA,
+            //     destination: $LocationStore.SCZ
+            // },
         ]
 
         commuteRequests.forEach(async function (commuteRequest) {
