@@ -1,46 +1,52 @@
 <script>
-    async function handleCommuteRequest() {
-        const locations = {
-            HOME_MTNVW: {
-                name: 'Home, Mountain View',
-                lat_lon: '37.403712687363814,-122.07814772790742'
-            },
-            WORK_CUP: {
-                name: 'Work, Cupertino',
-                lat_lon: '37.330227595678146,-122.03281591229046'
-            },
-        }
+    import { LocationStore } from '$lib/stores/LocationStore'
 
-        const commuteRequest = {
-            origin: locations.HOME_MTNVW,
-            destination: locations.WORK_CUP
-        } 
+    async function handleCommuteRequests(commuteRequest) {
+        const commuteRequests = [
+            {
+                origin: $LocationStore.HOME_MTV,
+                destination: $LocationStore.WORK_CUP
+            },
+            {
+                origin: $LocationStore.HOME_MTV,
+                destination: $LocationStore.WORK_STA
+            },
+            {
+                origin: $LocationStore.WORK_CUP,
+                destination: $LocationStore.HOME_MTV
+            },
+            {
+                origin: $LocationStore.WORK_STA,
+                destination: $LocationStore.HOME_MTV
+            },
+        ]
 
-        try {
-            // Request the realtime commute info
-            const res = await fetch('/record-commute', {
-                method: 'POST',
-                body: JSON.stringify(commuteRequest)
-            })
-            if (res.status === 200) {
-                const commute = await res.json();
-                try {
-                    // POST the commute to mongodb
-                    await fetch('/recorded-commutes', {
-                        method: 'POST',
-                        body: JSON.stringify(commute)
-                    });
-                } catch (err) {
-                    alert('POST error');
+        commuteRequests.forEach(async function (commuteRequest) {
+             try {
+                // Request the realtime commute info
+                const res = await fetch('/record-commute', {
+                    method: 'POST',
+                    body: JSON.stringify(commuteRequest)
+                })
+                if (res.status === 200) {
+                    const commute = await res.json();
+                    try {
+                        // POST the commute to mongodb
+                        await fetch('/recorded-commutes', {
+                            method: 'POST',
+                            body: JSON.stringify(commute)
+                        });
+                    } catch (err) {
+                        alert('POST error');
+                    }
                 }
+            } catch (err) {
+                alert('handleCommuteRequest error');
             }
-        } catch (err) {
-            alert('handleCommuteRequest error');
-        }
-        
+        });
     }
 </script>
 
 <h1>Commute in Theory</h1>
 
-<button name="Handle New Commute" on:click={handleCommuteRequest}>Handle new commute</button>
+<button name="Handle New Commute" on:click={handleCommuteRequests}>Handle new commute</button>
