@@ -1,6 +1,8 @@
 // From https://github.com/vercel/next.js/blob/canary/examples/with-mongodb/lib/mongodb.js
 // https://youtu.be/P6gEnVlJPOc?t=705
 
+// https://docs.atlas.mongodb.com/best-practices-connecting-from-vercel/
+
 import { MongoClient } from 'mongodb'
 
 // Using npm env-cmd to expose all env vars, not just those prefixed with VITE_
