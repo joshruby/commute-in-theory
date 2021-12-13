@@ -90,6 +90,18 @@ LOCATIONS = {
             'name': 'Menlo Park, West MP',
             'lat_lon': '37.431029416205284,-122.20217060835637'
         },
+        'BER': {
+            'name': 'Berkeley, Downtown',
+            'lat_lon': '37.87075376688075,-122.27199562287598'
+        },
+        'CPA': {
+            'name': 'Capitola, Mall',
+            'lat_lon': '36.97371780004841,-121.95931307716036'
+        },
+        'PCA': {
+            'name': 'Pacifica, Linda Mar',
+            'lat_lon': '37.594122784571354,-122.5015289019967'
+        },
         # 'FEL': {
         #     'name': 'Felton, Downtown',
         #     'lat_lon': '37.05131035573837,-122.07406272553854'
@@ -102,18 +114,6 @@ LOCATIONS = {
         #     'name': 'San Francisco, Mission District',
         #     'lat_lon': '37.75870633260038,-122.41794365829263'
         # },
-        # 'PCA': {
-        #     'name': 'Pacifica, Linda Mar',
-        #     'lat_lon': '37.594122784571354,-122.5015289019967'
-        # },
-        # 'BER': {
-        #     'name': 'Berkeley, Downtown',
-        #     'lat_lon': '37.87075376688075,-122.27199562287598'
-        # },
-        # 'CPA': {
-        #     'name': 'Capitola, Mall',
-        #     'lat_lon': '36.97371780004841,-121.95931307716036'
-        # },
         # 'MTV': {
         #     'name': 'Mountain View, Shoreline',
         #     'lat_lon': '37.403712687363814,-122.07814772790742'
@@ -121,7 +121,7 @@ LOCATIONS = {
     }
 }
 
-RECORDING_INTERVAL = 5  # [min]
+RECORDING_INTERVAL = 15  # [min]
 TZ_LA = pytz.timezone('America/Los_Angeles')
 
 if __name__ == "__main__":
