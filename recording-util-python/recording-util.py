@@ -66,6 +66,8 @@ LOCATIONS = {
     },
 }
 
+RECORDING_INTERVAL = 5  # [min]
+
 if __name__ == "__main__":
     # Generate commute request pairs
     pairs = list(permutations(LOCATIONS, 2))
@@ -86,4 +88,4 @@ if __name__ == "__main__":
             except Exception as e:
                 logging.error(e)
 
-        time.sleep(10 * 60)
+        time.sleep(RECORDING_INTERVAL * 60)
