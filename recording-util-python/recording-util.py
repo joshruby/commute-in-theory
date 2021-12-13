@@ -70,19 +70,20 @@ if __name__ == "__main__":
     # Generate commute request pairs
     pairs = list(permutations(LOCATIONS, 2))
 
-    for origin, destination in pairs:
-        try:
-            # Retreive the commute info
-            commute = recordCommute(
-                {
-                    'origin': LOCATIONS[origin],
-                    'destination': LOCATIONS[destination]
-                }
-            )
+    while True:
+        for origin, destination in pairs:
+            try:
+                # Retreive the commute info
+                commute = recordCommute(
+                    {
+                        'origin': LOCATIONS[origin],
+                        'destination': LOCATIONS[destination]
+                    }
+                )
 
-            # Save the commute in mongodb
-            mongodbPOST(commute)
-        except Exception as e:
-            logging.error(e)
+                # Save the commute in mongodb
+                mongodbPOST(commute)
+            except Exception as e:
+                logging.error(e)
 
-    time.sleep(10 * 60)
+        time.sleep(10 * 60)
