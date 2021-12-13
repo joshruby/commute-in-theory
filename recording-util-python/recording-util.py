@@ -1,5 +1,6 @@
 import json
 import requests
+from pymongo import MongoClient
 import config
 
 def recordCommute(commute_request):
@@ -29,6 +30,14 @@ def recordCommute(commute_request):
         'travelTimeInSeconds': res['routes'][0]['summary']['travelTimeInSeconds']
     }
 
+def mongodbPOST(commute):
+    client = MongoClient(config.MONGODB_URI)
+    db = client.get_database()
+    collection = db['commutes']
+
+    # POST commute to db
+    collection.insert_one(commute)
+
 LOCATIONS = {
     'MTV': {
         'name': 'Mountain View',
@@ -56,5 +65,4 @@ if __name__ == "__main__":
         }
     )
 
-    text = json.dumps(commute, sort_keys=True, indent=4)
-    print(text)
+    mongodbPOST(commute)
