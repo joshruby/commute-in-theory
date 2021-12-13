@@ -45,7 +45,8 @@
                     body: JSON.stringify(commuteRequest)
                 })
                 if (res.status === 200) {
-                    const commute = await res.json();
+                    const data = await res.json();
+                    const commute = data.commute;
                     try {
                         // POST the commute to mongodb
                         await fetch('/recorded-commutes', {
