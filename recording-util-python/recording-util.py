@@ -1,3 +1,11 @@
+import logging
+logging.basicConfig(
+    filename='cit.log', 
+    encoding='utf-8',
+    format='%(asctime)s %(message)s', 
+    datefmt='%m/%d/%Y %I:%M:%S %p', 
+    level=logging.INFO
+)
 import time
 from itertools import permutations
 import requests
@@ -63,15 +71,18 @@ if __name__ == "__main__":
     pairs = list(permutations(LOCATIONS, 2))
 
     for origin, destination in pairs:
-        # Retreive the commute info
-        commute = recordCommute(
-            {
-                'origin': LOCATIONS[origin],
-                'destination': LOCATIONS[destination]
-            }
-        )
+        try:
+            # Retreive the commute info
+            commute = recordCommute(
+                {
+                    'origin': LOCATIONS[origin],
+                    'destination': LOCATIONS[destination]
+                }
+            )
 
-        # Save the commute in mongodb
-        mongodbPOST(commute)
+            # Save the commute in mongodb
+            mongodbPOST(commute)
+        except Exception as e:
+            logging.error(e)
 
     time.sleep(10 * 60)
