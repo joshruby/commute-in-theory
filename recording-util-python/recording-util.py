@@ -7,6 +7,8 @@ logging.basicConfig(
         level=logging.ERROR)
 logger = logging.getLogger()
 import time
+from datetime import datetime
+import pytz
 import requests
 from pymongo import MongoClient
 import config
@@ -120,27 +122,29 @@ LOCATIONS = {
 }
 
 RECORDING_INTERVAL = 5  # [min]
+TZ_LA = pytz.timezone('America/Los_Angeles')
 
 if __name__ == "__main__":
     while True:
-        for wkey, work in LOCATIONS['work'].items():
-            for hkey, home in LOCATIONS['home'].items():
-                pairs = [(home, work), (work, home)]
-                for p in pairs:
-                    try:
-                        # Retreive the commute info
-                        commute = recordCommute(
-                            {
-                                'origin': p[0],
-                                'destination': p[1]
-                            }
-                        )
+        if 6 <= datetime.now(TZ_LA).hour <= 19:
+            for wkey, work in LOCATIONS['work'].items():
+                for hkey, home in LOCATIONS['home'].items():
+                    pairs = [(home, work), (work, home)]
+                    for p in pairs:
+                        try:
+                            # Retreive the commute info
+                            commute = recordCommute(
+                                {
+                                    'origin': p[0],
+                                    'destination': p[1]
+                                }
+                            )
 
-                        # Save the commute in mongodb
-                        mongodbPOST(commute)
-                    except Exception as e:
-                        logging.error(repr(e))
-                        continue
+                            # Save the commute in mongodb
+                            mongodbPOST(commute)
+                        except Exception as e:
+                            logging.error(repr(e))
+                            continue
 
-        time.sleep(RECORDING_INTERVAL * 60)
+            time.sleep(RECORDING_INTERVAL * 60)
         
