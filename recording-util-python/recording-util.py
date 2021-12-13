@@ -1,3 +1,4 @@
+import time
 from itertools import permutations
 import requests
 from pymongo import MongoClient
@@ -72,3 +73,5 @@ if __name__ == "__main__":
 
         # Save the commute in mongodb
         mongodbPOST(commute)
+
+    time.sleep(10 * 60)
