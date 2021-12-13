@@ -2,8 +2,6 @@ import logging
 logging.basicConfig(
     filename='cit.log', 
     encoding='utf-8',
-    format='%(asctime)s %(message)s', 
-    datefmt='%m/%d/%Y %I:%M:%S %p', 
     level=logging.INFO
 )
 import time
