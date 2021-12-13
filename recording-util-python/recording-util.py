@@ -7,7 +7,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 import time
-from itertools import permutations
 import requests
 from pymongo import MongoClient
 import config
@@ -48,7 +47,7 @@ def mongodbPOST(commute):
     collection.insert_one(commute)
 
 LOCATIONS = {
-    'Work': {
+    'work': {
         'CUP': {
             'name': 'Cupertino, MA',
             'lat_lon': '37.330227595678146,-122.03281591229046'
@@ -58,7 +57,7 @@ LOCATIONS = {
             'lat_lon': '37.42666339942809,-122.17649144765893'
         },
     },
-    'Home': {
+    'home': {
         'MTV': {
             'name': 'Mountain View, Shoreline',
             'lat_lon': '37.403712687363814,-122.07814772790742'
@@ -115,30 +114,50 @@ LOCATIONS = {
             'name': 'Menlo Park, West MP',
             'lat_lon': '37.431029416205284,-122.20217060835637'
         },
-        
     }
 }
 
 RECORDING_INTERVAL = 5  # [min]
 
 if __name__ == "__main__":
-    # Generate commute request pairs
-    pairs = list(permutations(LOCATIONS, 2))
-
     while True:
-        for origin, destination in pairs:
-            try:
-                # Retreive the commute info
-                commute = recordCommute(
-                    {
-                        'origin': LOCATIONS[origin],
-                        'destination': LOCATIONS[destination]
-                    }
-                )
+        for wkey, work in LOCATIONS['work'].items():
+            for hkey, home in LOCATIONS['home'].items():
+                pairs = [(home, work), (work, home)]
+                for p in pairs:
+                    try:
+                        # Retreive the commute info
+                        commute = recordCommute(
+                            {
+                                'origin': p[0],
+                                'destination': p[1]
+                            }
+                        )
 
-                # Save the commute in mongodb
-                mongodbPOST(commute)
-            except Exception as e:
-                logging.error(e)
+                        # Save the commute in mongodb
+                        mongodbPOST(commute)
+                    except Exception as e:
+                        logging.error(e)
+                        continue
 
         time.sleep(RECORDING_INTERVAL * 60)
+
+            
+
+
+        # for origin, destination in pairs:
+        #     try:
+        #         # Retreive the commute info
+        #         commute = recordCommute(
+        #             {
+        #                 'origin': LOCATIONS[origin],
+        #                 'destination': LOCATIONS[destination]
+        #             }
+        #         )
+
+        #         # Save the commute in mongodb
+        #         mongodbPOST(commute)
+        #     except Exception as e:
+        #         logging.error(e)
+
+        # time.sleep(RECORDING_INTERVAL * 60)
