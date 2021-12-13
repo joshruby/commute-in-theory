@@ -142,6 +142,10 @@ if __name__ == "__main__":
 
                             # Save the commute in mongodb
                             mongodbPOST(commute)
+
+                            # Can't exceed 5 QPS for the TomTom Routing API
+                            # https://developer.tomtom.com/default-qps
+                            time.sleep(0.5)
                         except Exception as e:
                             logging.error(repr(e))
                             continue
