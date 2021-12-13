@@ -1,11 +1,11 @@
 import logging
+format = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(
-    filename='cit.log', 
-    encoding='utf-8',
-    format='%(asctime)s %(message)s', 
-    datefmt='%m/%d/%Y %I:%M:%S %p', 
-    level=logging.INFO
-)
+        filename='cit.log',
+        filemode='w',
+        format=format,
+        level=logging.ERROR)
+logger = logging.getLogger()
 import time
 import requests
 from pymongo import MongoClient
@@ -139,7 +139,7 @@ if __name__ == "__main__":
                         # Save the commute in mongodb
                         mongodbPOST(commute)
                     except Exception as e:
-                        logging.error(e)
+                        logging.error(repr(e))
                         continue
 
         time.sleep(RECORDING_INTERVAL * 60)
