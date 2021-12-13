@@ -1,4 +1,4 @@
-import json
+from itertools import permutations
 import requests
 from pymongo import MongoClient
 import config
@@ -58,11 +58,17 @@ LOCATIONS = {
 }
 
 if __name__ == "__main__":
-    commute = recordCommute(
-        {
-            'origin': LOCATIONS['MTV'],
-            'destination': LOCATIONS['CUP']
-        }
-    )
+    # Generate commute request pairs
+    pairs = list(permutations(LOCATIONS, 2))
 
-    mongodbPOST(commute)
+    for origin, destination in pairs:
+        # Retreive the commute info
+        commute = recordCommute(
+            {
+                'origin': LOCATIONS[origin],
+                'destination': LOCATIONS[destination]
+            }
+        )
+
+        # Save the commute in mongodb
+        mongodbPOST(commute)
