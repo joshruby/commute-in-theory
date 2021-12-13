@@ -141,23 +141,4 @@ if __name__ == "__main__":
                         continue
 
         time.sleep(RECORDING_INTERVAL * 60)
-
-            
-
-
-        # for origin, destination in pairs:
-        #     try:
-        #         # Retreive the commute info
-        #         commute = recordCommute(
-        #             {
-        #                 'origin': LOCATIONS[origin],
-        #                 'destination': LOCATIONS[destination]
-        #             }
-        #         )
-
-        #         # Save the commute in mongodb
-        #         mongodbPOST(commute)
-        #     except Exception as e:
-        #         logging.error(e)
-
-        # time.sleep(RECORDING_INTERVAL * 60)
+        
