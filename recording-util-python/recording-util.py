@@ -130,7 +130,7 @@ if __name__ == "__main__":
         hour = now_LA.hour
         minute = now_LA.minute
 
-        if 6 <= hour <= 19 and minute % (60 / RECORDINGS_PER_HOUR) == 0:
+        if 6 <= hour <= 20 and minute % (60 / RECORDINGS_PER_HOUR) == 0:
             for wkey, work in LOCATIONS['work'].items():
                 for hkey, home in LOCATIONS['home'].items():
                     pairs = [(home, work), (work, home)]
