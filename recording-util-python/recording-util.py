@@ -34,8 +34,8 @@ def recordCommute(commute_request):
 
     # Keep only the relevant information
     return {
-        'origin': commute_request['origin'],
-        'destination': commute_request['destination'],
+        'origin': commute_request['origin']['name'],
+        'destination': commute_request['destination']['name'],
         'departureTime': res['routes'][0]['summary']['departureTime'],
         'travelTimeInSeconds': res['routes'][0]['summary']['travelTimeInSeconds']
     }
