@@ -154,6 +154,6 @@ if __name__ == "__main__":
                             logging.error(repr(e))
                             continue
 
-        # Ensure another set of recordings doesn't immediately run 
-        time.sleep(60)
+            # Ensure another set of recordings doesn't immediately run 
+            time.sleep(60)
         
