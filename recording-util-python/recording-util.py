@@ -121,12 +121,16 @@ LOCATIONS = {
     }
 }
 
-RECORDING_INTERVAL = 15  # [min]
+RECORDINGS_PER_HOUR = 4
 TZ_LA = pytz.timezone('America/Los_Angeles')
 
 if __name__ == "__main__":
     while True:
-        if 6 <= datetime.now(TZ_LA).hour <= 19:
+        now_LA = datetime.now(TZ_LA)
+        hour = now_LA.hour
+        minute = now_LA.minute
+
+        if 6 <= hour <= 19 and minute % (60 / RECORDINGS_PER_HOUR) == 0:
             for wkey, work in LOCATIONS['work'].items():
                 for hkey, home in LOCATIONS['home'].items():
                     pairs = [(home, work), (work, home)]
@@ -150,5 +154,6 @@ if __name__ == "__main__":
                             logging.error(repr(e))
                             continue
 
-            time.sleep(RECORDING_INTERVAL * 60)
+        # Ensure another set of recordings doesn't immediately run 
+        time.sleep(60)
         
