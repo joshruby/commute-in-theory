@@ -14,8 +14,14 @@ from pymongo import MongoClient
 import config
 
 def recordCommute(commute_request):
+    # Parse the request
+    origin_id = commute_request['origin'][0]
+    origin = commute_request['origin'][1]
+    destination_id = commute_request['destination'][0]
+    destination = commute_request['destination'][1]
+
     # Build the URL
-    uri = f'https://api.tomtom.com/routing/1/calculateRoute/{commute_request["origin"]["lat_lon"]}:{commute_request["destination"]["lat_lon"]}/json'
+    uri = f'https://api.tomtom.com/routing/1/calculateRoute/{origin["lat_lon"]}:{destination["lat_lon"]}/json'
     params = {
         'sectionType': 'traffic',
         'traffic': 'true',
@@ -34,8 +40,8 @@ def recordCommute(commute_request):
 
     # Keep only the relevant information
     return {
-        'origin': commute_request['origin']['name'],
-        'destination': commute_request['destination']['name'],
+        'origin': origin_id,
+        'destination': destination_id,
         'departureTime': res['routes'][0]['summary']['departureTime'],
         'travelTimeInSeconds': res['routes'][0]['summary']['travelTimeInSeconds']
     }
@@ -131,9 +137,13 @@ if __name__ == "__main__":
         minute = now_LA.minute
 
         if 6 <= hour <= 20 and minute % (60 / RECORDINGS_PER_HOUR) == 0:
-            for wkey, work in LOCATIONS['work'].items():
-                for hkey, home in LOCATIONS['home'].items():
-                    pairs = [(home, work), (work, home)]
+            for wkey, wval in LOCATIONS['work'].items():
+                for hkey, hval in LOCATIONS['home'].items():
+                    pairs = [
+                        ((hkey, hval), (wkey, wval)), 
+                        ((wkey, wval), (hkey, hval))
+                    ]
+
                     for p in pairs:
                         try:
                             # Retreive the commute info
