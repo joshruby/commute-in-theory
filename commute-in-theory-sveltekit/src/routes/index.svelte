@@ -1,9 +1,11 @@
 <script>
-    import SvgOne from '$lib/components/SvgOne.svelte'
-    import BarTwo from '$lib/components/BarTwo.svelte'
+    import OneSVG from '$lib/components/OneSVG.svelte'
+    import TwoBar from '$lib/components/TwoBar.svelte'
+    import ThreeScatter from '$lib/components/ThreeScatter.svelte'
 </script>
 
 <h1>Commute in Theory</h1>
 
 <!-- <SvgOne/> -->
-<BarTwo/>
+<!-- <TwoBar/> -->
+<ThreeScatter/>
