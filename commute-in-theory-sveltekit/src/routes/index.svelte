@@ -10,4 +10,4 @@
 <!-- <SvgOne /> -->
 <!-- <TwoBar /> -->
 <!-- <ThreeScatter /> -->
-<FourMain />
+<FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/>

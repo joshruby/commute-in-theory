@@ -1,11 +1,18 @@
 <script>
+	import FourDropdown from './FourDimensionSelector.svelte';
 	import data from './iris.json';
 	import { scaleLinear, scaleOrdinal } from 'd3-scale';
 	import { extent } from 'd3-array';
+	import FourDimensionSelector from './FourDimensionSelector.svelte';
+
+	// Allow the height and width to be specified
+	export let width = 600;
+	export let height = 600;
+	// Allow the chart dimensions to be specified
+	export let xDimension = 'petalLength';
+	export let yDimension = 'petalWidth';
 
 	// Image size
-	const width = 600;
-	const height = 600;
 	const buffer = 10;
 	const axesSpace = 50;
 
@@ -14,36 +21,41 @@
 	const species = Array.from(new Set(data.map((d) => d.species)));
 	// Now maps the colors to the species
 	// scaleOrdinal matches values from the domain and range up elementwise
-	let colorScale = scaleOrdinal().domain(Array.from(species)).range(colors);
+	let colorScale = scaleOrdinal().domain(species).range(colors);
 
+	// Since the extents and scales need to be updated when the dimensions are
+	// changed by the user we need to make them reactive
 	// Get the range of the data
-	let xExtent = extent(data, (d) => d.petalLength);
-	let yExtent = extent(data, (d) => d.petalWidth);
+	$: xExtent = extent(data, (d) => d[xDimension]);
+	$: yExtent = extent(data, (d) => d[yDimension]);
 
 	// Create a scale for each axis by interpolating each range
-	// d3 scales are functions. If you pass in a value in the domain interval,
-	// you'll get back its corresponding value in the range interval
-	let xScale = scaleLinear()
+	// d3 scales are functions. If you pass in a value in the
+	// domain interval, you'll get back its corresponding value
+	// in the range interval
+	$: xScale = scaleLinear()
 		.domain(xExtent)
 		.range([buffer + axesSpace, width - buffer]);
 	// yScale range is flipped so that increasing y is viewed as going "up"
 	// (pos y is downward by convention in browser coordinate space)
-	let yScale = scaleLinear()
+	$: yScale = scaleLinear()
 		.domain(yExtent)
 		.range([height - buffer - axesSpace, buffer]);
 </script>
 
-<!-- The svelte await control structure is irrelevant here since the data is being
-loaded from a local .json file. I'm keeping it in the code for future reference -->
+<!-- The svelte await control structure is irrelevant here since the data 
+is being loaded from a local .json file. I'm keeping it in the code 
+for future reference -->
 {#await data}
 	<p>Loading...</p>
 {:then iris}
 	<svg {height} {width}>
 		{#each iris as item}
+            <!-- To get the points to animate when changed we need to position
+            them using transform rather than cx and cy -->
 			<circle
 				r="3"
-				cx={xScale(item.petalLength)}
-				cy={yScale(item.petalWidth)}
+                transform={`translate(${xScale(item[xDimension])} ${yScale(item[yDimension])})`}
 				fill={colorScale(item.species)}
 			/>
 		{/each}
@@ -73,4 +85,16 @@ loaded from a local .json file. I'm keeping it in the code for future reference 
 			{/each}
 		</g>
 	</svg>
+
+    <!-- We pass in the dimensions and bind to them so that we can detect when
+    they're changed and update the axes -->
+	<p>X Dimension: <FourDimensionSelector bind:selectedColumn={xDimension} /></p>
+	<p>Y Dimension: <FourDimensionSelector bind:selectedColumn={yDimension} /></p>
 {/await}
+
+<style>
+    /* Animate all objects when their transform property is changed */
+    svg * {
+        transition: transform 0.4s;
+    }
+</style>
