@@ -8,6 +8,7 @@
         const res = await fetch('/recorded-commutes', { credentials: 'omit' });
         if (res.ok) {
             // Cache the page for this many seconds
+            // https://github.com/sveltejs/kit/issues/793
             return {
                 props: {
                     commuteData: await res.json()
@@ -43,4 +44,24 @@
 
 <!-- <p><b>Commutes:</b> {$CommuteStore.length}</p> -->
 
-{$CommuteStore.length}
+{#each $CommuteStore.slice(0, 10) as commute}
+    <div class="commute-block">
+        <p><b>Origin:</b> {commute.origin}</p>
+        <p><b>Destination:</b> {commute.destination}</p>
+        <p><b>Departure Time:</b> {commute.departureTime}</p>
+        <p><b>Travel Time [s]:</b> {commute.travelTimeInSeconds}</p>
+    </div>
+{/each}
+
+<style>
+    :global(body) {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .commute-block {
+        max-width: 400px;
+        border: 2px solid #aaa;
+        border-radius: 20px;
+        padding: 10px;
+        margin: 5px auto;
+    }
+</style>
