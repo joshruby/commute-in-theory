@@ -10,4 +10,5 @@
 <!-- <SvgOne /> -->
 <!-- <TwoBar /> -->
 <!-- <ThreeScatter /> -->
-<FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/>
+<!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
+
