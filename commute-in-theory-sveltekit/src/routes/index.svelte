@@ -64,13 +64,13 @@
     Object.keys(groupedCommutes).forEach((key) => {
         groupedCommutes[key] = groupBy(
             groupedCommutes[key],
-            ele => ele.departureTime.getHours() + ':' + ele.departureTime.getMinutes()
+            ele => ele.departureTime.toLocaleTimeString()
         )
     });
 
-    console.log(groupedCommutes);
     // Save the commutes in a store
     CommuteStore.set(groupedCommutes)
+    console.log($CommuteStore);
 </script> 
 
 <h1>Commute in Theory</h1>
