@@ -31,14 +31,30 @@
 
     import { CommuteStore } from '$lib/stores/CommuteStore'
 
-
-    // Load the commute documents from mongodb into a store
+    // Receive the commuteData from load
     export let commuteData;
     let commutes = commuteData.commutes;
-    // Convert the departureTime strings to Date objects
-    commutes.forEach((ele) => ele.departureTime = new Date(ele.departureTime))
 
-    CommuteStore.set(commuteData.commutes)
+    // Convert the departureTime strings to Date objects and 
+    // simplify their minutes and seconds
+    commutes.forEach((ele) => {
+        const thresh = 5;
+        const recordingTimes = [0, 15, 30, 45];
+        
+        let date = new Date(ele.departureTime);
+        const minutes = date.getMinutes();
+
+        recordingTimes.forEach((t) => {
+            if (Math.abs(minutes - t) <= thresh) {
+            date.setMinutes(t, 0);
+        }
+        });
+        
+        ele.departureTime = date;
+    });
+
+    // Save the commutes in a store
+    CommuteStore.set(commutes)
 </script> 
 
 <h1>Commute in Theory</h1>
@@ -50,7 +66,7 @@
 
 <!-- <p><b>Commutes:</b> {$CommuteStore.length}</p> -->
 
-{#each $CommuteStore.slice(0, 1) as commute}
+{#each $CommuteStore.slice(0, 10) as commute}
     <div class="commute-block">
         <p><b>Origin:</b> {commute.origin}</p>
         <p><b>Destination:</b> {commute.destination}</p>
