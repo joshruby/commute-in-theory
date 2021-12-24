@@ -38,16 +38,23 @@
     // Convert the departureTime strings to Date objects and 
     // simplify their minutes and seconds
     commutes.forEach((ele) => {
-        const thresh = 5;
+        const minuteThresh = 7;
         const recordingTimes = [0, 15, 30, 45];
         
         let date = new Date(ele.departureTime);
-        const minutes = date.getMinutes();
 
         recordingTimes.forEach((t) => {
-            if (Math.abs(minutes - t) <= thresh) {
-            date.setMinutes(t, 0);
-        }
+            const diff = Math.abs(date.getMinutes() - t);
+
+            if (diff <= minuteThresh) {
+                date.setMinutes(t, 0);
+            }
+            else if (diff >= (60 - minuteThresh)) {
+                // E.g 07:54 should be set to 08:00, not 07:00
+                // This could lead to a day having multiple commutes attributed
+                // to the same recording time. I think that's fine for now
+                date.setHours(date.getHours() + 1, t, 0);
+            }
         });
         
         ele.departureTime = date;
