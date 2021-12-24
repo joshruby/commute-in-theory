@@ -56,11 +56,19 @@
     // Group the commutes by city pairs
     // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
     const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
-    const groupedCommutes = groupBy(
+    let groupedCommutes = groupBy(
         commutes, 
         ele => ele.origin + '-' + ele.destination
     );
+    // Within each city pair arr group commutes by hour and minute
+    Object.keys(groupedCommutes).forEach((key) => {
+        groupedCommutes[key] = groupBy(
+            groupedCommutes[key],
+            ele => ele.departureTime.getHours() + ':' + ele.departureTime.getMinutes()
+        )
+    });
 
+    console.log(groupedCommutes);
     // Save the commutes in a store
     CommuteStore.set(groupedCommutes)
 </script> 
@@ -71,7 +79,7 @@
 <!-- <TwoBar /> -->
 <!-- <ThreeScatter /> -->
 <!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
-
+<!-- 
 {#each $CommuteStore['CUP-SCZ'].slice(0, 10) as commute}
     <div class="commute-block">
         <p><b>Origin:</b> {commute.origin}</p>
@@ -79,9 +87,9 @@
         <p><b>Departure Time:</b> {commute.departureTime}</p>
         <p><b>Travel Time [s]:</b> {commute.travelTimeInSeconds}</p>
     </div>
-{/each}
+{/each} -->
 
-<style>
+<!-- <style>
     :global(body) {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
@@ -92,4 +100,4 @@
         padding: 10px;
         margin: 5px auto;
     }
-</style>
+</style> -->
