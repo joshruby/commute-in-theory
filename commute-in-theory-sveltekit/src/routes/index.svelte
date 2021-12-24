@@ -53,8 +53,17 @@
         ele.departureTime = date;
     });
 
+    // Group the commutes by city pair
+    // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
+    const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
+    // First group by origin
+    const groupedCommutes = groupBy(
+        commutes, 
+        ele => ele.origin + '-' + ele.destination
+    );
+
     // Save the commutes in a store
-    CommuteStore.set(commutes)
+    CommuteStore.set(groupedCommutes)
 </script> 
 
 <h1>Commute in Theory</h1>
@@ -64,9 +73,7 @@
 <!-- <ThreeScatter /> -->
 <!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
 
-<!-- <p><b>Commutes:</b> {$CommuteStore.length}</p> -->
-
-{#each $CommuteStore.slice(0, 10) as commute}
+{#each $CommuteStore['CUP-SCZ'].slice(0, 10) as commute}
     <div class="commute-block">
         <p><b>Origin:</b> {commute.origin}</p>
         <p><b>Destination:</b> {commute.destination}</p>
