@@ -1,7 +1,4 @@
 <script context="module">
-    import { onMount, onDestroy } from 'svelte';
-    import { CommuteStore } from '$lib/stores/CommuteStore'
-
     export const load = async ({ page, fetch }) => {
         // let commutes = [];
 
@@ -25,15 +22,24 @@
     }
 </script>
 
+
 <script>
     // import OneSVG from '$lib/components/OneSVG.svelte'
     // import TwoBar from '$lib/components/TwoBar.svelte'
     // import ThreeScatter from '$lib/components/ThreeScatter.svelte'
     // import FourMain from '$lib/components/FourMain.svelte'
 
+    import { CommuteStore } from '$lib/stores/CommuteStore'
+
+
+    // Load the commute documents from mongodb into a store
     export let commuteData;
+    let commutes = commuteData.commutes;
+    // Convert the departureTime strings to Date objects
+    commutes.forEach((ele) => ele.departureTime = new Date(ele.departureTime))
+
     CommuteStore.set(commuteData.commutes)
-</script>
+</script> 
 
 <h1>Commute in Theory</h1>
 
@@ -44,7 +50,7 @@
 
 <!-- <p><b>Commutes:</b> {$CommuteStore.length}</p> -->
 
-{#each $CommuteStore.slice(0, 10) as commute}
+{#each $CommuteStore.slice(0, 1) as commute}
     <div class="commute-block">
         <p><b>Origin:</b> {commute.origin}</p>
         <p><b>Destination:</b> {commute.destination}</p>
