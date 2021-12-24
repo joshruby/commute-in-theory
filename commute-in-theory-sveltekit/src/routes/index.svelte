@@ -53,10 +53,9 @@
         ele.departureTime = date;
     });
 
-    // Group the commutes by city pair
+    // Group the commutes by city pairs
     // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
     const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
-    // First group by origin
     const groupedCommutes = groupBy(
         commutes, 
         ele => ele.origin + '-' + ele.destination
