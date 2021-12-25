@@ -78,7 +78,7 @@
     // import ThreeScatter from '$lib/components/ThreeScatter.svelte'
     // import FourMain from '$lib/components/FourMain.svelte'
 
-    import LineChart from '$lib/components/LineChart.svelte'
+    import ScatterChart from '$lib/components/ScatterChart.svelte'
 
     import { CommuteStore } from '$lib/stores/CommuteStore'
 
@@ -117,4 +117,4 @@
     }
 </style> -->
 
-<LineChart />
+<ScatterChart />
