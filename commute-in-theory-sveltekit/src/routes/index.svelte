@@ -50,7 +50,7 @@
             // });
 
             // Save the commutes in a store
-            CommuteStore.set(groupedCommutes)
+            CommuteStore.set(groupedCommutes);
 
             // Cache the page for this many seconds
             // https://github.com/sveltejs/kit/issues/793
@@ -116,3 +116,5 @@
         margin: 5px auto;
     }
 </style> -->
+
+<LineChart />
