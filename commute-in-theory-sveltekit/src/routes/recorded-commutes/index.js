@@ -8,8 +8,13 @@ export async function get() {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
+        const query = {
+            origin: 'CUP',
+            destination: 'SCZ'
+        }
+
         // Retrieve db items and put into an array
-        const commutes = await collection.find().limit(80).toArray();
+        const commutes = await collection.find(query).limit(300).toArray();
 
         return {
             status: 200,
