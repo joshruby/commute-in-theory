@@ -93,12 +93,13 @@
 <script>
     import { CommuteStore } from '$lib/stores/CommuteStore'
     import FourMain from '$lib/components/FourMain.svelte'
-    import ScatterChart from '$lib/components/ScatterChart.svelte'
+    import CityPairChart from '$lib/components/CityPairChart.svelte'
 
     // console.log($CommuteStore);
 </script> 
 
 <h1>Commute in Theory</h1>
 
-<ScatterChart data={$CommuteStore['CUP-SCZ']} />
-<FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/>
+<!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
+
+<CityPairChart data={$CommuteStore['CUP-SCZ']} />

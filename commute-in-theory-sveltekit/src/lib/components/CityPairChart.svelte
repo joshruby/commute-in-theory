@@ -6,6 +6,8 @@
     https://bl.ocks.org/curran/3f2ff2e32652397de94d406460e240ce
     https://github.com/TomFevrier/svelte-d3-demo
     https://dev.to/learners/line-chart-with-svelte-and-d3-3086 
+    https://github.com/TomFevrier/svelte-d3-demo/
+    https://github.com/AnupJoseph/svelteLearn
 
 -->
 
@@ -82,9 +84,9 @@
                 {#each recordings as item}
                     <!-- To get the points to animate when changed we need to position
                     them using transform rather than cx and cy -->
-                    <circle class="weekends"
+                    <!-- <circle class="weekends"
                         transform={`translate(${xScale(item.departureTimeConstDate)} ${yScale(item.travelTimeInSeconds)})`}
-                    />
+                    /> -->
                 {/each}
             {:else}
                 <path class="weekdays"
@@ -93,17 +95,17 @@
                 {#each recordings as item, i}
                     <!-- To get the points to animate when changed we need to position
                     them using transform rather than cx and cy -->
-                    <circle class="weekdays"
+                    <!-- <circle class="weekdays"
                         cx={xScale(item.departureTimeConstDate)}
                         cy={yScale(item.travelTimeInSeconds)}
-                    />
+                    /> -->
                 {/each}
             {/if}
         {/each}
 
         <text 
             class='axis-label' 
-            transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`} text-anchor="middle" 
+            transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom + 5})`} text-anchor="middle" 
             dominant-baseline="hanging"
         >
             {xLabel}
