@@ -76,8 +76,8 @@
             stroke-width="1"
         />
 
-        <ChartAxis {innerHeight} {margin} scale={xScale} position="bottom" />
-        <ChartAxis {innerHeight} {margin} scale={yScale} position="left" />
+        <ChartAxis {innerHeight} {innerWidth} {margin} scale={xScale} position="bottom" />
+        <ChartAxis {innerHeight} {innerWidth} {margin} scale={yScale} position="left" />
 
         <text class="title"
             transform={`translate(${innerWidth / 50} -5)`}
