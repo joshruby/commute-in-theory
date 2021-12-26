@@ -1,52 +1,96 @@
+<!-- 
+
+Resources
+
+https://bl.ocks.org/mbostock/3371592
+
+ -->
+
 <script>
-    import { select, selectAll, axisBottom, axisLeft, timeMinute, timeFormat} from 'd3'
+	import { onMount } from 'svelte';
+	import { select, selectAll, axisBottom, axisLeft, timeMinute, timeFormat } from 'd3';
 
-    export let  innerHeight;
-    export let  margin;
-    export let  position;
-    export let  scale;
+	export let innerHeight;
+	export let innerWidth;
+	export let margin;
+	export let position;
+	export let scale;
 
-    let  transform;
-    let  g;
+	let transform;
+	let gAxis;
+	let gGrid;
 
-    $: {
-        select(g).selectAll("*").remove();
+	onMount(() => {
+		select(gAxis).selectAll('*').remove();
+		select(gGrid).selectAll('*').remove();
 
-        let  axis;
-        switch (position) {
-            case "bottom":
-                axis = axisBottom(scale)
-                    .tickSizeOuter(0)
-                    .ticks(
-                        timeMinute.every(15),
-                        timeFormat("%H:%M")
-                    );
-                    
-                transform = `translate(0, ${innerHeight})`;
+		let axis;
+		let grid;
 
-                select(g).call(axis).selectAll("text")	
-                    .style("text-anchor", "end")
-                    .attr("dx", "-1em")
-                    .attr("dy", "0em")
-                    .attr("transform", "rotate(-65)");
+		switch (position) {
+			case 'bottom':
+				transform = `translate(0, ${innerHeight})`;
 
-                break;
+				// Configure the axis and ticks
+				axis = axisBottom(scale).ticks(timeMinute.every(60), timeFormat('%-I %p')).tickSizeOuter(0);
+				select(gAxis).call(axis);
+				// .selectAll("text")  // Rotate the tick labels for readability
+				//     //     .style("text-anchor", "end")
+				//     //     .attr("dx", "-1em")
+				//     //     .attr("dy", "0em")
+				//     //     .attr("transform", "rotate(-65)");
 
-            case "left":
-                axis = axisLeft(scale).tickSizeOuter(0);
-                transform = `translate(${margin}, 0)`;
+				// Configure the grid lines
+				grid = axisBottom(scale).tickSize(-innerHeight).tickFormat('').tickSizeOuter(0);
+				select(gGrid).attr('id', 'gridX').call(grid);
+				// select("g#gridX").select("domain").remove();
 
-                select(g).call(axis)
+				// Remove the duplicate paths (the x = and y = 0 axis lines)
+				select('g#gridX').select('path').remove();
 
-                break;
-        }
+				// Remove the first and last grid lines
+				selectAll('g.grid')
+					.selectAll('.tick')
+					.filter((tick, i, list) => {
+						if (i === 0 || i === list.length - 1) {
+							return true;
+						}
+					})
+					.attr('visibility', 'hidden');
 
-        // select(g).call(axis).selectAll("text")	
-        //             .style("text-anchor", "end")
-        //             .attr("dx", "-.8em")
-        //             .attr("dy", ".15em")
-        //             .attr("transform", "rotate(-65)");;
-    }
+				break;
+
+			case 'left':
+				transform = `translate(${margin}, 0)`;
+
+				// Configure the axis and ticks
+				axis = axisLeft(scale).ticks();
+				select(gAxis).call(axis);
+
+				// Configure the grid lines
+				grid = axisLeft(scale).tickSize(-innerWidth).tickFormat('');
+				select(gGrid).attr('id', 'gridY').call(grid);
+
+				// Remove the duplicate paths (the x = and y = 0 axis lines)
+				select('g#gridY').select('path').remove();
+
+				// Remove the first and last grid lines
+				selectAll('g.grid')
+					.selectAll('.tick')
+					.filter((tick, i, list) => {
+						if (i === 0 || i === list.length - 1) {
+							return true;
+						}
+					})
+					.attr('visibility', 'hidden');
+
+				break;
+		}
+
+		// Style the grids
+		selectAll('g.grid').selectAll('line').attr('stroke', '#aaa').style('stroke-dasharray', '2');
+	});
 </script>
 
-<g  class="axis"  bind:this={g}  {transform} />
+<g class="axis" bind:this={gAxis} {transform} />
+<g class="grid" bind:this={gGrid} {transform} />
