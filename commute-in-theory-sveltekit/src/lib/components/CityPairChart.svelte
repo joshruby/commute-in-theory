@@ -13,16 +13,19 @@
 
 
 <script>
+    import { CommuteStore } from '$lib/stores/CommuteStore'
     import { fly } from "svelte/transition";
     import { extent, scaleLinear, scaleTime, line, curveMonotoneX } from 'd3'
     import ChartAxis from './ChartAxis.svelte'
 
-    export let data;
+    export let cityPair;
+    
+    const data = $CommuteStore[cityPair]
 
     const xLabel = 'Time of Day';
     const yLabel = 'Travel Time [s]';
 
-	const width = 1200;
+	const width = 900;
 	const height = 500;
     const margin = { left: 60, right: 20, top: 60, bottom: 20 };
     const innerWidth = width - margin.left - margin.right;
@@ -76,6 +79,13 @@
         <ChartAxis {innerHeight} {margin} scale={xScale} position="bottom" />
         <ChartAxis {innerHeight} {margin} scale={yScale} position="left" />
 
+        <text class="title"
+            transform={`translate(${innerWidth / 50} 0)`}
+            text-anchor="start"
+        >
+            {cityPair}
+        </text>
+
         {#each Object.entries(data) as [date, recordings]}
             {#if date.includes('Sat') || date.includes('Sun')}
                 <path class="weekends"
@@ -124,19 +134,25 @@
 </svg>
 
 <style>
-    circle.weekdays {
+    circle {
         r: 3;
+    }
+
+    circle.weekdays {
         fill: black;
     }
+    
     circle.weekends {
-        r: 3;
+
         fill: #aaa;
     }
+    
     path.weekdays {
         stroke: black; 
         stroke-width: 1;
         fill: none;
     }
+    
     path.weekends {
         stroke: #aaa; 
         stroke-width: 1;
@@ -147,6 +163,10 @@
         border: 1px solid red;
         width: 100%;
         height: 600px;
+    }
+
+    .title {
+        font-size: 1.5rem;
     }
 
     /* .weekdays, .weekends {

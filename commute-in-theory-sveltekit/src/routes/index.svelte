@@ -96,10 +96,12 @@
     import CityPairChart from '$lib/components/CityPairChart.svelte'
 
     // console.log($CommuteStore);
+
+    let cityPair = 'CUP-SCZ';
 </script> 
 
 <h1>Commute in Theory</h1>
 
 <!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
 
-<CityPairChart data={$CommuteStore['CUP-SCZ']} />
+<CityPairChart {cityPair} />
