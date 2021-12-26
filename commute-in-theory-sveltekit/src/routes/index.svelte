@@ -28,10 +28,22 @@
                     }
                 });
                 
+                // Make the departureTime values Date objects
                 ele.departureTime = date;
 
-                // Add a new field for the locale time string
+                // Add a new field for the locale time to ease grouping later on
                 ele.departureTimeLocaleString = date.toLocaleTimeString()
+
+                // Add another field that has a constant date for all points
+                // This will make generating plot scales easier
+                ele.departureTimeConstDate = new Date(
+                    2021, 
+                    5, 
+                    21, 
+                    date.getHours(), 
+                    date.getMinutes(), 
+                    0
+                )
             });
 
             // Group the commutes by city pairs
@@ -48,6 +60,14 @@
             //         ele => ele.departureTime.toLocaleTimeString()
             //     )
             // });
+
+            // Within each city pair arr group commutes by date
+            Object.keys(groupedCommutes).forEach((key) => {
+                groupedCommutes[key] = groupBy(
+                    groupedCommutes[key],
+                    ele => ele.departureTime.toDateString()
+                );
+            });
 
             // Save the commutes in a store
             CommuteStore.set(groupedCommutes)
@@ -70,49 +90,15 @@
     }
 </script>
 
-
 <script>
-    // import { navigating } from '$app/stores'
-    // import OneSVG from '$lib/components/OneSVG.svelte'
-    // import TwoBar from '$lib/components/TwoBar.svelte'
-    // import ThreeScatter from '$lib/components/ThreeScatter.svelte'
-    // import FourMain from '$lib/components/FourMain.svelte'
-
-    import LineChart from '$lib/components/LineChart.svelte'
-
     import { CommuteStore } from '$lib/stores/CommuteStore'
+    import FourMain from '$lib/components/FourMain.svelte'
+    import ScatterChart from '$lib/components/ScatterChart.svelte'
 
-    // Receive the commuteData from load
-    // export let commuteData;
-    
     // console.log($CommuteStore);
 </script> 
 
 <h1>Commute in Theory</h1>
 
-<!-- <SvgOne /> -->
-<!-- <TwoBar /> -->
-<!-- <ThreeScatter /> -->
-<!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
-<!-- 
-{#each $CommuteStore['CUP-SCZ'].slice(0, 10) as commute}
-    <div class="commute-block">
-        <p><b>Origin:</b> {commute.origin}</p>
-        <p><b>Destination:</b> {commute.destination}</p>
-        <p><b>Departure Time:</b> {commute.departureTime}</p>
-        <p><b>Travel Time [s]:</b> {commute.travelTimeInSeconds}</p>
-    </div>
-{/each} -->
-
-<!-- <style>
-    :global(body) {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .commute-block {
-        max-width: 400px;
-        border: 2px solid #aaa;
-        border-radius: 20px;
-        padding: 10px;
-        margin: 5px auto;
-    }
-</style> -->
+<ScatterChart data={$CommuteStore['CUP-SCZ']} />
+<FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/>
