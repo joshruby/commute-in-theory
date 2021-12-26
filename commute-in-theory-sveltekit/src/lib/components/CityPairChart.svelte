@@ -68,13 +68,13 @@
 
 <svg>
     <g transform={`translate(${margin.left} ${margin.top})`}>
-        <rect 
+        <!-- <rect 
             width={innerWidth} 
             height={innerHeight} 
             fill="none" 
             stroke="blue" 
             stroke-width="1"
-        />
+        /> -->
 
         <ChartAxis {innerHeight} {innerWidth} {margin} scale={xScale} position="bottom" />
         <ChartAxis {innerHeight} {innerWidth} {margin} scale={yScale} position="left" />
