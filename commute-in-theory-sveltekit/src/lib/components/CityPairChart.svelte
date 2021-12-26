@@ -105,7 +105,9 @@
 
         <text 
             class='axis-label' 
-            transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom + 5})`} text-anchor="middle" 
+            transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`} 
+            dy="1.5em"
+            text-anchor="middle" 
             dominant-baseline="hanging"
         >
             {xLabel}
