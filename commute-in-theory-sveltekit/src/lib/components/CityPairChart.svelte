@@ -23,7 +23,7 @@
     const data = $CommuteStore[cityPair]
 
     const xLabel = 'Time of Day';
-    const yLabel = 'Travel Time [s]';
+    const yLabel = 'Travel Time (min)';
 
 	const width = 960;
 	const height = 500;
@@ -79,8 +79,9 @@
         <ChartAxis {innerHeight} {innerWidth} {margin} scale={xScale} position="bottom" />
         <ChartAxis {innerHeight} {innerWidth} {margin} scale={yScale} position="left" />
 
+        <!-- Chart title -->
         <text class="title"
-            transform={`translate(${innerWidth / 50} -5)`}
+            transform={`translate(${innerWidth / 50} -10)`}
             text-anchor="start"
         >
             {cityPair}
@@ -119,7 +120,7 @@
         <text 
             class='axis-label' 
             transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`} 
-            dy="1.7em"
+            dy="1em"
             text-anchor="middle" 
             dominant-baseline="hanging"
         >
@@ -129,7 +130,7 @@
         <text 
             class='axis-label' 
             transform={`translate(${-margin.left} ${innerHeight / 2}) rotate(-90)`}
-            dy="1.5em"
+            dy="1em"
             text-anchor="middle"
             dominant-baseline="bottom"
         >
@@ -171,7 +172,7 @@
     }
 
     .title {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
     }
 
     /* .weekdays, .weekends {
