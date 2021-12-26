@@ -25,7 +25,7 @@
     const xLabel = 'Time of Day';
     const yLabel = 'Travel Time [s]';
 
-	const width = 900;
+	const width = 960;
 	const height = 500;
     const margin = { left: 60, right: 20, top: 60, bottom: 20 };
     const innerWidth = width - margin.left - margin.right;
@@ -42,7 +42,7 @@
     // The sampleDay will most likely not happen to be the day with the min or
     // max travel time. That's ok though. Having a consistent scale between city 
     // pair charts is probably better 
-    $: yExtent = extent([0, 7200]);
+    $: yExtent = extent([0, 7200 / 60]);
 	// $: yExtent = extent(sampleDay, (d) => d.travelTimeInSeconds);
 
     // Create a scale for each axis by interpolating each range
@@ -63,7 +63,7 @@
     $: path = line()
         .curve(curveMonotoneX)
         .x((d) => xScale(d.departureTimeConstDate))
-        .y((d) => yScale(d.travelTimeInSeconds));
+        .y((d) => yScale(d.travelTimeInSeconds / 60));
 </script>
 
 <svg>
@@ -80,7 +80,7 @@
         <ChartAxis {innerHeight} {margin} scale={yScale} position="left" />
 
         <text class="title"
-            transform={`translate(${innerWidth / 50} 0)`}
+            transform={`translate(${innerWidth / 50} -5)`}
             text-anchor="start"
         >
             {cityPair}
@@ -95,7 +95,9 @@
                     <!-- To get the points to animate when changed we need to position
                     them using transform rather than cx and cy -->
                     <circle class="weekends"
-                        transform={`translate(${xScale(item.departureTimeConstDate)} ${yScale(item.travelTimeInSeconds)})`}
+                        cx={xScale(item.departureTimeConstDate)}
+                        cy={yScale(item.travelTimeInSeconds / 60)}
+                        r="3"
                     />
                 {/each}
             {:else}
@@ -107,7 +109,8 @@
                     them using transform rather than cx and cy -->
                     <circle class="weekdays"
                         cx={xScale(item.departureTimeConstDate)}
-                        cy={yScale(item.travelTimeInSeconds)}
+                        cy={yScale(item.travelTimeInSeconds / 60)}
+                        r="3"
                     />
                 {/each}
             {/if}
@@ -134,10 +137,6 @@
 </svg>
 
 <style>
-    circle {
-        r: 3;
-    }
-
     circle.weekdays {
         fill: black;
     }
