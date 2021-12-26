@@ -119,7 +119,7 @@
         <text 
             class='axis-label' 
             transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`} 
-            dy="1.5em"
+            dy="1.7em"
             text-anchor="middle" 
             dominant-baseline="hanging"
         >
@@ -128,8 +128,10 @@
 
         <text 
             class='axis-label' 
-            transform={`translate(${-margin.left} ${innerHeight / 2}) rotate(-90)`} text-anchor="middle"
-            dominant-baseline="hanging"
+            transform={`translate(${-margin.left} ${innerHeight / 2}) rotate(-90)`}
+            dy="1.5em"
+            text-anchor="middle"
+            dominant-baseline="bottom"
         >
             {yLabel}
         </text>
@@ -137,6 +139,10 @@
 </svg>
 
 <style>
+    text.axis-label {
+        font-size: 1.2em;
+    }
+
     circle.weekdays {
         fill: black;
     }
