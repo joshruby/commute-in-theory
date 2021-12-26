@@ -14,7 +14,7 @@
 
 <script>
     import { fly } from "svelte/transition";
-    import { extent, scaleLinear, scaleTime, line, curveNatural } from 'd3'
+    import { extent, scaleLinear, scaleTime, line, curveMonotoneX } from 'd3'
     import ChartAxis from './ChartAxis.svelte'
 
     export let data;
@@ -58,7 +58,7 @@
         .nice();
 
     $: path = line()
-        .curve(curveNatural)
+        .curve(curveMonotoneX)
         .x((d) => xScale(d.departureTimeConstDate))
         .y((d) => yScale(d.travelTimeInSeconds));
 </script>
@@ -84,9 +84,9 @@
                 {#each recordings as item}
                     <!-- To get the points to animate when changed we need to position
                     them using transform rather than cx and cy -->
-                    <!-- <circle class="weekends"
+                    <circle class="weekends"
                         transform={`translate(${xScale(item.departureTimeConstDate)} ${yScale(item.travelTimeInSeconds)})`}
-                    /> -->
+                    />
                 {/each}
             {:else}
                 <path class="weekdays"
@@ -95,10 +95,10 @@
                 {#each recordings as item, i}
                     <!-- To get the points to animate when changed we need to position
                     them using transform rather than cx and cy -->
-                    <!-- <circle class="weekdays"
+                    <circle class="weekdays"
                         cx={xScale(item.departureTimeConstDate)}
                         cy={yScale(item.travelTimeInSeconds)}
-                    /> -->
+                    />
                 {/each}
             {/if}
         {/each}
