@@ -92,16 +92,21 @@
 
 <script>
     import { CommuteStore } from '$lib/stores/CommuteStore'
+    import { CityPairStore } from '$lib/stores/LocationStore'
     import FourMain from '$lib/components/FourMain.svelte'
     import CityPairChart from '$lib/components/CityPairChart.svelte'
 
     // console.log($CommuteStore);
+    // console.log($CityPairStore);
 
-    let cityPair = 'CUP-SCZ';
 </script> 
 
 <h1>Commute in Theory</h1>
 
 <!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
 
-<CityPairChart {cityPair} />
+{#each $CityPairStore as cityPair}
+    {#if cityPair in $CommuteStore}
+        <CityPairChart {cityPair} />
+    {/if} 
+{/each}
