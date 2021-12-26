@@ -8,18 +8,24 @@
 
     console.log(commutes)
 
-    const plot = Plot.plot({
-        grid: true,
-        marks: [
-            Plot.dot(
-                commutes, 
-                {x: "departureTimeLocaleString", y: "travelTimeInSeconds"}
-            )
-        ]
-    })
+    let plot;
+
+    $: {
+        plot = Plot.plot({
+            grid: true,
+            marks: [
+                Plot.dot(
+                    commutes, 
+                    {x: "departureTime", y: "travelTimeInSeconds"}
+                )
+            ]
+        })
+    }
 </script>
 
-{plot}
+<svg>
+    <g bind:this={plot}></g>
+</svg>
 
 <!-- <svg height=600 width=600>
   {plot}
@@ -27,10 +33,10 @@
 
 <!-- {plot} -->
 
-<!-- <style>
+<style>
     svg {
         border: 1px solid red;
-        width: 100%;
+        width: 900%;
         height: 500px;
     }
-</style> -->
+</style>
