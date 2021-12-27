@@ -14,7 +14,7 @@ export async function get() {
         }
 
         // Retrieve db items and put into an array
-        const commutes = await collection.find().limit(10000).toArray();
+        const commutes = await collection.find(query).limit(10000).toArray();
 
         return {
             status: 200,
