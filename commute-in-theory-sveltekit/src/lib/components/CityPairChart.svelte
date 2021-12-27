@@ -25,12 +25,13 @@
     const xLabel = 'Time of Day';
     const yLabel = 'Travel Time (min)';
 
-	let width = 600;
-	let height = 300;
+	let width = 700;
+	let height = 400;
     const margin = { left: 60, right: 15, top: 50, bottom: 15 };
-
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
+    const dotSize = 2;
 
     let sampleDay;
     // Select a full day of recordings to set the extents
@@ -100,7 +101,7 @@
                         <circle class="weekends"
                             cx={xScale(item.departureTimeConstDate)}
                             cy={yScale(item.travelTimeInSeconds / 60)}
-                            r="3"
+                            r={dotSize}
                         />
                     {/each}
                 {:else}
@@ -113,7 +114,7 @@
                         <circle class="weekdays"
                             cx={xScale(item.departureTimeConstDate)}
                             cy={yScale(item.travelTimeInSeconds / 60)}
-                            r="3"
+                            r={dotSize}
                         />
                     {/each}
                 {/if}
@@ -149,29 +150,28 @@
 	} */
 
     circle.weekdays {
-        fill: black;
+        fill: #0b4f6c;
     }
     
     circle.weekends {
-
-        fill: #aaa;
+        fill: #757575;
     }
     
     path.weekdays {
-        stroke: black; 
-        stroke-width: 1;
+        stroke: #0b4f6c; 
+        stroke-width: 1px;
         fill: none;
     }
     
     path.weekends {
-        stroke: #aaa; 
-        stroke-width: 1;
+        stroke: #757575; 
+        stroke-width: 1px;
         fill: none;
     }
 
     svg {
-        width: 615px;
-        height: 340px;
+        width: 715px;
+        height: 440px;
     }
 
     text.axis-label {
