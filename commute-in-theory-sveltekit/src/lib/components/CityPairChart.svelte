@@ -76,8 +76,8 @@
             stroke-width="1"
         /> -->
 
-        <ChartAxis {innerHeight} {innerWidth} {margin} scale={xScale} position="bottom" />
-        <ChartAxis {innerHeight} {innerWidth} {margin} scale={yScale} position="left" />
+        <ChartAxis {innerHeight} {innerWidth} scale={xScale} position="bottom" />
+        <ChartAxis {innerHeight} {innerWidth} scale={yScale} position="left" />
 
         <!-- Chart title -->
         <text class="title"
