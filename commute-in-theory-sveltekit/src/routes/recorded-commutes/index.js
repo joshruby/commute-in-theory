@@ -9,7 +9,7 @@ export async function get() {
         const collection = db.collection('commutes');
 
         // Retrieve db items and put into an array
-        const commutes = await collection.find().limit(20000).toArray();
+        const commutes = await collection.find().limit(10000).toArray();
 
         return {
             status: 200,
