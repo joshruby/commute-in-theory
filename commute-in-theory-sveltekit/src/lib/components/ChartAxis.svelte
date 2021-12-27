@@ -12,20 +12,19 @@ https://bl.ocks.org/mbostock/3371592
 
 	export let innerHeight;
 	export let innerWidth;
-	export let margin;
 	export let position;
 	export let scale;
 
 	let transform;
 	let gAxis;
 	let gGrid;
-
+    
 	onMount(() => {
-		select(gAxis).selectAll('*').remove();
-		select(gGrid).selectAll('*').remove();
-
 		let axis;
-		let grid;
+        let grid;
+
+        select(gAxis).selectAll('*').remove();
+		select(gGrid).selectAll('*').remove();
 
 		switch (position) {
 			case 'bottom':
@@ -46,7 +45,7 @@ https://bl.ocks.org/mbostock/3371592
 				// select("g#gridX").select("domain").remove();
 
 				// Remove the duplicate paths (the x = and y = 0 axis lines)
-				select('g#gridX').select('path').remove();
+				selectAll('g#gridX').select('path').remove();
 
 				// Remove the first and last grid lines
 				selectAll('g.grid')
@@ -61,7 +60,7 @@ https://bl.ocks.org/mbostock/3371592
 				break;
 
 			case 'left':
-				transform = `translate(${margin}, 0)`;
+				// transform = `translate(0 0)`;
 
 				// Configure the axis and ticks
 				axis = axisLeft(scale).ticks();
@@ -72,7 +71,7 @@ https://bl.ocks.org/mbostock/3371592
 				select(gGrid).attr('id', 'gridY').call(grid);
 
 				// Remove the duplicate paths (the x = and y = 0 axis lines)
-				select('g#gridY').select('path').remove();
+				selectAll('g#gridY').select('path').remove();
 
 				// Remove the first and last grid lines
 				selectAll('g.grid')
