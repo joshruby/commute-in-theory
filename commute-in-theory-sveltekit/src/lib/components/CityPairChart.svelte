@@ -143,11 +143,10 @@
 </div>
 
 <style>
-
-    .chart {
+    /* .chart {
 		width: 100%;
 		max-width: 800px;
-	}
+	} */
 
     circle.weekdays {
         fill: black;
@@ -171,7 +170,6 @@
     }
 
     svg {
-        position: relative;
         width: 615px;
         height: 340px;
     }
