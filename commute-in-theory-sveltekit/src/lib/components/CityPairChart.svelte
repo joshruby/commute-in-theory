@@ -31,7 +31,7 @@
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const dotSize = 2;
+    const dotSize = 3;
 
     let sampleDay;
     // Select a full day of recordings to set the extents
