@@ -1,6 +1,19 @@
 <script context="module">
 	export const load = async ({ page, fetch }) => {
 		const res = await fetch('/recorded-commutes', { credentials: 'omit' });
+        
+        // const query = {
+        //     origin: 'CUP',
+        //     destination: 'SCZ'
+        // };
+        // const res = await fetch(
+        //     '/recorded-commutes',
+        //     { 
+        //         method: 'POST',
+        //         request: JSON.stringify(query),
+        //         credentials: 'omit',
+        //     }
+        // );
 
 		if (res.ok) {
 			const commuteData = await res.json();
