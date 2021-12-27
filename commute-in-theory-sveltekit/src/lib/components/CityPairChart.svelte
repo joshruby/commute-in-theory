@@ -25,9 +25,10 @@
     const xLabel = 'Time of Day';
     const yLabel = 'Travel Time (min)';
 
-	const width = 960;
-	const height = 500;
-    const margin = { left: 60, right: 20, top: 60, bottom: 20 };
+	let width = 600;
+	let height = 300;
+    const margin = { left: 60, right: 15, top: 50, bottom: 15 };
+
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
@@ -66,83 +67,87 @@
         .y((d) => yScale(d.travelTimeInSeconds / 60));
 </script>
 
-<svg>
-    <g transform={`translate(${margin.left} ${margin.top})`}>
-        <!-- <rect 
-            width={innerWidth} 
-            height={innerHeight} 
-            fill="none" 
-            stroke="blue" 
-            stroke-width="1"
-        /> -->
-
-        <ChartAxis {innerHeight} {innerWidth} scale={xScale} position="bottom" />
-        <ChartAxis {innerHeight} {innerWidth} scale={yScale} position="left" />
-
-        <!-- Chart title -->
-        <text class="title"
-            transform={`translate(${innerWidth / 50} -10)`}
-            text-anchor="start"
-        >
-            {cityPair}
-        </text>
-
-        {#each Object.entries(data) as [date, recordings]}
-            {#if date.includes('Sat') || date.includes('Sun')}
-                <path class="weekends"
-                    d={path(recordings)}
-                />
-                {#each recordings as item}
-                    <!-- To get the points to animate when changed we need to position
-                    them using transform rather than cx and cy -->
-                    <circle class="weekends"
-                        cx={xScale(item.departureTimeConstDate)}
-                        cy={yScale(item.travelTimeInSeconds / 60)}
-                        r="3"
+<div class="chart">
+    <svg>
+        <g transform={`translate(${margin.left} ${margin.top})`}>
+            <!-- <rect
+                width={innerWidth}
+                height={innerHeight}
+                fill="none"
+                stroke="blue"
+                stroke-width="1"
+            /> -->
+    
+            <ChartAxis {innerHeight} {innerWidth} scale={xScale} position="bottom" />
+            <ChartAxis {innerHeight} {innerWidth} scale={yScale} position="left" />
+    
+            <!-- Chart title -->
+            <text class="title"
+                transform={`translate(${innerWidth / 50} -10)`}
+                text-anchor="start"
+            >
+                {cityPair}
+            </text>
+    
+            {#each Object.entries(data) as [date, recordings]}
+                {#if date.includes('Sat') || date.includes('Sun')}
+                    <path class="weekends"
+                        d={path(recordings)}
                     />
-                {/each}
-            {:else}
-                <path class="weekdays"
-                    d={path(recordings)}
-                />
-                {#each recordings as item, i}
-                    <!-- To get the points to animate when changed we need to position
-                    them using transform rather than cx and cy -->
-                    <circle class="weekdays"
-                        cx={xScale(item.departureTimeConstDate)}
-                        cy={yScale(item.travelTimeInSeconds / 60)}
-                        r="3"
+                    {#each recordings as item}
+                        <!-- To get the points to animate when changed we need to position
+                        them using transform rather than cx and cy -->
+                        <circle class="weekends"
+                            cx={xScale(item.departureTimeConstDate)}
+                            cy={yScale(item.travelTimeInSeconds / 60)}
+                            r="3"
+                        />
+                    {/each}
+                {:else}
+                    <path class="weekdays"
+                        d={path(recordings)}
                     />
-                {/each}
-            {/if}
-        {/each}
-
-        <text 
-            class='axis-label' 
-            transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`} 
-            dy="1em"
-            text-anchor="middle" 
-            dominant-baseline="hanging"
-        >
-            {xLabel}
-        </text>
-
-        <text 
-            class='axis-label' 
-            transform={`translate(${-margin.left} ${innerHeight / 2}) rotate(-90)`}
-            dy="1em"
-            text-anchor="middle"
-            dominant-baseline="bottom"
-        >
-            {yLabel}
-        </text>
-    </g>
-</svg>
+                    {#each recordings as item, i}
+                        <!-- To get the points to animate when changed we need to position
+                        them using transform rather than cx and cy -->
+                        <circle class="weekdays"
+                            cx={xScale(item.departureTimeConstDate)}
+                            cy={yScale(item.travelTimeInSeconds / 60)}
+                            r="3"
+                        />
+                    {/each}
+                {/if}
+            {/each}
+    
+            <text
+                class='axis-label'
+                transform={`translate(${innerWidth / 2} ${innerHeight + margin.bottom})`}
+                dy="1em"
+                text-anchor="middle"
+                dominant-baseline="hanging"
+            >
+                {xLabel}
+            </text>
+    
+            <text
+                class='axis-label'
+                transform={`translate(${-margin.left} ${innerHeight / 2}) rotate(-90)`}
+                dy="1em"
+                text-anchor="middle"
+                dominant-baseline="bottom"
+            >
+                {yLabel}
+            </text>
+        </g>
+    </svg>
+</div>
 
 <style>
-    text.axis-label {
-        font-size: 1.2em;
-    }
+
+    .chart {
+		width: 100%;
+		max-width: 800px;
+	}
 
     circle.weekdays {
         fill: black;
@@ -166,9 +171,13 @@
     }
 
     svg {
-        border: 1px solid red;
-        width: 100%;
-        height: 600px;
+        position: relative;
+        width: 615px;
+        height: 340px;
+    }
+
+    text.axis-label {
+        font-size: 1.2em;
     }
 
     .title {
