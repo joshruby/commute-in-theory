@@ -8,6 +8,11 @@ export async function get() {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
+        const query = {
+            origin: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] },
+            destination: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] }
+        }
+
         // Retrieve db items and put into an array
         const commutes = await collection.find().limit(10000).toArray();
 
