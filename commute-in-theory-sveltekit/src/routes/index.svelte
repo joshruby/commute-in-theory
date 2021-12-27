@@ -1,112 +1,92 @@
 <script context="module">
-    export const load = async ({ page, fetch }) => {
-        const res = await fetch('/recorded-commutes', { credentials: 'omit' });
-        
-        if (res.ok) {
-            const commuteData = await res.json();
-            let commutes = commuteData.commutes;
+	export const load = async ({ page, fetch }) => {
+		const res = await fetch('/recorded-commutes', { credentials: 'omit' });
 
-            // Convert the departureTime strings to Date objects and 
-            // simplify their minutes and seconds
-            commutes.forEach((ele) => {
-                const minuteThresh = 7;
-                const recordingTimes = [0, 15, 30, 45];
-                
-                let date = new Date(ele.departureTime);
+		if (res.ok) {
+			const commuteData = await res.json();
+			let commutes = commuteData.commutes;
 
-                recordingTimes.forEach((t) => {
-                    const diff = Math.abs(date.getMinutes() - t);
+			// Convert the departureTime strings to Date objects and
+			// simplify their minutes and seconds
+			commutes.forEach((ele) => {
+				const minuteThresh = 7;
+				const recordingTimes = [0, 15, 30, 45];
 
-                    if (diff <= minuteThresh) {
-                        date.setMinutes(t, 0);
-                    }
-                    else if (diff >= (60 - minuteThresh)) {
-                        // E.g 07:54 should be set to 08:00, not 07:00
-                        // This could lead to a day having multiple commutes attributed
-                        // to the same recording time. I think that's fine for now
-                        date.setHours(date.getHours() + 1, t, 0);
-                    }
-                });
-                
-                // Make the departureTime values Date objects
-                ele.departureTime = date;
+				let date = new Date(ele.departureTime);
 
-                // Add a new field for the locale time to ease grouping later on
-                ele.departureTimeLocaleString = date.toLocaleTimeString()
+				recordingTimes.forEach((t) => {
+					const diff = Math.abs(date.getMinutes() - t);
 
-                // Add another field that has a constant date for all points
-                // This will make generating plot scales easier
-                ele.departureTimeConstDate = new Date(
-                    2021, 
-                    5, 
-                    21, 
-                    date.getHours(), 
-                    date.getMinutes(), 
-                    0
-                )
-            });
+					if (diff <= minuteThresh) {
+						date.setMinutes(t, 0);
+					} else if (diff >= 60 - minuteThresh) {
+						// E.g 07:54 should be set to 08:00, not 07:00
+						// This could lead to a day having multiple commutes attributed
+						// to the same recording time. I think that's fine for now
+						date.setHours(date.getHours() + 1, t, 0);
+					}
+				});
 
-            // Group the commutes by city pairs
-            // https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
-            const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
-            let groupedCommutes = groupBy(
-                commutes, 
-                ele => ele.origin + '-' + ele.destination
-            );
-            // // Within each city pair arr group commutes by hour and minute
-            // Object.keys(groupedCommutes).forEach((key) => {
-            //     groupedCommutes[key] = groupBy(
-            //         groupedCommutes[key],
-            //         ele => ele.departureTime.toLocaleTimeString()
-            //     )
-            // });
+				// Make the departureTime values Date objects
+				ele.departureTime = date;
 
-            // Within each city pair arr group commutes by date
-            Object.keys(groupedCommutes).forEach((key) => {
-                groupedCommutes[key] = groupBy(
-                    groupedCommutes[key],
-                    ele => ele.departureTime.toDateString()
-                );
-            });
+				// Add a new field for the locale time to ease grouping later on
+				ele.departureTimeLocaleString = date.toLocaleTimeString();
 
-            // Save the commutes in a store
-            CommuteStore.set(groupedCommutes)
+				// Add another field that has a constant date for all points
+				// This will make generating plot scales easier
+				ele.departureTimeConstDate = new Date(2021, 5, 21, date.getHours(), date.getMinutes(), 0);
+			});
 
-            // Cache the page for this many seconds
-            // https://github.com/sveltejs/kit/issues/793
-            return {
-                // props: {
-                //     commuteData: await res.json()
-                // },
-                maxage: 60 * 15 // Cache the page in the cdn for this many seconds
-            }
-        }
+			// Group the commutes by city pairs
+			// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
+			const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
+			let groupedCommutes = groupBy(commutes, (ele) => ele.origin + '-' + ele.destination);
+			// // Within each city pair arr group commutes by hour and minute
+			// Object.keys(groupedCommutes).forEach((key) => {
+			//     groupedCommutes[key] = groupBy(
+			//         groupedCommutes[key],
+			//         ele => ele.departureTime.toLocaleTimeString()
+			//     )
+			// });
 
-        return {
-            status: res.status,
-            error: new Error('Could not load the recorded commutes.')
-        }
+			// Within each city pair arr group commutes by date
+			Object.keys(groupedCommutes).forEach((key) => {
+				groupedCommutes[key] = groupBy(groupedCommutes[key], (ele) =>
+					ele.departureTime.toDateString()
+				);
+			});
 
-    }
+			// Save the commutes in a store
+			CommuteStore.set(groupedCommutes);
+
+			// Cache the page for this many seconds
+			// https://github.com/sveltejs/kit/issues/793
+			return {
+				// props: {
+				//     commuteData: await res.json()
+				// },
+				maxage: 60 * 15 // Cache the page in the cdn for this many seconds
+			};
+		}
+
+		return {
+			status: res.status,
+			error: new Error('Could not load the recorded commutes.')
+		};
+	};
 </script>
 
 <script>
-    import { CommuteStore } from '$lib/stores/CommuteStore'
-    import { CityPairStore } from '$lib/stores/LocationStore'
-    import FourMain from '$lib/components/FourMain.svelte'
-    import CityPairChart from '$lib/components/CityPairChart.svelte'
-
-    // console.log($CommuteStore);
-    // console.log($CityPairStore);
-
-</script> 
+	import { CommuteStore } from '$lib/stores/CommuteStore';
+	import { CityPairStore } from '$lib/stores/LocationStore';
+	import CityPairChart from '$lib/components/CityPairChart.svelte';
+</script>
 
 <h1>Commute in Theory</h1>
 
-<!-- <FourMain width={600} height={600} xDimension={'petalLength'} yDimension={'petalWidth'}/> -->
-
 {#each $CityPairStore as cityPair}
-    {#if cityPair in $CommuteStore}
-        <CityPairChart {cityPair} />
-    {/if} 
+	{#if cityPair in $CommuteStore}
+		<CityPairChart {cityPair} />
+	{/if}
 {/each}
