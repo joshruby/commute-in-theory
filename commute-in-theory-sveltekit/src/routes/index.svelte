@@ -91,15 +91,6 @@
 </script>
 
 <script>
-	import { CommuteStore } from '$lib/stores/CommuteStore';
-	import { CityPairStore } from '$lib/stores/LocationStore';
-	import CityPairChart from '$lib/components/CityPairChart.svelte';
 </script>
 
-<h1>Commute in Theory</h1>
-
-{#each $CityPairStore as cityPair}
-	{#if cityPair in $CommuteStore}
-		<CityPairChart {cityPair} />
-	{/if}
-{/each}
+<h1 class="uppercase text-2xl">Commute in Theory</h1>
