@@ -3,7 +3,7 @@ module.exports = {
     './src/**/*.svelte'
   ],
   plugins: [
-    // require('@tailwindcss/typography'),
+    require('@tailwindcss/typography'),
     require('daisyui'),
   ],
   daisyui: {
