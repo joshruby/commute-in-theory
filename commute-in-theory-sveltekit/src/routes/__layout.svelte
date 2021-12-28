@@ -11,4 +11,8 @@
     /* .btn {
         @apply rounded-full;
     } */
+
+    :global(h1) {
+        @apply text-3xl;
+    }
 </style>
