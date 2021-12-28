@@ -94,4 +94,4 @@
 	import { CommuteStore } from '$lib/stores/CommuteStore'
 </script>
 
-<h1 class="uppercase text-2xl">Commute in Theory</h1>
+<h1>Commute in Theory</h1>

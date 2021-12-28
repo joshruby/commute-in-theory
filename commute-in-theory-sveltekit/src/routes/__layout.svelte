@@ -1,4 +1,4 @@
-<div class="p-8 max-w-6xl">
+<div>
     <!-- The slot represents the components specific to each page -->
     <slot></slot>
 </div>
@@ -7,4 +7,8 @@
     @tailwind base;
     @tailwind components;
     @tailwind utilities;
+
+    /* .btn {
+        @apply rounded-full;
+    } */
 </style>
