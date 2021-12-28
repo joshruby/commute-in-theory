@@ -1,5 +1,4 @@
 import clientPromise from '$lib/db'
-import { ObjectId } from 'mongodb'
 
 export async function get() {
     try {
@@ -14,7 +13,7 @@ export async function get() {
         }
 
         // Retrieve db items and put into an array
-        const commutes = await collection.find(query).limit(10000).toArray();
+        const commutes = await collection.find(query).limit(100).toArray();
 
         return {
             status: 200,
