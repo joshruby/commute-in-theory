@@ -1,37 +1,22 @@
 <script>
-    import { beforeUpdate, afterUpdate, onMount } from 'svelte';
-    import { CommuteStore } from '$lib/stores/CommuteStore'
+    import { onMount } from 'svelte';
     import * as Plot from "@observablehq/plot";
 
-    export let cityPair = 'CUP-SCZ';
-
-    // const data = [
-    //     {x: 1, y:100},
-    //     {x: 2, y:50},
-    //     {x: 3, y:200},
-    //     {x: 4, y:75},
-    //     {x: 5, y:100},
-    //     {x: 6, y:50},
-    //     {x: 7, y:200},
-    //     {x: 8, y:75},
-    // ];
-    
     let data = [];
-    const max = 100;
+    const max = 10;
     for (let i = 0; i < 100; i++) {
         data.push({
             x: i,
-            y: Math.floor(Math.random() * (max + Math.pow(i, 2)))
+            y: Math.floor(Math.random() * (max + Math.pow(i, 3) / 1000))
         })
         
     }
 
-    const commutes = $CommuteStore[cityPair]
-    // console.log(commutes);
-
+    // Instantiate a variable to bind the plot's parent div element to
     let div;
     
     onMount(() => {
+        // Create the plot (Plot.plot returns an SVG element)
         const svgPlot = Plot.plot({
             grid: true,
             marks: [
@@ -41,8 +26,16 @@
                 )
             ]
         });
+        // Insert the plot SVG into the DOM under the parent div
+        div.append(svgPlot);
 
-        div.appendChild(svgPlot);
+        // Change its attributes and elements as necessary
+        svgPlot.setAttribute(
+            "width", "800px",
+        )
+        svgPlot.querySelectorAll("circle").forEach(
+            (circle) => circle.setAttribute("fill", "red")
+        );
     });
 </script>
 
@@ -51,11 +44,5 @@
 <style>
     div.plot {
         border: 1px solid red;
-        width: 800px;
-        height: 600px;
     }
-
-    /* svg {
-        border: 1px solid blue;
-    } */
 </style>
