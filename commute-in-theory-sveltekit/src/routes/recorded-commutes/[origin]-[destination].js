@@ -1,4 +1,9 @@
+// TODO
+// - Figure out how to get around the 10k limit
+
+
 import clientPromise from '$lib/db'
+import { TopologyDescription } from 'mongodb';
 
 export async function get({ params }) {
     try {
@@ -7,11 +12,15 @@ export async function get({ params }) {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
-        // Query for documents that match the provided origin and destination
-        const query = { origin: params.origin, destination: params.destination};
+        // Query for documents that match the provided 
+        // origin and destination
+        const query = { 
+            origin: params.origin, 
+            destination: params.destination 
+        };
 
         // Retrieve the documents and put them into an array
-        const commutes = await collection.find(query).toArray();
+        const commutes = await collection.find(query).limit(10000).toArray();
 
         return {
             status: 200,

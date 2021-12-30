@@ -1,24 +1,41 @@
 <script context="module">
 	export const load = async ({ page, fetch }) => {
-		const res = await fetch('/recorded-commutes', { credentials: 'omit' });
-        
-        // const query = {
-        //     origin: 'CUP',
-        //     destination: 'SCZ'
-        // };
-        // const res = await fetch(
-        //     '/recorded-commutes',
-        //     { 
-        //         method: 'POST',
-        //         request: JSON.stringify(query),
-        //         credentials: 'omit',
-        //     }
-        // );
+		let commutes = [];
 
-		if (res.ok) {
-			const commuteData = await res.json();
-			let commutes = commuteData.commutes;
+		// Build up the queries of interest
+		const workCities = ['CUP', 'STA'];
+        const homeCities = ['SCZ'];
+        let queries = [];
+        for (const home of homeCities) {
+            for (const work of workCities) {
+                queries.push({
+					origin: home,
+					destination: work
+				});
+				queries.push({
+					origin: work,
+					destination: home
+				});
+            }
+        }
 
+		// Fetch with each query
+		for (const query of queries) {
+			const res = await fetch(
+				`/recorded-commutes/${query.origin}-${query.destination}`, 
+				{ credentials: 'omit' }
+			);
+    
+			if (res.ok) {
+				const commuteData = await res.json();
+				commutes = commutes.concat(commuteData.commutes);
+			}
+		}
+
+		// console.log(commutes);
+		
+		// Process all of the commutes
+		if (commutes.length > 0) {
 			// Convert the departureTime strings to Date objects and
 			// simplify their minutes and seconds
 			commutes.forEach((ele) => {
@@ -69,6 +86,8 @@
 					ele.departureTime.toDateString()
 				);
 			});
+
+			console.log(groupedCommutes);
 
 			// Save the commutes in a store
 			CommuteStore.set(groupedCommutes);

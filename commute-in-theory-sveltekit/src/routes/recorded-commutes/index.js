@@ -8,12 +8,12 @@ export async function get() {
         const collection = db.collection('commutes');
 
         const query = {
-            origin: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] },
+            origin: { $in: ['CUP','SCZ', 'LGS', 'MLP'] },
             destination: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] }
-        }
+        };
 
         // Retrieve db items and put into an array
-        const commutes = await collection.find(query).limit(100).toArray();
+        const commutes = await collection.find(query).limit(10).toArray()
 
         return {
             status: 200,
@@ -31,23 +31,27 @@ export async function get() {
     }
 }
 
+// https://stackoverflow.com/questions/31826760/how-to-get-data-in-batches-in-mongodb
+// or https://docs.mongodb.com/manual/reference/method/cursor.batchSize/#example
 export async function post(request) {
     try {
         // Parse the request
-        const commute = JSON.parse(request.body);
+        const query = JSON.parse(request.body);
+
+        console.log(query);
 
         // Connect to the db
         const connectedClient = await clientPromise;
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
-        // POST the new item
-        await collection.insertOne(commute)
+        // Fetch the commutes from mongodb
+        const commutes = await collection.find(query).limit(10000)
 
         return {
             status: 200,
             body: {
-                status: 'Successful POST'
+                commutes
             }
         }
     } catch(err) {
