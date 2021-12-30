@@ -3,7 +3,6 @@
 
 
 import clientPromise from '$lib/db'
-import { TopologyDescription } from 'mongodb';
 
 export async function get({ params }) {
     try {
