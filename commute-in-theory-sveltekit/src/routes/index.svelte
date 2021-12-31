@@ -87,7 +87,7 @@
 				);
 			});
 
-			console.log(groupedCommutes);
+			// console.log(groupedCommutes);
 
 			// Save the commutes in a store
 			CommuteStore.set(groupedCommutes);
