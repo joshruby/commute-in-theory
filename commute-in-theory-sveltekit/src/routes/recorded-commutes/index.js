@@ -13,7 +13,7 @@ export async function get() {
         }
 
         // Retrieve db items and put into an array
-        const commutes = await collection.find(query).limit(100).toArray();
+        const commutes = await collection.find(query).toArray();
 
         return {
             status: 200,
