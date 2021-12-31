@@ -4,7 +4,7 @@
 
 		// Build up the queries of interest
 		const workCities = ['CUP', 'STA'];
-        const homeCities = ['SCZ'];
+        const homeCities = ['SCZ', 'PCA', 'MLP', 'LGS'];
         let queries = [];
         for (const home of homeCities) {
             for (const work of workCities) {
