@@ -1,5 +1,5 @@
 <script context="module">
-	export const load = async ({ page, fetch }) => {
+	export const load = async ({ fetch }) => {
 		const res = await fetch('/recorded-commutes', { credentials: 'omit' });
         
         // const query = {
