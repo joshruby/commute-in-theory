@@ -1,17 +1,3 @@
-<!-- 
-
-TODO
-
-- Figure out if stores can be used across routes
-- Save unprocessed commutes in browser local storage 
-	- Check local storage before fetching new commutes
-	- Only fetch those that are newer than the latest one in local storage
-	- Update local storage with the new commutes
-	- Update the UnprocessedCommutes store
-	- Reprocess all commutes
-	- Update the ProcessedCommutes store
--->
-
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore'
 	import { onMount } from 'svelte'
@@ -76,54 +62,80 @@ TODO
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		let pageSize = 50;
-		let lastSeenId = null;
-		let commutes = [];
+		const pageSize = 2500;
+		let lastSeenId;
+		if ($UnprocessedCommutes.length > 0) {
+			lastSeenId = 
+				$UnprocessedCommutes[$UnprocessedCommutes.length - 1]._id;
+		} else {
+			lastSeenId = null;
+		}
+		
+		console.log(
+			'Commutes in db: ',
+		 	totalDocumentCount
+		);
+		console.log(
+			'Commutes already in localStorage: ',
+		 	$UnprocessedCommutes.length
+		);
+		console.log(
+			'lastSeenId already in localStorage: ',
+			lastSeenId
+		);
 
+		outerWhile:
+			while ($UnprocessedCommutes.length < totalDocumentCount) {
+				const res = await fetch(
+					`/recorded-commutes/paged`,
+					{
+						method: 'POST',
+						body: JSON.stringify(
+							{
+								pageSize,
+								lastSeenId
+							}
+						)
+					}
+				);
 
-		console.log('totalDocumentCount: ', totalDocumentCount);
-		console.log('Fetching commutes...');
-		while (commutes.length < totalDocumentCount) {
-			const resTemp = await fetch(
-				`/recorded-commutes/paged`,
-				{
-					method: 'POST',
-					body: JSON.stringify(
-						{
-							pageSize,
-							lastSeenId
-						}
-					)
+				if (res.ok) {
+					const data = await res.json();
+					lastSeenId = data.lastSeenId;
+
+					try {
+						// Update the store (which will update localStorage)
+						UnprocessedCommutes.update(val => {
+							return val.concat(data.commutes);
+						});
+					} catch(err) {
+						console.log(new Error (err));
+						break outerWhile;
+					}
+
+					console.log(
+						'Commutes now in localStorage: ',
+						$UnprocessedCommutes.length
+					);
+					console.log(
+						'lastSeenId now in localStorage: ',
+						lastSeenId
+					);
+					
+				} else {
+					console.log('res not ok', res)
 				}
-			);
-
-			if (resTemp.ok) {
-				const data = await resTemp.json();
-
-				lastSeenId = data.lastSeenId;
-				commutes = commutes.concat(data.commutes);
-			} else {
-				console.log('res not ok')
 			}
 
-			console.log('Commutes fetched: ', commutes.length);
-		}
-
-		// Save the unprocessed commutes in a store
-		UnprocessedCommutes.set(commutes);
-
 		// Process all of the commutes
-		if (commutes.length > 0) {
-			const groupedCommutes = processCommutes(commutes);
-
-			// Save the processed commutes in a store
-			ProcessedCommutes.set(groupedCommutes);
-		}
+		const groupedCommutes = processCommutes($UnprocessedCommutes);
+		// Save the processed commutes in a store
+		ProcessedCommutes.set(groupedCommutes);
 	});
 </script>
 
 <h1>Commute in Theory</h1>
 
-{#each $UnprocessedCommutes as commute, i}
-	<h3>{i}: {commute.origin}</h3>
+{#each Object.keys($ProcessedCommutes) as k}
+	<h3>{k}</h3>
 {/each}
