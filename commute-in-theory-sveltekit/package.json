@@ -14,6 +14,7 @@
     "@sveltejs/adapter-cloudflare": "^1.0.0-next.5",
     "@sveltejs/kit": "next",
     "autoprefixer": "^10.4.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
@@ -28,7 +29,6 @@
     "@tailwindcss/typography": "^0.5.0",
     "d3": "^7.2.1",
     "daisyui": "^1.20.0",
-    "env-cmd": "^10.1.0",
     "mongodb": "^4.2.1"
   }
 }
