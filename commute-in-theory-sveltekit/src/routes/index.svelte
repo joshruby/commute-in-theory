@@ -62,7 +62,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 2500;
+		const pageSize = 5000;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
