@@ -13,14 +13,12 @@
 
 
 <script>
-    import { CommuteStore } from '$lib/stores/CommuteStore'
     import { fly } from "svelte/transition";
     import { extent, scaleLinear, scaleTime, line, curveMonotoneX } from 'd3'
     import ChartAxis from './ChartAxis.svelte'
 
     export let cityPair;
-    
-    const data = $CommuteStore[cityPair]
+    export let commutes;
 
     const xLabel = 'Time of Day';
     const yLabel = 'Travel Time (min)';
@@ -35,7 +33,7 @@
 
     let sampleDay;
     // Select a full day of recordings to set the extents
-    Object.values(data).some((value) => {
+    Object.values(commutes).some((value) => {
         sampleDay = value;
         return value.length >= 60;
     });
@@ -90,7 +88,7 @@
                 {cityPair}
             </text>
     
-            {#each Object.entries(data) as [date, recordings]}
+            {#each Object.entries(commutes) as [date, recordings]}
                 {#if date.includes('Sat') || date.includes('Sun')}
                     <path class="weekends"
                         d={path(recordings)}
