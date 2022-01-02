@@ -63,6 +63,7 @@
 		const totalDocumentCount = data.count;
 
 		const pageSize = 2500;
+		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
 			lastSeenId = 
@@ -74,14 +75,6 @@
 		console.log(
 			'Commutes in db: ',
 		 	totalDocumentCount
-		);
-		console.log(
-			'Commutes already in localStorage: ',
-		 	$UnprocessedCommutes.length
-		);
-		console.log(
-			'lastSeenId already in localStorage: ',
-			lastSeenId
 		);
 
 		outerWhile:
@@ -104,7 +97,7 @@
 					lastSeenId = data.lastSeenId;
 
 					try {
-						// Update the store (which will update localStorage)
+						// Update the store
 						UnprocessedCommutes.update(val => {
 							return val.concat(data.commutes);
 						});
@@ -114,11 +107,11 @@
 					}
 
 					console.log(
-						'Commutes now in localStorage: ',
+						'Commutes now in store: ',
 						$UnprocessedCommutes.length
 					);
 					console.log(
-						'lastSeenId now in localStorage: ',
+						'lastSeenId now in store: ',
 						lastSeenId
 					);
 					
@@ -136,6 +129,4 @@
 
 <h1>Commute in Theory</h1>
 
-{#each Object.keys($ProcessedCommutes) as k}
-	<h3>{k}</h3>
-{/each}
+<h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
