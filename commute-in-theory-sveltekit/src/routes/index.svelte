@@ -1,6 +1,7 @@
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore'
 	import { onMount } from 'svelte'
+	import CityPairChart from '$lib/components/CityPairChart.svelte';
 
 	function processCommutes(commutes) {
 		// Convert the departureTime strings to Date objects and
@@ -62,7 +63,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 5000;
+		const pageSize = 0;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -78,7 +79,7 @@
 		);
 
 		outerWhile:
-			while ($UnprocessedCommutes.length < totalDocumentCount) {
+			while ($UnprocessedCommutes.length < pageSize) {
 				const res = await fetch(
 					`/recorded-commutes/paged`,
 					{
@@ -130,3 +131,5 @@
 <h1>Commute in Theory</h1>
 
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
+
+<CityPairChart />
