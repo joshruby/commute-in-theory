@@ -2,18 +2,26 @@
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
 
+    export let commutes;
+
 	function createChart() {
-        var trace1 = {
-            x: [1, 2, 3, 4],
-            y: [10, 15, 13, 17],
-            type: 'scatter'
-	    };
-        var trace2 = {
-            x: [1, 2, 3, 4],
-            y: [16, 5, 11, 9],
-            type: 'scatter'
+        // Prepare the trace data
+        const testCommutes = [
+            { x: 1, y: 5 },
+            { x: 2, y: 8 },
+            { x: 3, y: 10 },
+            { x: 4, y: 1 },
+        ];
+        let trace1 = {
+            x: [],
+            y: [],
+            mode: "scatter"
         };
-        var data = [trace1, trace2];
+        testCommutes.forEach((val) => {
+            trace1.x.push(val['x']);
+            trace1.y.push(val['y']);
+        });
+        var data = [trace1];
 
 		var layout = {
 			autosize: true,
@@ -40,15 +48,16 @@
 	afterUpdate(createChart);
 </script>
 
-<main>
+<div class="container">
     <div id="plot">
     <!-- Plotly chart will be drawn inside this DIV -->
     </div>
-</main>
+</div>
 
 <style>
-    #plot {
-        border: 1px solid red;
-        max-width: 800px;
+    .container {
+        border: 2px solid red;
+        border-radius: 6px;
+        max-width: 850px;
     }
 </style>
