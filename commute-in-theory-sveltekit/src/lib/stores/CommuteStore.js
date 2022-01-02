@@ -1,3 +1,4 @@
 import { writable } from 'svelte/store'
 
-export const CommuteStore = writable([]);
+export const ProcessedCommutes = writable([]);
+export const UnprocessedCommutes = writable([]);
