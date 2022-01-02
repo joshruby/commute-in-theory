@@ -63,7 +63,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 2500;
+		const pageSize = 5000;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -133,5 +133,12 @@
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
 
 {#each Object.entries($ProcessedCommutes) as [cityPair, commutes]}
-	<CityPairChart {cityPair} {commutes} />
+	{#if 
+		cityPair === 'CUP-SCZ' ||
+		cityPair === 'SCZ-CUP' || 
+		cityPair === 'STA-SCZ' || 
+		cityPair === 'SCZ-STA'
+	}
+		<CityPairChart {cityPair} {commutes} />
+	{/if}
 {/each}
