@@ -82,7 +82,7 @@ let cityPairPermutations = [];
 let cityPairCombinations = []
 Object.keys(locations['work']).forEach((workKey) => {
     Object.keys(locations['home']).forEach((homeKey) => {
-        cityPairCombinations.push(`${homeKey}-${workKey}`)
+        cityPairCombinations.push([homeKey, workKey])
         
         cityPairPermutations.push(`${homeKey}-${workKey}`)
         cityPairPermutations.push(`${workKey}-${homeKey}`)
