@@ -2,8 +2,18 @@
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes } from '$lib/stores/CommuteStore'
+    import { Locations } from '$lib/stores/LocationStore'
 
     export let cityPair;
+
+    let titles = {
+        forward: 
+            `${$Locations.home[cityPair.home].name} \u2013 ` +
+            `${$Locations.work[cityPair.work].name}`,
+        reverse:
+            `${$Locations.work[cityPair.work].name} \u2013 ` +
+            `${$Locations.home[cityPair.home].name}`
+    };
 
 	function createChart() {
         // All traces will be pushed into data
@@ -67,7 +77,7 @@
 
 		var layout = {
 			width: 950,
-			height: 500,
+			height: 700,
             // title: `${title}`,
 			xaxis: {
 				// title: 'Departure Time',
@@ -84,13 +94,31 @@
 			yaxis: {
 				// title: 'Travel Time (min)',
                 anchor: 'x',
-                domain: [0.52, 1]
+                domain: [0.6, 1]
 			},
             yaxis2: {
 				// title: 'Travel Time (min)',
                 anchor: 'x2',
-                domain: [0, 0.48]
+                domain: [0, 0.4]
 			},
+            annotations: [
+                {
+                    text: `${titles.forward}`,
+                    showarrow: false,
+                    x: 0,
+                    xref: 'x domain',
+                    y: 1.25,
+                    yref: 'y domain'
+                },
+                {
+                    text: `${titles.reverse}`,
+                    showarrow: false,
+                    x: 0,
+                    xref: 'x2 domain',
+                    y: 1.25,
+                    yref: 'y2 domain'
+                },
+            ],
             hovermode:'closest',
 			showlegend: true
 		};
