@@ -1,8 +1,8 @@
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore'
-	import { CityPairCombinations } from '$lib/stores/LocationStore'
+	import { CityPairs } from '$lib/stores/LocationStore'
 	import { onMount } from 'svelte'
-	import CityPairChart from '$lib/components/CityPairChart.svelte';
+	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 
 	function processCommutes(commutes) {
 		// Convert the departureTime strings to Date objects and
@@ -64,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 5000;
+		const pageSize = 200;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -149,9 +149,9 @@
 {/each} -->
 
 {#if Object.entries($ProcessedCommutes).length > 0}
-	{#each $CityPairCombinations as cityComb}
-		{#if cityComb[0] === 'SCZ' && cityComb[1] === 'CUP'}
-			<CityPairChart {cityComb} />
+	{#each $CityPairs as cityPair}
+		{#if cityPair.home === 'SCZ' && cityPair.work === 'CUP'}
+			<CityPairSubChart {cityPair} />
 		{/if}
 	{/each}
 {/if}

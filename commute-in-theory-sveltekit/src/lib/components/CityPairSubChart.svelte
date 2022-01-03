@@ -2,35 +2,31 @@
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes } from '$lib/stores/CommuteStore'
-    import { Locations } from '$lib/stores/LocationStore'
 
-    export let cityComb;  
-
-    const cityPairs = [
-        `${cityComb[0]}-${cityComb[1]}`,
-        `${cityComb[1]}-${cityComb[0]}`
-    ];
+    export let cityPair;
 
 	function createChart() {
-        // Structure the commutes in plotly trace objects
-        // Make a trace for each day of recordings 
+        // All traces will be pushed into data
         let data = [];
-        cityPairs.forEach((cityPair, i) => {
+
+        for (const [direction, route] of Object.entries(cityPair.routes)) {
             // Retrive the commutes from the store
-            const commutes = $ProcessedCommutes[cityPair]
+            const commutes = $ProcessedCommutes[route]
+            
             // Assign plot sub axis labels
             let xaxis;
             let yaxis;
-            switch (i) {
-                case 0:
+            switch (direction) {
+                case 'forward':
                     xaxis = 'x';
                     yaxis = 'y';
                     break;
-                case 1:
+                case 'reverse':
                     xaxis = 'x2';
                     yaxis = 'y2'; 
             }
 
+            // Make a trace for each day of recordings 
             for (const [date, recordings] of Object.entries(commutes)) {
                 let color;
                 let legendgroup;
@@ -67,14 +63,12 @@
                 });
                 data.push(trace);
             }
-        });
-
-        console.log(data)
+        }
 
 		var layout = {
 			width: 950,
 			height: 500,
-            y_title: 'Your master y-title',
+            // title: `${title}`,
 			xaxis: {
 				// title: 'Departure Time',
                 tickformat: '%H:%M',

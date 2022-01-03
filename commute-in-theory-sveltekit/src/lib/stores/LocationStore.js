@@ -1,8 +1,7 @@
 import { writable } from 'svelte/store'
 
 export const Locations = writable([])
-export const CityPairPermutations = writable([])
-export const CityPairCombinations = writable([])
+export const CityPairs = writable([])
 
 const locations = {
     work: {
@@ -78,15 +77,17 @@ const locations = {
 }
 Locations.set(locations)
 
-let cityPairPermutations = [];
-let cityPairCombinations = []
-Object.keys(locations['work']).forEach((workKey) => {
-    Object.keys(locations['home']).forEach((homeKey) => {
-        cityPairCombinations.push([homeKey, workKey])
-        
-        cityPairPermutations.push(`${homeKey}-${workKey}`)
-        cityPairPermutations.push(`${workKey}-${homeKey}`)
+let cityPairs = [];
+Object.keys(locations['work']).forEach((work) => {
+    Object.keys(locations['home']).forEach((home) => {
+        cityPairs.push({
+            home: home,
+            work: work,
+            routes: {
+                forward: `${home}-${work}`,
+                reverse: `${work}-${home}`
+            }
+        });
     })
 })
-CityPairPermutations.set(cityPairPermutations);
-CityPairCombinations.set(cityPairCombinations);
+CityPairs.set(cityPairs);
