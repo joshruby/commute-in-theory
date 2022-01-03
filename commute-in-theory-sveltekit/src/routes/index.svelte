@@ -64,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 500;
+		const pageSize = 5000;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -75,7 +75,7 @@
 
 		console.log('Commutes in db: ', totalDocumentCount);
 
-		outerWhile: while ($UnprocessedCommutes.length < pageSize) {
+		outerWhile: while ($UnprocessedCommutes.length < totalDocumentCount0) {
 			const res = await fetch(`/recorded-commutes/paged`, {
 				method: 'POST',
 				body: JSON.stringify({
@@ -117,22 +117,33 @@
 	let containerWidth;
 </script>
 
-<h1>Commute in Theory</h1>
 
-<h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
 
 <div class="container" bind:clientWidth={containerWidth}>
-	{#if containerWidth > 768}
-		{#if Object.entries($ProcessedCommutes).length > 0}
-			<div class="grid grid-cols-1 place-items-center gap-4">
-				{#each $CityPairs as cityPair}
-					{#if cityPair.home === 'SCZ'}
-						<div class="grid place-items-center border-2 rounded-3xl shadow-sm hover:shadow-md">
-							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-						</div>
-					{/if}
-				{/each}
-			</div>
+	<div class="mx-8 my-4">
+		<div class="mb-8">
+			<h1 class="inline">Commute in Theory</h1>
+			<h3 class="mt-2 text-gray-400 float-right">
+					Commutes: 
+					<span class="font-semibold">
+						{$UnprocessedCommutes.length}
+					</span>
+			</h3>
+			<hr>
+		</div>
+		
+		{#if containerWidth > 768}
+			{#if Object.entries($ProcessedCommutes).length > 0}
+				<div class="grid grid-cols-1 place-items-center gap-4">
+					{#each $CityPairs as cityPair}
+						{#if cityPair.home === 'SCZ'}
+							<div class="grid place-items-center border-2 rounded-3xl shadow-sm hover:shadow-md">
+								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+							</div>
+						{/if}
+					{/each}
+				</div>
+			{/if}
 		{/if}
-	{/if}
+	</div>
 </div>
