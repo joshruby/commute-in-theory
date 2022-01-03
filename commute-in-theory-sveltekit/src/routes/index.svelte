@@ -1,6 +1,8 @@
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore'
+	import { CityPairs } from '$lib/stores/LocationStore'
 	import { onMount } from 'svelte'
+	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 
 	function processCommutes(commutes) {
 		// Convert the departureTime strings to Date objects and
@@ -125,8 +127,35 @@
 		// Save the processed commutes in a store
 		ProcessedCommutes.set(groupedCommutes);
 	});
+
+	// let cityPair = 'SCZ-CUP';
+	// let commutes = {};
+	// // console.log(commutes);
+	// $: {
+	// 	commutes = $ProcessedCommutes[cityPair];
+	// 	console.log('commutes updated');
+	// }
+
 </script>
 
 <h1>Commute in Theory</h1>
 
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
+
+{#if Object.entries($ProcessedCommutes).length > 0}
+	{#each $CityPairs as cityPair}
+		<!-- {#if cityPair.home === 'SCZ'} -->
+		<div class="city-pair-sub-chart">
+			<CityPairSubChart {cityPair} />
+		</div>
+		<!-- {/if} -->
+	{/each}
+{/if}
+
+<style>
+	/* .city-pair-sub-chart {
+		border: 2px solid blue;
+		border-radius: 12px;
+		padding: 10px;
+	} */
+</style>
