@@ -128,14 +128,8 @@
 		ProcessedCommutes.set(groupedCommutes);
 	});
 
-	// let cityPair = 'SCZ-CUP';
-	// let commutes = {};
-	// // console.log(commutes);
-	// $: {
-	// 	commutes = $ProcessedCommutes[cityPair];
-	// 	console.log('commutes updated');
-	// }
-
+	let chartWidth = 850;
+	let chartHeight = 600;
 </script>
 
 <h1>Commute in Theory</h1>
@@ -143,19 +137,19 @@
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
 
 {#if Object.entries($ProcessedCommutes).length > 0}
+	<div 
+		class="grid grid-cols-1 place-items-center gap-4" 
+	>
 	{#each $CityPairs as cityPair}
-		<!-- {#if cityPair.home === 'SCZ'} -->
-		<div class="city-pair-sub-chart">
-			<CityPairSubChart {cityPair} />
+			{#if cityPair.home === 'SCZ'}
+				<div 
+					class="grid place-items-center border-2 rounded-3xl shadow-sm hover:shadow-md">
+					<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
 		</div>
-		<!-- {/if} -->
+			{/if}
 	{/each}
+	</div>
 {/if}
 
 <style>
-	/* .city-pair-sub-chart {
-		border: 2px solid blue;
-		border-radius: 12px;
-		padding: 10px;
-	} */
 </style>
