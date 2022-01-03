@@ -64,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 200;
+		const pageSize = 5000;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -80,7 +80,7 @@
 		);
 
 		outerWhile:
-			while ($UnprocessedCommutes.length < pageSize) {
+			while ($UnprocessedCommutes.length < totalDocumentCount) {
 				const res = await fetch(
 					`/recorded-commutes/paged`,
 					{
@@ -142,16 +142,20 @@
 
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
 
-<!-- {#each Object.entries($ProcessedCommutes) as [cityPair, commutes]}
-	{#if ['SCZ-CUP', 'CUP-SCZ'].includes(cityPair)}
-		<CityPairChart {cityPair} {commutes} />
-	{/if}
-{/each} -->
-
 {#if Object.entries($ProcessedCommutes).length > 0}
 	{#each $CityPairs as cityPair}
-		{#if cityPair.home === 'SCZ' && cityPair.work === 'CUP'}
+		<!-- {#if cityPair.home === 'SCZ'} -->
+		<div class="city-pair-sub-chart">
 			<CityPairSubChart {cityPair} />
-		{/if}
+		</div>
+		<!-- {/if} -->
 	{/each}
 {/if}
+
+<style>
+	/* .city-pair-sub-chart {
+		border: 2px solid blue;
+		border-radius: 12px;
+		padding: 10px;
+	} */
+</style>
