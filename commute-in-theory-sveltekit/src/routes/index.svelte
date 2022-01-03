@@ -1,5 +1,6 @@
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore'
+	import { CityPairCombinations } from '$lib/stores/LocationStore'
 	import { onMount } from 'svelte'
 	import CityPairChart from '$lib/components/CityPairChart.svelte';
 
@@ -63,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 0;
+		const pageSize = 5000;
 		
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -126,10 +127,31 @@
 		// Save the processed commutes in a store
 		ProcessedCommutes.set(groupedCommutes);
 	});
+
+	// let cityPair = 'SCZ-CUP';
+	// let commutes = {};
+	// // console.log(commutes);
+	// $: {
+	// 	commutes = $ProcessedCommutes[cityPair];
+	// 	console.log('commutes updated');
+	// }
+
 </script>
 
 <h1>Commute in Theory</h1>
 
 <h3>Commutes loaded: {$UnprocessedCommutes.length}</h3>
 
-<CityPairChart />
+<!-- {#each Object.entries($ProcessedCommutes) as [cityPair, commutes]}
+	{#if ['SCZ-CUP', 'CUP-SCZ'].includes(cityPair)}
+		<CityPairChart {cityPair} {commutes} />
+	{/if}
+{/each} -->
+
+{#if Object.entries($ProcessedCommutes).length > 0}
+	{#each $CityPairCombinations as cityComb}
+		{#if cityComb[0] === 'SCZ' && cityComb[1] === 'CUP'}
+			<CityPairChart {cityComb} />
+		{/if}
+	{/each}
+{/if}
