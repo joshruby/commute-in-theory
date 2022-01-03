@@ -58,14 +58,15 @@
                 let trace = {
                     x: [],
                     y: [],
-                    mode: 'lines+markers',
-                    marker: {
-                        color: color,
-                        size: 5
-                    },
+                    mode: 'lines',
+                    // marker: {
+                    //     color: color,
+                    //     size: 5
+                    // },
                     line: {
                         shape: 'spline',
-                        width: 1,
+                        width: 2,
+                        color: color,
                     },
                     name: `${date}`,
                     hovertemplate: '%{y} min',
