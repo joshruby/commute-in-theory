@@ -88,6 +88,13 @@
 		var layout = {
 			width: 950,
 			height: 700,
+            margin: {
+                l: 60,
+                r: 0,
+                b: 60,
+                t: 60,
+                // pad: 4
+            },
             // title: `${title}`,
 			xaxis: {
 				title: 'Departure Time',
