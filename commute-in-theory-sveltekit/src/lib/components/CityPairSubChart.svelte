@@ -141,14 +141,14 @@
         };
 
         // Plotly.purge(`plot-${cityPair}`);
-        Plotly.newPlot(`plot`, data, layout, config);
+        Plotly.newPlot(`plot-${cityPair.home}-${cityPair.work}`, data, layout, config);
 	}
 
 	afterUpdate(createChart);
 </script>
 
 <div class="chart">
-    <div id={`plot`}>
+    <div id={`plot-${cityPair.home}-${cityPair.work}`}>
     <!-- Plotly chart will be drawn inside this DIV -->
     </div>
 </div>
