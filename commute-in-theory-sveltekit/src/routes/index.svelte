@@ -64,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 5000;
+		const pageSize = 10000;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -75,7 +75,7 @@
 
 		console.log('Commutes in db: ', totalDocumentCount);
 
-		outerWhile: while ($UnprocessedCommutes.length < totalDocumentCount0) {
+		outerWhile: while ($UnprocessedCommutes.length < totalDocumentCount) {
 			const res = await fetch(`/recorded-commutes/paged`, {
 				method: 'POST',
 				body: JSON.stringify({
