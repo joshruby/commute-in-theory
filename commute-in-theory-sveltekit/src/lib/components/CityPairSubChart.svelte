@@ -91,31 +91,55 @@
             // title: `${title}`,
 			xaxis: {
 				title: 'Departure Time',
+                titlefont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 tickformat: '%H:%M',
+                tickfont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 anchor: 'y',
                 domain: [0, 1]
 			},
             xaxis2: {
 				title: 'Departure Time',
+                titlefont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 tickformat: '%H:%M',
+                tickfont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 anchor: 'y2',
                 domain: [0, 1]
 			},
 			yaxis: {
 				title: 'Travel Time (min)',
+                titlefont: {
+                    color: 'rgb(107, 107, 107)',
+                },
+                tickfont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 anchor: 'x',
-                domain: [0.65, 1]
+                domain: [0.64, 1]
 			},
             yaxis2: {
 				title: 'Travel Time (min)',
+                titlefont: {
+                    color: 'rgb(107, 107, 107)',
+                },
+                tickfont: {
+                    color: 'rgb(107, 107, 107)',
+                },
                 anchor: 'x2',
-                domain: [0, 0.35]
+                domain: [0, 0.36]
 			},
             annotations: [
                 {
                     text: `${titles.forward}`,
                     font: {
-                        size: '16',
+                        size: '18',
                     },
                     showarrow: false,
                     x: 0,
@@ -126,7 +150,7 @@
                 {
                     text: `${titles.reverse}`,
                     font: {
-                        size: '16',
+                        size: '18',
                     },
                     showarrow: false,
                     x: 0,
