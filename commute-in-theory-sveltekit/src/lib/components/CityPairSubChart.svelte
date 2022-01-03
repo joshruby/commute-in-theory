@@ -1,3 +1,10 @@
+<!-- TODO
+
+ - Style axis and title labels
+ - Figure out legend groups
+ - Add date to over info -->
+
+
 <script>
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
