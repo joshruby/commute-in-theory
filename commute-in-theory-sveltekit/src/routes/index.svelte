@@ -64,7 +64,7 @@
 		const data = await res.json();
 		const totalDocumentCount = data.count;
 
-		const pageSize = 10000;
+		const pageSize = 200;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -75,7 +75,7 @@
 
 		console.log('Commutes in db: ', totalDocumentCount);
 
-		outerWhile: while ($UnprocessedCommutes.length < totalDocumentCount) {
+		outerWhile: while ($UnprocessedCommutes.length < 200) {
 			const res = await fetch(`/recorded-commutes/paged`, {
 				method: 'POST',
 				body: JSON.stringify({
@@ -136,11 +136,11 @@
 			{#if Object.entries($ProcessedCommutes).length > 0}
 				<div class="grid grid-cols-1 place-items-center gap-4">
 					{#each $CityPairs as cityPair}
-						{#if cityPair.home === 'SCZ'}
-							<div class="grid place-items-center border-2 rounded-3xl shadow-sm hover:shadow-md">
+						<!-- {#if cityPair.home === 'SCZ'} -->
+							<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
 								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
 							</div>
-						{/if}
+						<!-- {/if} -->
 					{/each}
 				</div>
 			{/if}
