@@ -49,10 +49,10 @@
                 let legendgroup;
                 if (date.includes('Sat') || date.includes('Sun')){
                     color = 'rgb(170, 170, 170)';
-                    legendgroup = 'weekends';
+                    legendgroup = `Weekends - ${route}`;
                 } else {
                     color = 'rgb(164, 194, 244)';
-                    legendgroup = 'weekdays'
+                    legendgroup = `Weekdays - ${route}`
                 }
 
                 let trace = {
@@ -64,9 +64,8 @@
                         size: 6
                     },
                     name: `${date}`,
-                    hovertemplate: '%{y} min<extra></extra>',
+                    hovertemplate: '%{y} min',
                     legendgroup: legendgroup,
-                    showlegend: false,
                     xaxis: xaxis,
                     yaxis: yaxis
                 };
@@ -87,7 +86,7 @@
 			height: 700,
             // title: `${title}`,
 			xaxis: {
-				// title: 'Departure Time',
+				title: 'Departure Time',
                 tickformat: '%H:%M',
                 anchor: 'y',
                 domain: [0, 1]
@@ -99,14 +98,14 @@
                 domain: [0, 1]
 			},
 			yaxis: {
-				// title: 'Travel Time (min)',
+				title: 'Travel Time (min)',
                 anchor: 'x',
-                domain: [0.6, 1]
+                domain: [0.65, 1]
 			},
             yaxis2: {
-				// title: 'Travel Time (min)',
+				title: 'Travel Time (min)',
                 anchor: 'x2',
-                domain: [0, 0.4]
+                domain: [0, 0.35]
 			},
             annotations: [
                 {
@@ -114,7 +113,7 @@
                     showarrow: false,
                     x: 0,
                     xref: 'x domain',
-                    y: 1.25,
+                    y: 1.2,
                     yref: 'y domain'
                 },
                 {
@@ -122,7 +121,7 @@
                     showarrow: false,
                     x: 0,
                     xref: 'x2 domain',
-                    y: 1.25,
+                    y: 1.2,
                     yref: 'y2 domain'
                 },
             ],
