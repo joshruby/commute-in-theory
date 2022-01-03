@@ -12,6 +12,8 @@
     import { Locations } from '$lib/stores/LocationStore'
 
     export let cityPair;
+    export let chartWidth;
+    export let chartHeight;
 
     let titles = {
         forward: 
@@ -87,8 +89,8 @@
         }
 
 		var layout = {
-			width: 950,
-			height: 700,
+			width: chartWidth,
+			height: chartHeight,
             margin: {
                 l: 60,
                 r: 0,
@@ -147,7 +149,7 @@
                 {
                     text: `${titles.forward}`,
                     font: {
-                        size: '18',
+                        size: '16',
                     },
                     showarrow: false,
                     x: 0,
@@ -158,7 +160,7 @@
                 {
                     text: `${titles.reverse}`,
                     font: {
-                        size: '18',
+                        size: '16',
                     },
                     showarrow: false,
                     x: 0,
@@ -183,14 +185,15 @@
 	afterUpdate(createChart);
 </script>
 
-<div class="chart">
-    <div id={`plot-${cityPair.home}-${cityPair.work}`}>
+<div 
+    id={`plot-${cityPair.home}-${cityPair.work}`} 
+    class="plot"
+>
     <!-- Plotly chart will be drawn inside this DIV -->
-    </div>
 </div>
 
 <style>
-    .chart {
-        max-width: 950px;
+    .plot {
+        padding: 10px;
     }
 </style>
