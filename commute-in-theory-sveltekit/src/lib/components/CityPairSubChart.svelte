@@ -110,18 +110,24 @@
             annotations: [
                 {
                     text: `${titles.forward}`,
+                    font: {
+                        size: '16',
+                    },
                     showarrow: false,
                     x: 0,
                     xref: 'x domain',
-                    y: 1.2,
+                    y: 1.25,
                     yref: 'y domain'
                 },
                 {
                     text: `${titles.reverse}`,
+                    font: {
+                        size: '16',
+                    },
                     showarrow: false,
                     x: 0,
                     xref: 'x2 domain',
-                    y: 1.2,
+                    y: 1.25,
                     yref: 'y2 domain'
                 },
             ],
@@ -141,6 +147,14 @@
 	afterUpdate(createChart);
 </script>
 
-<div id={`plot`}>
-<!-- Plotly chart will be drawn inside this DIV -->
+<div class="chart">
+    <div id={`plot`}>
+    <!-- Plotly chart will be drawn inside this DIV -->
+    </div>
 </div>
+
+<style>
+    .chart {
+        max-width: 950px;
+    }
+</style>
