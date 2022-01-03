@@ -61,7 +61,11 @@
                     mode: 'lines+markers',
                     marker: {
                         color: color,
-                        size: 6
+                        size: 5
+                    },
+                    line: {
+                        shape: 'spline',
+                        width: 1,
                     },
                     name: `${date}`,
                     hovertemplate: '%{y} min',
