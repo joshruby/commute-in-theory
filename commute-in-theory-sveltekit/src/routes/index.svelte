@@ -1,3 +1,12 @@
+<!-- TODO
+
+ - Change subchart title en dashes to arrows
+ - Add a multi-search bar to filter which charts are displayed
+    - Use a default query to limit the number of charts drawn by default
+    - Make a list of toggles for each citypair that adds the combination to the multi-search query
+
+-->
+
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
