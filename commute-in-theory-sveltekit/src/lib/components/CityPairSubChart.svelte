@@ -1,8 +1,11 @@
 <!-- TODO
 
- - Style axis and title labels
- - Figure out legend groups
- - Add date to over info -->
+ - Change subchart title en dashes to arrows
+ - Add a multi-search bar to filter which charts are displayed
+    - Use a default query to limit the number of charts drawn by default
+    - Make a list of toggles for each citypair that adds the combination to the multi-search query
+
+-->
 
 
 <script>
