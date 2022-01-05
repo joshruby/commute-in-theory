@@ -4,6 +4,14 @@
  - Add a multi-search bar to filter which charts are displayed
     - Use a default query to limit the number of charts drawn by default
     - Make a list of toggles for each citypair that adds the combination to the multi-search query
+- Line styling
+	- Reduce opacity
+	- Increase smoothing
+- Add an additional comparison multi sect tool
+	- Draw traces on one chart in different colors
+- Styling
+	- Move top bar to __layout?
+	- Center all items, including the top bar
 
 -->
 
