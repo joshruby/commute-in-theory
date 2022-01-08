@@ -12,7 +12,7 @@
 -->
 
 <script>
-	import { ProcessedCommutes, UnprocessedCommutes } from '$lib/stores/CommuteStore';
+	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
 	import { onMount } from 'svelte';
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
@@ -75,7 +75,7 @@
 	onMount(async () => {
 		const res = await fetch('/recorded-commutes/count');
 		const data = await res.json();
-		const totalDocumentCount = data.count;
+		CommuteCount.set(data.count);
 
 		const pageSize = 200;
 
@@ -86,7 +86,7 @@
 			lastSeenId = null;
 		}
 
-		console.log('Commutes in db: ', totalDocumentCount);
+		console.log('Commutes in db: ', $CommuteCount);
 
 		outerWhile: while ($UnprocessedCommutes.length < pageSize) {
 			const res = await fetch(`/recorded-commutes/paged`, {
