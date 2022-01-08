@@ -130,7 +130,18 @@
 	let containerWidth;
 </script>
 
-<div class="flex justify-center">
+
+<div class="flex justify-center items-center mb-6 border-b">
+    <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
+        <span class="text-2xl">Commute in Theory</span>
+        <div>
+            <span class="mr-2">Commutes Loaded</span>
+            <span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
+        </div>
+    </div>
+</div>
+
+<div class="flex justify-center mx-16 my-4">
 	<div class="container" bind:clientWidth={containerWidth}>
 		{#if containerWidth > 768}
 			{#if Object.entries($ProcessedCommutes).length > 0}

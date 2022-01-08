@@ -1,22 +1,4 @@
-<script>
-    import { UnprocessedCommutes } from '$lib/stores/CommuteStore'
-</script>
-
-<div class="flex justify-center items-center mb-6 border-b">
-    <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
-        <span class="text-2xl">Commute in Theory</span>
-        <span>
-            Commutes:
-            <span class="font-semibold">
-                {$UnprocessedCommutes.length}
-            </span>
-        </span>
-    </div>
-</div>
-
-<div class="mx-16 my-4">
-    <slot></slot>
-</div>
+<slot></slot>
 
 <style>
     @tailwind base;
