@@ -1,18 +1,18 @@
 <!-- TODO
 
- - Change subchart title en dashes to arrows
- - Add a multi-search bar to filter which charts are displayed
-    - Use a default query to limit the number of charts drawn by default
-    - Make a list of toggles for each citypair that adds the combination to the multi-search query
-- Line styling
-	- Reduce opacity
-	- Increase smoothing
-- Add an additional comparison multi sect tool
-	- Draw traces on one chart in different colors
-- Styling
 	- Move top bar to __layout?
 	- Center all items, including the top bar
 
+	- Make a section for each city combination
+		- Only draw the plots when each section is opened 
+		- Show all traces but make them somewhat thinner and less opaque and have a darker, thicker trace for the average at each time
+		- Change subchart title en dashes to arrows
+		- Show a table of statistics for each route
+		- Show a dynamic correlation chart between time of day and commute time
+			- Use a slider or series of 7 radio buttons to control the day of the week
+
+	- Multi select comparison tool
+		- Show average of all data for each of the selected city combinations on one chart, each in a different color
 -->
 
 <script>
