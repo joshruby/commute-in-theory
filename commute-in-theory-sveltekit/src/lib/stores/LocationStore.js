@@ -35,7 +35,7 @@ const locations = {
         },
         SJC: {
             code: 'SJC',
-            name: 'Santa Jose, Downtown',
+            name: 'San Jose, Downtown',
             lat_lon: '37.33481534485126,-121.88822099401446'
         },
         SFP: {
