@@ -77,7 +77,7 @@
 		const data = await res.json();
 		CommuteCount.set(data.count);
 
-		const pageSize = 500;
+		const pageSize = 200;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -126,16 +126,15 @@
 
 	let chartWidth = 850;
 	let chartHeight = 600;
-
 	let containerWidth;
 
-	let searchFilter = '';
+	let searchFilter = 'Santa Cruz';
 </script>
 
 
 <div class="flex justify-center items-center mb-6 border-b">
     <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
-        <span class="text-2xl">Commute in Theory</span>
+        <span class="text-2xl font-semibold">Commute in Theory</span>
         <div>
             <span class="mr-2">Commutes Loaded</span>
             <span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
@@ -143,26 +142,31 @@
     </div>
 </div>
 
-<div class="flex justify-center mx-16">
-	<div class="container" bind:clientWidth={containerWidth}>
-		{#if containerWidth > 768 && Object.entries($ProcessedCommutes).length > 0}
-				<div class="grid grid-cols-1 place-items-center gap-4">
 
-				<div class="flex">
-					<div class="form-control max-w-screen-xl mb-6">
-						<input id="searchFilter" type="text" placeholder="Filter charts..." bind:value={searchFilter} class="input input-bordered">
-					</div>
+
+<div class="flex justify-center">
+	<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
+		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
+			<div class="grid grid-cols-1 place-items-center gap-4">
+			
+				<div class="form-control w-64">
+					<label for="searchFilter" class="label">
+						<span class="label-text text-lg font-semibold">Filter</span>
+					</label>
+					<input type="text" bind:value={searchFilter} id="searchFilter" placeholder={searchFilter} class="input input-bordered">
 				</div>
 
-
-					{#each $CityPairs as cityPair}
-						{#if cityPair.home.code === 'SCZ'}
-							<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
-								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-							</div>
-						{/if}
-					{/each}
-				</div>
+				{#each $CityPairs as cityPair}
+					{#if
+						cityPair.home.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+						cityPair.work.name.toLowerCase().includes(searchFilter.toLowerCase())
+					}
+						<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
+							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+						</div>
+					{/if}
+				{/each}
+			</div>
 		{/if}
 	</div>
 </div>
