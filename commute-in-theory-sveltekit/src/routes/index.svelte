@@ -77,7 +77,7 @@
 		const data = await res.json();
 		CommuteCount.set(data.count);
 
-		const pageSize = 200;
+		const pageSize = 500;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
@@ -128,6 +128,8 @@
 	let chartHeight = 600;
 
 	let containerWidth;
+
+	let searchFilter = '';
 </script>
 
 
@@ -141,11 +143,18 @@
     </div>
 </div>
 
-<div class="flex justify-center mx-16 my-4">
+<div class="flex justify-center mx-16">
 	<div class="container" bind:clientWidth={containerWidth}>
-		{#if containerWidth > 768}
-			{#if Object.entries($ProcessedCommutes).length > 0}
+		{#if containerWidth > 768 && Object.entries($ProcessedCommutes).length > 0}
 				<div class="grid grid-cols-1 place-items-center gap-4">
+
+				<div class="flex">
+					<div class="form-control max-w-screen-xl mb-6">
+						<input id="searchFilter" type="text" placeholder="Filter charts..." bind:value={searchFilter} class="input input-bordered">
+					</div>
+				</div>
+
+
 					{#each $CityPairs as cityPair}
 						{#if cityPair.home === 'SCZ'}
 							<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
@@ -154,7 +163,6 @@
 						{/if}
 					{/each}
 				</div>
-			{/if}
 		{/if}
 	</div>
 </div>
