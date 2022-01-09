@@ -2,19 +2,14 @@
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes } from '$lib/stores/CommuteStore'
-    import { Locations } from '$lib/stores/LocationStore'
 
     export let cityPair;
     export let chartWidth;
     export let chartHeight;
 
     let titles = {
-        forward: 
-            `${$Locations.home[cityPair.home].name} \u2013 ` +
-            `${$Locations.work[cityPair.work].name}`,
-        reverse:
-            `${$Locations.work[cityPair.work].name} \u2013 ` +
-            `${$Locations.home[cityPair.home].name}`
+        forward: `${cityPair.home.name} \u2013 ${cityPair.work.name}`,
+        reverse: `${cityPair.work.name} \u2013 ${cityPair.home.name}`
     };
 
 	function createChart() {
@@ -171,15 +166,15 @@
             displayModeBar: false
         };
 
-        // Plotly.purge(`plot-${cityPair}`);
-        Plotly.newPlot(`plot-${cityPair.home}-${cityPair.work}`, data, layout, config);
+        // Give each chart a unique ID
+        Plotly.newPlot(`plot-${cityPair.home.code}-${cityPair.work.code}`, data, layout, config);
 	}
 
 	afterUpdate(createChart);
 </script>
 
 <div 
-    id={`plot-${cityPair.home}-${cityPair.work}`} 
+    id={`plot-${cityPair.home.code}-${cityPair.work.code}`} 
     class="plot"
 >
     <!-- Plotly chart will be drawn inside this DIV -->

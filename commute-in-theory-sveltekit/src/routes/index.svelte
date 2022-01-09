@@ -156,7 +156,7 @@
 
 
 					{#each $CityPairs as cityPair}
-						{#if cityPair.home === 'SCZ'}
+						{#if cityPair.home.code === 'SCZ'}
 							<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
 								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
 							</div>
