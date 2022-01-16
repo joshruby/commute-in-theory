@@ -37,13 +37,14 @@ def recordCommute(commute_request):
 
     # Convert response to JSON
     res = res.json()
+    summary = res['routes'][0]['summary']
 
     # Keep only the relevant information
     return {
         'origin': origin_id,
         'destination': destination_id,
-        'departureTime': res['routes'][0]['summary']['departureTime'],
-        'travelTimeInSeconds': res['routes'][0]['summary']['travelTimeInSeconds']
+        'departureTime': datetime.fromisoformat(summary['departureTime']),
+        'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
 def mongodbPOST(commute):
