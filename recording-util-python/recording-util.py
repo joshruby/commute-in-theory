@@ -39,11 +39,37 @@ def recordCommute(commute_request):
     res = res.json()
     summary = res['routes'][0]['summary']
 
+    # Make a date obj from the departureTime str
+    departure_time = datetime.fromisoformat(summary['departureTime'])
+
+    # Round each recording to the intended recording time
+    for minute in RECORDING_MINUTES:
+        diff = abs(departure_time.minute - minute)
+        if (diff <= MINUTE_THRESH):
+            departure_time = departure_time.replace(minute=minute, second=0)
+            break
+        elif (diff >= 60 - MINUTE_THRESH):
+            # E.g 07:54 should be set to 08:00, not 07:00
+            departure_time = departure_time.replace(
+                hour=departure_time.hour + 1,
+                minute=minute, 
+                second=0
+            )
+            break
+    
+    # Store each recording with a constant date to make querying by time possible
+    departure_time_const_date = departure_time.replace(
+        year=2021,
+        month=6,
+        day=21
+    )
+
     # Keep only the relevant information
     return {
         'origin': origin_id,
         'destination': destination_id,
-        'departureTime': datetime.fromisoformat(summary['departureTime']),
+        'departureTime': departure_time,
+        'departureTimeConstDate': departure_time_const_date,
         'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
@@ -128,8 +154,9 @@ LOCATIONS = {
     }
 }
 
-RECORDINGS_PER_HOUR = 4
 TZ_LA = pytz.timezone('America/Los_Angeles')
+RECORDING_MINUTES = [0, 15, 30, 45]
+MINUTE_THRESH = 7
 
 if __name__ == "__main__":
     while True:
@@ -137,7 +164,7 @@ if __name__ == "__main__":
         hour = now_LA.hour
         minute = now_LA.minute
 
-        if 6 <= hour <= 20 and minute % (60 / RECORDINGS_PER_HOUR) == 0:
+        if 6 <= hour <= 20 and minute in RECORDING_MINUTES:
             for wkey, wval in LOCATIONS['work'].items():
                 for hkey, hval in LOCATIONS['home'].items():
                     pairs = [
