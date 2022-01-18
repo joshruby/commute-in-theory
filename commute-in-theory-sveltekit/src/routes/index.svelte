@@ -12,6 +12,8 @@
 
 	- Multi select comparison tool
 		- Show average of all data for each of the selected city combinations on one chart, each in a different color
+
+	- Investigate data-forge package
 -->
 
 <script>
