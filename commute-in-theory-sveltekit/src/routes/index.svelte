@@ -23,8 +23,9 @@
 		// Convert the departureTime strings to Date objects and
 		// simplify their minutes and seconds
 		commutes.forEach((ele) => {
-
 			// Make the departureTime into a Date obj
+			// By default this will convert the UTC time to the local timezone
+			// of the browser
 			ele.departureTime = new Date(ele.departureTime);
 
 			// Add another field that has a constant date for all points
