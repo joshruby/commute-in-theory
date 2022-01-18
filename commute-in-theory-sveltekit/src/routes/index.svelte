@@ -1,5 +1,6 @@
 <!-- TODO
-	- Store some data offline for use during developing. There's no sense in pulling the data each time when I'm not actively working on the GET processes
+	X Store some data offline for use during developing
+		- Import and parse the offline commutes
 
 	- Make a section for each city combination
 		- Only draw the plots when each section is opened 
