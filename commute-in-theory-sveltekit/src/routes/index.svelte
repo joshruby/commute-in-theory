@@ -41,19 +41,28 @@
 		const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
 		let groupedCommutes = groupBy(commutes, (ele) => ele.origin + '-' + ele.destination);
 
-		// Within each city pair arr, separately group commutes by date and time
+		// Make each city pair an obj
 		Object.keys(groupedCommutes).forEach((key) => {
-			groupedCommutes[key]['groupedByDate'] = groupBy(
-				groupedCommutes[key], 
-				(ele) => ele.departureTime.toDateString()
-			);
+			let commutes = groupedCommutes[key];
+		    groupedCommutes[key] = {
+				ungrouped: commutes
+			};
 		});
 
+		// Within each city pair arr, separately group commutes by date and time
+		
 		Object.keys(groupedCommutes).forEach((key) => {
-		    groupedCommutes[key]['groupedByTime'] = groupBy(
-		        groupedCommutes[key],
+			groupedCommutes[key]['grouped'] = {};
+
+			groupedCommutes[key]['grouped']['byDate'] = groupBy(
+				groupedCommutes[key]['ungrouped'], 
+				(ele) => ele.departureTime.toDateString()
+			);
+
+			groupedCommutes[key]['grouped']['byTime'] = groupBy(
+		        groupedCommutes[key]['ungrouped'],
 		        ele => ele.departureTime.toLocaleTimeString()
-		    )
+		    );
 		});
 
 		return groupedCommutes;

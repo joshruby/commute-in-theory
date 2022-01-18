@@ -18,7 +18,7 @@
 
         for (const [direction, route] of Object.entries(cityPair.routes)) {
             // Retrive the commutes from the store
-            const commutes = $ProcessedCommutes[route].groupedByDate
+            const commutes = $ProcessedCommutes[route].grouped.byDate
             
             // Assign plot sub axis labels
             let xaxis;
