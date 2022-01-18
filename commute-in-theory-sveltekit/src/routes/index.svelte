@@ -23,33 +23,17 @@
 		// Convert the departureTime strings to Date objects and
 		// simplify their minutes and seconds
 		commutes.forEach((ele) => {
-			const minuteThresh = 7;
-			const recordingTimes = [0, 15, 30, 45];
 
-			let date = new Date(ele.departureTime);
-
-			recordingTimes.forEach((t) => {
-				const diff = Math.abs(date.getMinutes() - t);
-
-				if (diff <= minuteThresh) {
-					date.setMinutes(t, 0);
-				} else if (diff >= 60 - minuteThresh) {
-					// E.g 07:54 should be set to 08:00, not 07:00
-					// This could lead to a day having multiple commutes attributed
-					// to the same recording time. I think that's fine for now
-					date.setHours(date.getHours() + 1, t, 0);
-				}
-			});
-
-			// Make the departureTime values Date objects
-			ele.departureTime = date;
-
-			// Add a new field for the locale time to ease grouping later on
-			ele.departureTimeLocaleString = date.toLocaleTimeString();
+			// Make the departureTime into a Date obj
+			ele.departureTime = new Date(ele.departureTime);
 
 			// Add another field that has a constant date for all points
 			// This will make generating plot scales easier
-			ele.departureTimeConstDate = new Date(2021, 5, 21, date.getHours(), date.getMinutes(), 0);
+			ele.departureTimeConstDate = new Date(
+				2021, 5, 21, 
+				ele.departureTime.getHours(), 
+				ele.departureTime.getMinutes(), 
+				0);
 		});
 
 		// Group the commutes by city pairs
@@ -79,7 +63,7 @@
 		const data = await res.json();
 		CommuteCount.set(data.count);
 
-		const pageSize = 200;
+		const pageSize = 20;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {
