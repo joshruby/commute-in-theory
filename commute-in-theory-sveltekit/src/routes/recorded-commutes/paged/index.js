@@ -23,7 +23,7 @@ export async function post(request) {
             // Fetch from the last seen commute
             commutes = await collection
                 .find({ "_id": { "$gt": lastSeenId } })
-                .sort({"_id": 1 })
+                .sort({ "_id": 1 })
                 .limit(pageSize)
                 .toArray()
 
