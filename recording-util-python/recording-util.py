@@ -19,6 +19,8 @@ def recordCommute(commute_request):
     origin = commute_request['origin'][1]
     destination_id = commute_request['destination'][0]
     destination = commute_request['destination'][1]
+    hour = commute_request['hour']
+    minute = commute_request['minute']
 
     # Build the URL
     uri = f'https://api.tomtom.com/routing/1/calculateRoute/{origin["lat_lon"]}:{destination["lat_lon"]}/json'
@@ -56,20 +58,13 @@ def recordCommute(commute_request):
                 second=0
             )
             break
-    
-    # Store each recording with a constant date to make querying by time possible
-    departure_time_const_date = departure_time.replace(
-        year=2021,
-        month=6,
-        day=21
-    )
 
     # Keep only the relevant information
     return {
         'origin': origin_id,
         'destination': destination_id,
         'departureTime': departure_time,
-        'departureTimeConstDate': departure_time_const_date,
+        'departureTimeLocalizedSimplified': {'hour': hour, 'minute': minute},
         'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
@@ -178,7 +173,9 @@ if __name__ == "__main__":
                             commute = recordCommute(
                                 {
                                     'origin': p[0],
-                                    'destination': p[1]
+                                    'destination': p[1],
+                                    'hour': hour,
+                                    'minute': minute
                                 }
                             )
 
