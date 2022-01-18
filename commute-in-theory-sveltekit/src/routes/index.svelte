@@ -40,19 +40,20 @@
 		// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
 		const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
 		let groupedCommutes = groupBy(commutes, (ele) => ele.origin + '-' + ele.destination);
-		// // Within each city pair arr group commutes by hour and minute
-		// Object.keys(groupedCommutes).forEach((key) => {
-		//     groupedCommutes[key] = groupBy(
-		//         groupedCommutes[key],
-		//         ele => ele.departureTime.toLocaleTimeString()
-		//     )
-		// });
 
-		// Within each city pair arr group commutes by date
+		// Within each city pair arr, separately group commutes by date and time
 		Object.keys(groupedCommutes).forEach((key) => {
-			groupedCommutes[key] = groupBy(groupedCommutes[key], (ele) =>
-				ele.departureTime.toDateString()
+			groupedCommutes[key]['groupedByDate'] = groupBy(
+				groupedCommutes[key], 
+				(ele) => ele.departureTime.toDateString()
 			);
+		});
+
+		Object.keys(groupedCommutes).forEach((key) => {
+		    groupedCommutes[key]['groupedByTime'] = groupBy(
+		        groupedCommutes[key],
+		        ele => ele.departureTime.toLocaleTimeString()
+		    )
 		});
 
 		return groupedCommutes;
@@ -63,7 +64,7 @@
 		const data = await res.json();
 		CommuteCount.set(data.count);
 
-		const pageSize = 20;
+		const pageSize = 500;
 
 		let lastSeenId;
 		if ($UnprocessedCommutes.length > 0) {

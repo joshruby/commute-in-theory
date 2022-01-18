@@ -18,7 +18,7 @@
 
         for (const [direction, route] of Object.entries(cityPair.routes)) {
             // Retrive the commutes from the store
-            const commutes = $ProcessedCommutes[route]
+            const commutes = $ProcessedCommutes[route].groupedByDate
             
             // Assign plot sub axis labels
             let xaxis;
@@ -37,6 +37,7 @@
             for (const [date, recordings] of Object.entries(commutes)) {
                 let color;
                 let legendgroup;
+                
                 if (date.includes('Sat') || date.includes('Sun')){
                     color = 'rgb(170, 170, 170)';
                     legendgroup = `Weekends - ${route}`;
