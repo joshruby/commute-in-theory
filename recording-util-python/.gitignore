@@ -1,6 +1,5 @@
 config.py
 *.pem
-commutes.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
