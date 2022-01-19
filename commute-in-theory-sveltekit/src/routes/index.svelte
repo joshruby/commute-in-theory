@@ -1,6 +1,8 @@
 <!-- TODO
 	X Store some data offline for use during developing
-		- Import and parse the offline commutes
+		X Import offline commutes
+		- Correct offline commute timestamps (either here or in the Python util)
+
 
 	- Make a section for each city combination
 		- Only draw the plots when each section is opened 
@@ -20,6 +22,7 @@
 	import { CityPairs } from '$lib/stores/LocationStore';
 	import { onMount } from 'svelte';
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
+	import data from './commutes.json'
 
 	function processCommutes(commutes) {
 		// Convert the departureTime strings to Date objects and
@@ -72,62 +75,75 @@
 	}
 
 	onMount(async () => {
-		const res = await fetch('/recorded-commutes/count');
-		const data = await res.json();
-		CommuteCount.set(data.count);
+		//////   Online   ////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+		// const res = await fetch('/recorded-commutes/count');
+		// const data = await res.json();
+		// CommuteCount.set(data.count);
 
-		const pageSize = 500;
+		// const pageSize = 500;
 
-		let lastSeenId;
-		if ($UnprocessedCommutes.length > 0) {
-			lastSeenId = $UnprocessedCommutes[$UnprocessedCommutes.length - 1]._id;
-		} else {
-			lastSeenId = null;
-		}
+		// let lastSeenId;
+		// if ($UnprocessedCommutes.length > 0) {
+		// 	lastSeenId = $UnprocessedCommutes[$UnprocessedCommutes.length - 1]._id;
+		// } else {
+		// 	lastSeenId = null;
+		// }
 
-		console.log('Commutes in db: ', $CommuteCount);
+		// console.log('Commutes in db: ', $CommuteCount);
 
-		outerWhile: while ($UnprocessedCommutes.length < pageSize) {
-			const res = await fetch(`/recorded-commutes/paged`, {
-				method: 'POST',
-				body: JSON.stringify({
-					pageSize,
-					lastSeenId
-				})
-			});
+		// outerWhile: while ($UnprocessedCommutes.length < pageSize) {
+		// 	const res = await fetch(`/recorded-commutes/paged`, {
+		// 		method: 'POST',
+		// 		body: JSON.stringify({
+		// 			pageSize,
+		// 			lastSeenId
+		// 		})
+		// 	});
 
-			if (res.ok) {
-				const data = await res.json();
-				lastSeenId = data.lastSeenId;
+		// 	if (res.ok) {
+		// 		const data = await res.json();
+		// 		lastSeenId = data.lastSeenId;
 
-				try {
-					// Update the store
-					UnprocessedCommutes.update((val) => {
-						return val.concat(data.commutes);
-					});
-				} catch (err) {
-					console.log(new Error(err));
-					break outerWhile;
-				}
+		// 		try {
+		// 			// Update the store
+		// 			UnprocessedCommutes.update((val) => {
+		// 				return val.concat(data.commutes);
+		// 			});
+		// 		} catch (err) {
+		// 			console.log(new Error(err));
+		// 			break outerWhile;
+		// 		}
 
-				console.log('Commutes now in store: ', $UnprocessedCommutes.length);
-				console.log('lastSeenId now in store: ', lastSeenId);
-			} else {
-				console.log('res not ok', res);
-			}
-		}
+		// 		console.log('Commutes now in store: ', $UnprocessedCommutes.length);
+		// 		console.log('lastSeenId now in store: ', lastSeenId);
+		// 	} else {
+		// 		console.log('res not ok', res);
+		// 	}
+		// }
+		//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+
+
+		/////   Offline   ////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+		// Load the offline commutes arr and save it in the UnprocessedStore
+		const commutes = data.commutes;
+		UnprocessedCommutes.set(commutes)
+		CommuteCount.set(commutes.length);
 
 		// Process all of the commutes
 		const groupedCommutes = processCommutes($UnprocessedCommutes);
 		// Save the processed commutes in a store
 		ProcessedCommutes.set(groupedCommutes);
+		//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
 	});
 
 	let chartWidth = 850;
 	let chartHeight = 600;
 	let containerWidth;
 </script>
-
 
 <div class="flex justify-center items-center mb-6 border-b">
     <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
