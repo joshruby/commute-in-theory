@@ -5,7 +5,6 @@
 	- Make a section for each city combination
 		- Only draw the plots when each section is opened 
 		- Show all traces but make them somewhat thinner and less opaque and have a darker, thicker trace for the average at each time
-		- Change subchart title en dashes to arrows
 		- Show a table of statistics for each route
 		- Show a dynamic correlation chart between time of day and commute time
 			- Use a slider or series of 7 radio buttons to control the day of the week

@@ -8,8 +8,8 @@
     export let chartHeight;
 
     let titles = {
-        forward: `${cityPair.home.name} \u2013 ${cityPair.work.name}`,
-        reverse: `${cityPair.work.name} \u2013 ${cityPair.home.name}`
+        forward: `${cityPair.home.name}   \u2b62   ${cityPair.work.name}`,
+        reverse: `${cityPair.work.name}   \u2b62   ${cityPair.home.name}`
     };
 
 	function createChart() {
