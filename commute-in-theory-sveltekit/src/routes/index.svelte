@@ -127,8 +127,6 @@
 	let chartWidth = 850;
 	let chartHeight = 600;
 	let containerWidth;
-
-	let searchFilter = 'Santa Cruz';
 </script>
 
 
@@ -148,23 +146,10 @@
 	<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
 		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
 			<div class="grid grid-cols-1 place-items-center gap-4">
-			
-				<div class="form-control w-64">
-					<label for="searchFilter" class="label">
-						<span class="label-text text-lg font-semibold">Filter</span>
-					</label>
-					<input type="text" bind:value={searchFilter} id="searchFilter" placeholder={searchFilter} class="input input-bordered">
-				</div>
-
 				{#each $CityPairs as cityPair}
-					{#if
-						cityPair.home.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-						cityPair.work.name.toLowerCase().includes(searchFilter.toLowerCase())
-					}
-						<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
-							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-						</div>
-					{/if}
+					<div class="grid place-items-center border rounded-3xl shadow-sm hover:shadow-md">
+						<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+					</div>
 				{/each}
 			</div>
 		{/if}
