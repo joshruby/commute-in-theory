@@ -144,7 +144,7 @@
 <div class="flex justify-center items-center border-b">
     <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
         <span class="text-2xl font-semibold">Commute in Theory</span>
-        <div class="bg-slate-50/50 p-2 border rounded-xl">
+        <div class="bg-slate-50/50 p-2 border rounded-xl shadow-sm">
             <span class="mr-1">Commutes Loaded</span>
             <span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
         </div>
@@ -158,7 +158,7 @@
 		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
 			<div class="grid grid-cols-1 place-items-center gap-4">
 				{#each $CityPairs as cityPair}
-					<div class="grid place-items-center bg-white border rounded-3xl shadow-sm hover:shadow-md">
+					<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
 						<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
 					</div>
 				{/each}
