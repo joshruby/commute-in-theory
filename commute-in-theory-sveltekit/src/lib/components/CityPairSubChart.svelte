@@ -39,7 +39,7 @@
                 let legendgroup;
                 
                 if (date.includes('Sat') || date.includes('Sun')){
-                    color = 'rgb(170, 170, 170)';
+                    color = 'rgb(200, 200, 200)';
                     legendgroup = `Weekends - ${route}`;
                 } else {
                     color = 'rgb(164, 194, 244)';
@@ -56,7 +56,7 @@
                     // },
                     line: {
                         shape: 'spline',
-                        width: 2,
+                        width: 1,
                         color: color,
                     },
                     name: `${date}`,
