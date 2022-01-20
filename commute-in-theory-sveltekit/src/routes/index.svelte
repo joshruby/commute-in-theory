@@ -126,14 +126,14 @@
 		// Load the offline commutes arr and save it in the UnprocessedStore
 		const commutes = data.commutes;
 		UnprocessedCommutes.set(commutes)
-		CommuteCount.set(commutes.length);
+		CommuteCount.set(commutes.length);		
+		//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
 
 		// Process all of the commutes
 		const groupedCommutes = processCommutes($UnprocessedCommutes);
 		// Save the processed commutes in a store
 		ProcessedCommutes.set(groupedCommutes);
-		//////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////
 	});
 
 	let chartWidth = 850;
