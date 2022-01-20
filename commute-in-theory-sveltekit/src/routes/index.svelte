@@ -153,7 +153,7 @@
 
 
 
-<div class="flex justify-center bg-slate-50/50 pt-4">
+<div class="flex justify-center bg-slate-50/50 py-4">
 	<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
 		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
 			<div class="grid grid-cols-1 place-items-center gap-4">
