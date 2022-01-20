@@ -60,7 +60,7 @@
                         color: color,
                     },
                     name: `${date}`,
-                    hovertemplate: '%{y} min',
+                    hovertemplate: '%{y:.0f} min',
                     legendgroup: legendgroup,
                     xaxis: xaxis,
                     yaxis: yaxis
@@ -70,7 +70,7 @@
                         recording.departureTimeConstDate
                     );
                     trace.y.push(
-                        Math.floor(recording.travelTimeInSeconds / 60)
+                        recording.travelTimeInSeconds / 60
                     );
                 });
                 data.push(trace);
