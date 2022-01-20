@@ -1,7 +1,4 @@
 <!-- TODO
-	X Store some data offline for use during developing
-		X Import offline commutes
-		- Correct offline commute timestamps (either here or in the Python util)
 
 	- Make a section for each city combination
 		- Only draw the plots when each section is opened 
@@ -13,6 +10,7 @@
 		- Show average of all data for each of the selected city combinations on one chart, each in a different color
 
 	- Investigate data-forge package
+	
 -->
 
 <script>
