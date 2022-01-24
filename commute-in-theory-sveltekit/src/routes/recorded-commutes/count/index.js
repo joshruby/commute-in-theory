@@ -8,16 +8,12 @@ export async function get() {
         const collection = db.collection('commutes');
 
         // Estimate the total number of documents in the collection
-        // const countEstimate = await collection.estimatedDocumentCount();
-
-        // Find the exact number of documents that match the specified query
-        const query = { };
-        const countExact = await collection.countDocuments(query);
+        const countEstimate = await collection.estimatedDocumentCount();
 
         return {
             status: 200,
             body: {
-                count: countExact
+                count: countEstimate
             }
         }
     } catch(err) {
