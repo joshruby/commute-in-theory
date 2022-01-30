@@ -10,6 +10,9 @@
 		- Show average of all data for each of the selected city combinations on one chart, each in a different color
 
 	- Investigate data-forge package
+
+	- On a weekly basis, use the recording util to download all of the commutes, compute statistics for each route, and post them to a "commute-stats" collection
+		- Compute the median, average, std, and percentiles (10th, 25, 50th, 75th, 90th) for each route and time
 	
 -->
 
