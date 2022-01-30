@@ -6,45 +6,40 @@ export async function post(request) {
     try {
         // Parse the request
         const body = JSON.parse(request.body);
+        const origin = body.origin;
+        const destination = body.destination;
         const pageSize = body.pageSize;
-        let lastSeenId = body.lastSeenId;
-        
+        const lowerDateLimit = new Date(body.lowerDateLimit);
+        let lastSeenDepartureTime = new Date(body.lastSeenDepartureTime);
+       
         // Connect to the db
         const connectedClient = await clientPromise;
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
+        // Query the db
         let commutes = [];
-        if (lastSeenId) {
-            // If a non-null lastSeenId str was passed in the request
-            // convert it into a mongodb ObjectId
-            lastSeenId = new ObjectId(lastSeenId)
+        commutes = await collection
+            .find({
+                "departureTime": { 
+                    "$gte": lowerDateLimit,
+                    "$lt": lastSeenDepartureTime 
+                },
+                origin: origin,
+                destination: destination 
+            })
+            .sort({ "departureTime": -1 })
+            .limit(pageSize)
+            .toArray()
 
-            // Fetch from the last seen commute
-            commutes = await collection
-                .find({ "_id": { "$gt": lastSeenId } })
-                .sort({ "_id": 1 })
-                .limit(pageSize)
-                .toArray()
-
-                // .find({ "_id": { "$gt": lastSeenId } })
-            
-        } else {
-            // Fetch from the beginning
-            commutes = await collection.find()
-                .sort({ "_id": 1 })
-                .limit(pageSize)
-                .toArray()
-        }
-            
-        // Update lastSeenId to the last document's id
-        lastSeenId = commutes[commutes.length - 1]._id
+        // Update lastSeenId to the last document's departure time
+        lastSeenDepartureTime = commutes[commutes.length - 1].departureTime
 
         return {
             status: 200,
             body: {
                 commutes,
-                lastSeenId
+                lastSeenDepartureTime
             }
         }
     } catch(err) {

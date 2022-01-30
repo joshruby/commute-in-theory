@@ -13,17 +13,115 @@
 	
 -->
 
+<script context="module">
+	export async function load({ fetch }) {
+		const res = await fetch('/recorded-commutes/count');
+		const data = await res.json();
+		const totalCommuteCount = data.count;
+
+		return {
+			props: { totalCommuteCount }
+		}
+	}
+</script>
+
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
-	import { onMount } from 'svelte';
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 	import data from './commutes.json'
 
-	function processCommutes(commutes) {
+	export let totalCommuteCount;
+	CommuteCount.set(totalCommuteCount);
+
+	async function getCommutes(cityA, cityB, dateLimits) {
+		//////   Online   ////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+		
+		// Find the date window length in days
+		// Set the page size
+		const pageSize = 10000;
+		
+		const routes = [
+			{
+				origin: cityA,
+				destination: cityB
+			},
+			{
+				origin: cityB,
+				destination: cityA
+			},
+		]
+		let commutes = [];
+		paging: for (const route of routes) {
+			let lastSeenDepartureTime = dateLimits.upper
+
+			while (lastSeenDepartureTime > dateLimits.lower) {
+				try {
+					const res = await fetch(`/recorded-commutes/paged`, {
+						method: 'POST',
+						body: JSON.stringify({
+							origin: route.origin,
+							destination: route.destination,
+							pageSize,
+							lowerDateLimit: dateLimits.lower,
+							lastSeenDepartureTime
+						})
+					});
+
+					if (res.ok) {
+						const data = await res.json();
+
+						// Update the array of commutes
+						commutes = commutes.concat(data.commutes)
+
+						// Update the date of the last seen id
+						lastSeenDepartureTime = new Date(data.lastSeenDepartureTime)
+
+						// Debugging
+						console.log('lastSeenDepartureTime: ', lastSeenDepartureTime)
+						console.log('Commutes fetched: ', commutes.length);
+						
+					} else {
+						console.log('res not ok', res);
+						break paging;
+					}
+				} catch (err) {
+					console.log(new Error(err));
+					break paging;
+				}
+			}
+		}
+
+		// Add the new comutes to the Unprocessed commutes store
+		UnprocessedCommutes.update((val) => {
+			return val.concat(commutes);
+		});
+
+		//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+
+
+		/////   Offline   ////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+		
+		// // Load the offline commutes arr and save it in the UnprocessedStore
+		// const commutes = data.commutes;
+		// UnprocessedCommutes.set(commutes)
+		// CommuteCount.set(commutes.length);	
+
+		//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////
+
+
+		// Process all of the commutes
+		processCommutes();
+	};
+
+	function processCommutes() {
 		// Convert the departureTime strings to Date objects and
 		// simplify their minutes and seconds
-		commutes.forEach((ele) => {
+		$UnprocessedCommutes.forEach((ele) => {
 			// Make the departureTime into a Date obj
 			// By default this will convert the UTC time to the local timezone
 			// of the browser
@@ -38,10 +136,10 @@
 				0);
 		});
 
-		// Group the commutes by city pairs
+		// Group all of the unprocessed commutes by city pairs
 		// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
 		const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
-		let groupedCommutes = groupBy(commutes, (ele) => ele.origin + '-' + ele.destination);
+		let groupedCommutes = groupBy($UnprocessedCommutes, (ele) => ele.origin + '-' + ele.destination);
 
 		// Make each city pair an obj
 		Object.keys(groupedCommutes).forEach((key) => {
@@ -52,7 +150,6 @@
 		});
 
 		// Within each city pair arr, separately group commutes by date and time
-		
 		Object.keys(groupedCommutes).forEach((key) => {
 			groupedCommutes[key]['grouped'] = {};
 
@@ -67,82 +164,31 @@
 		    );
 		});
 
-		return groupedCommutes;
-	}
-
-	onMount(async () => {
-		//////   Online   ////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////
-		// const res = await fetch('/recorded-commutes/count');
-		// const data = await res.json();
-		// CommuteCount.set(data.count);
-
-		// const pageSize = 500;
-
-		// let lastSeenId;
-		// if ($UnprocessedCommutes.length > 0) {
-		// 	lastSeenId = $UnprocessedCommutes[$UnprocessedCommutes.length - 1]._id;
-		// } else {
-		// 	lastSeenId = null;
-		// }
-
-		// console.log('Commutes in db: ', $CommuteCount);
-
-		// outerWhile: while ($UnprocessedCommutes.length < pageSize) {
-		// 	const res = await fetch(`/recorded-commutes/paged`, {
-		// 		method: 'POST',
-		// 		body: JSON.stringify({
-		// 			pageSize,
-		// 			lastSeenId
-		// 		})
-		// 	});
-
-		// 	if (res.ok) {
-		// 		const data = await res.json();
-		// 		lastSeenId = data.lastSeenId;
-
-		// 		try {
-		// 			// Update the store
-		// 			UnprocessedCommutes.update((val) => {
-		// 				return val.concat(data.commutes);
-		// 			});
-		// 		} catch (err) {
-		// 			console.log(new Error(err));
-		// 			break outerWhile;
-		// 		}
-
-		// 		console.log('Commutes now in store: ', $UnprocessedCommutes.length);
-		// 		console.log('lastSeenId now in store: ', lastSeenId);
-		// 	} else {
-		// 		console.log('res not ok', res);
-		// 	}
-		// }
-		//////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////
-
-
-		/////   Offline   ////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////
-		// Load the offline commutes arr and save it in the UnprocessedStore
-		const commutes = data.commutes;
-		UnprocessedCommutes.set(commutes)
-		CommuteCount.set(commutes.length);		
-		//////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////
-
-		// Process all of the commutes
-		const groupedCommutes = processCommutes($UnprocessedCommutes);
-		// Save the processed commutes in a store
+		// Set the Processed commutes store
 		ProcessedCommutes.set(groupedCommutes);
-	});
+	}
 
 	let chartWidth = 850;
 	let chartHeight = 600;
 	let containerWidth;
+
+	getCommutes(
+		'SCZ',
+		'CUP',
+		{
+			lower: new Date(2022, 0, 25, 6),
+			upper: new Date(2022, 0, (26 + 1)) 
+		}
+	)
+
+	$: {
+		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
+		// console.log('$ProcessedCommutes: ', $ProcessedCommutes)
+	}
 </script>
 
 <div class="flex justify-center items-center border-b">
-    <div class="flex justify-between items-center w-full max-w-screen-xl p-4">
+    <div class="flex justify-between items-center w-full max-w-screen-xl m-4">
         <span class="text-2xl font-semibold">Commute in Theory</span>
         <div class="bg-slate-50/50 p-2 border rounded-xl shadow-sm">
             <span class="mr-1">Commutes Loaded</span>
@@ -152,15 +198,16 @@
 </div>
 
 
-
-<div class="flex justify-center bg-slate-50/50 py-4">
+<div class="flex justify-center bg-slate-50/50 p-4">
 	<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
 		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
 			<div class="grid grid-cols-1 place-items-center gap-4">
 				{#each $CityPairs as cityPair}
-					<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
-						<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-					</div>
+					{#if cityPair.routes.forward in $ProcessedCommutes}
+						<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
+							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+						</div>
+					{/if}
 				{/each}
 			</div>
 		{/if}
