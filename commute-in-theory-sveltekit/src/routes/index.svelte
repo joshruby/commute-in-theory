@@ -38,65 +38,65 @@
 		//////   Online   ////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
 		
-		// Find the date window length in days
-		// Set the page size
-		const pageSize = 10000;
+		// // Find the date window length in days
+		// // Set the page size
+		// const pageSize = 10000;
 		
-		const routes = [
-			{
-				origin: cityA,
-				destination: cityB
-			},
-			{
-				origin: cityB,
-				destination: cityA
-			},
-		]
-		let commutes = [];
-		paging: for (const route of routes) {
-			let lastSeenDepartureTime = dateLimits.upper
+		// const routes = [
+		// 	{
+		// 		origin: cityA,
+		// 		destination: cityB
+		// 	},
+		// 	{
+		// 		origin: cityB,
+		// 		destination: cityA
+		// 	},
+		// ]
+		// let commutes = [];
+		// paging: for (const route of routes) {
+		// 	let lastSeenDepartureTime = dateLimits.upper
 
-			while (lastSeenDepartureTime > dateLimits.lower) {
-				try {
-					const res = await fetch(`/recorded-commutes/paged`, {
-						method: 'POST',
-						body: JSON.stringify({
-							origin: route.origin,
-							destination: route.destination,
-							pageSize,
-							lowerDateLimit: dateLimits.lower,
-							lastSeenDepartureTime
-						})
-					});
+		// 	while (lastSeenDepartureTime > dateLimits.lower) {
+		// 		try {
+		// 			const res = await fetch(`/recorded-commutes/paged`, {
+		// 				method: 'POST',
+		// 				body: JSON.stringify({
+		// 					origin: route.origin,
+		// 					destination: route.destination,
+		// 					pageSize,
+		// 					lowerDateLimit: dateLimits.lower,
+		// 					lastSeenDepartureTime
+		// 				})
+		// 			});
 
-					if (res.ok) {
-						const data = await res.json();
+		// 			if (res.ok) {
+		// 				const data = await res.json();
 
-						// Update the array of commutes
-						commutes = commutes.concat(data.commutes)
+		// 				// Update the array of commutes
+		// 				commutes = commutes.concat(data.commutes)
 
-						// Update the date of the last seen id
-						lastSeenDepartureTime = new Date(data.lastSeenDepartureTime)
+		// 				// Update the date of the last seen id
+		// 				lastSeenDepartureTime = new Date(data.lastSeenDepartureTime)
 
-						// Debugging
-						console.log('lastSeenDepartureTime: ', lastSeenDepartureTime)
-						console.log('Commutes fetched: ', commutes.length);
+		// 				// Debugging
+		// 				console.log('lastSeenDepartureTime: ', lastSeenDepartureTime)
+		// 				console.log('Commutes fetched: ', commutes.length);
 						
-					} else {
-						console.log('res not ok', res);
-						break paging;
-					}
-				} catch (err) {
-					console.log(new Error(err));
-					break paging;
-				}
-			}
-		}
+		// 			} else {
+		// 				console.log('res not ok', res);
+		// 				break paging;
+		// 			}
+		// 		} catch (err) {
+		// 			console.log(new Error(err));
+		// 			break paging;
+		// 		}
+		// 	}
+		// }
 
-		// Add the new comutes to the Unprocessed commutes store
-		UnprocessedCommutes.update((val) => {
-			return val.concat(commutes);
-		});
+		// // Add the new comutes to the Unprocessed commutes store
+		// UnprocessedCommutes.update((val) => {
+		// 	return val.concat(commutes);
+		// });
 
 		//////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
@@ -105,10 +105,10 @@
 		/////   Offline   ////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
 		
-		// // Load the offline commutes arr and save it in the UnprocessedStore
-		// const commutes = data.commutes;
-		// UnprocessedCommutes.set(commutes)
-		// CommuteCount.set(commutes.length);	
+		// Load the offline commutes arr and save it in the UnprocessedStore
+		const commutes = data.commutes;
+		UnprocessedCommutes.set(commutes)
+		CommuteCount.set(commutes.length);	
 
 		//////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
@@ -187,29 +187,33 @@
 	}
 </script>
 
-<div class="flex justify-center items-center border-b">
-    <div class="flex justify-between items-center w-full max-w-screen-xl m-4">
-        <span class="text-2xl font-semibold">Commute in Theory</span>
-        <div class="bg-slate-50/50 p-2 border rounded-xl shadow-sm">
-            <span class="mr-1">Commutes Loaded</span>
-            <span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
-        </div>
-    </div>
-</div>
-
-
-<div class="flex justify-center bg-slate-50/50 p-4">
-	<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
-		{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
-			<div class="grid grid-cols-1 place-items-center gap-4">
-				{#each $CityPairs as cityPair}
-					{#if cityPair.routes.forward in $ProcessedCommutes}
-						<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
-							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-						</div>
-					{/if}
-				{/each}
+<svelte:head>
+	<div class="flex justify-center items-center border-b">
+		<div class="flex justify-between items-center w-full max-w-screen-xl p-4">
+			<span class="text-2xl font-semibold">Commute in Theory</span>
+			<div class="bg-slate-50/50 p-2 border rounded-xl shadow-sm">
+				<span class="mr-1">Commutes Loaded</span>
+				<span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
 			</div>
-		{/if}
+		</div>
 	</div>
-</div>
+</svelte:head>
+
+
+<body class="bg-slate-50/50 p-4">
+	<div class="flex justify-center">
+		<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
+			{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
+				<div class="grid grid-cols-1 place-items-center gap-4">
+					{#each $CityPairs as cityPair}
+						{#if cityPair.routes.forward in $ProcessedCommutes}
+							<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
+								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+							</div>
+						{/if}
+					{/each}
+				</div>
+			{/if}
+		</div>
+	</div>
+</body>
