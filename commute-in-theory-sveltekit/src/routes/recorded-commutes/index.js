@@ -7,13 +7,27 @@ export async function get() {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
+        // Define the query
         const query = {
             origin: { $in: ['CUP','SCZ', 'LGS', 'MLP'] },
             destination: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] }
         };
 
-        // Retrieve db items and put into an array
-        const commutes = await collection.find(query).limit(10).toArray()
+        // Project the returned fields to ensure the query is covered
+        const projection = {
+            origin: 1,
+            destination: 1,
+            departureTime: 1,
+            "departureTimeLocalizedSimplified.hour": 1,
+            "departureTimeLocalizedSimplified.minute": 1,
+            travelTimeInSeconds: 1 
+        };
+
+        // Query the db
+        const commutes = await collection
+            .find(query, projection)
+            .limit(10)
+            .toArray()
 
         return {
             status: 200,
