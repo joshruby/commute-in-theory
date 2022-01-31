@@ -1,17 +1,18 @@
-import logging
-format = "%(levelname)s - %(asctime)s - %(message)s"
-logging.basicConfig(
-        filename='cit.log',
-        filemode='w',
-        format=format,
-        level=logging.ERROR)
-logger = logging.getLogger()
 import time
 from datetime import datetime
+import logging
 import pytz
 import requests
 from pymongo import MongoClient
 import config
+
+FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
+logging.basicConfig(
+        filename='cit.log',
+        filemode='w',
+        format=FORMAT,
+        level=logging.ERROR)
+LOGGER = logging.getLogger()
 
 def recordCommute(commute_request):
     # Parse the request
@@ -68,13 +69,13 @@ def recordCommute(commute_request):
         'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
-def mongodbPOST(commute):
+def mongodbPOST(collection, payload):
     client = MongoClient(config.MONGODB_URI)
     db = client.get_database()
-    collection = db['commutes']
+    collection = db[collection]
 
-    # POST commute to db
-    collection.insert_one(commute)
+    # POST payload to db
+    collection.insert_one(payload)
 
 LOCATIONS = {
     'work': {
@@ -92,7 +93,6 @@ LOCATIONS = {
             'name': 'Santa Cruz, Downtown',
             'lat_lon': '36.974797779340655,-122.0290861946705'
         },
-  
         'CAM': {
             'name': 'Campbell, Downtown',
             'lat_lon': '37.28750197556045,-121.94487365182788'
@@ -109,7 +109,6 @@ LOCATIONS = {
             'name': 'San Francisco, Pacific Heights',
             'lat_lon': '37.79427344559132,-122.43493160658136'
         },
-        
         'LGS': {
             'name': 'Los Gatos, Downtown',
             'lat_lon': '37.22473891235269,-121.98375589032867'
@@ -163,7 +162,7 @@ if __name__ == "__main__":
             for wkey, wval in LOCATIONS['work'].items():
                 for hkey, hval in LOCATIONS['home'].items():
                     pairs = [
-                        ((hkey, hval), (wkey, wval)), 
+                        ((hkey, hval), (wkey, wval)),
                         ((wkey, wval), (hkey, hval))
                     ]
 
@@ -180,15 +179,15 @@ if __name__ == "__main__":
                             )
 
                             # Save the commute in mongodb
-                            mongodbPOST(commute)
+                            mongodbPOST('commutes', commute)
 
                             # Can't exceed 5 QPS for the TomTom Routing API
                             # https://developer.tomtom.com/default-qps
                             time.sleep(0.5)
+                        # Pass and log any exception
                         except Exception as e:
                             logging.error(repr(e))
                             continue
 
-            # Ensure another set of recordings doesn't immediately run 
+            # Ensure another set of recordings doesn't immediately run
             time.sleep(60)
-        
