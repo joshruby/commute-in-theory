@@ -8,10 +8,7 @@ export async function get() {
         const collection = db.collection('commutes');
 
         // Define the query
-        const query = {
-            origin: { $in: ['CUP','SCZ', 'LGS', 'MLP'] },
-            destination: { $in: ['CUP', 'STA', 'SCZ', 'LGS', 'MLP'] }
-        };
+        const query = {}
 
         // Project the returned fields to ensure the query is covered
         const projection = {
@@ -26,7 +23,7 @@ export async function get() {
         // Query the db
         const commutes = await collection
             .find(query, projection)
-            .limit(10)
+            .limit(10000)
             .toArray()
 
         return {
