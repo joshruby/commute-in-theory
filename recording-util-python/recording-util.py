@@ -1,3 +1,4 @@
+
 import time
 from datetime import datetime
 import logging
@@ -5,6 +6,7 @@ import pytz
 import requests
 from pymongo import MongoClient
 import config
+import pandas as pd
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(
@@ -69,13 +71,138 @@ def recordCommute(commute_request):
         'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
-def mongodbPOST(collection, payload):
+
+def connect_to_db(collection):
     client = MongoClient(config.MONGODB_URI)
     db = client.get_database()
-    collection = db[collection]
 
-    # POST payload to db
-    collection.insert_one(payload)
+    return db[collection]
+
+
+def compute_summary_stats(collection):
+    collection = connect_to_db(collection)
+
+    # Query all of the documents
+    docs = list(collection.find(
+        {},
+        {
+            '_id': 0,
+            'origin': 1,
+            'destination': 1,
+            "departureTime": 1,
+            "departureTimeLocalizedSimplified.hour": 1,
+            "departureTimeLocalizedSimplified.minute": 1,
+            'travelTimeInSeconds': 1
+        }
+    ))
+
+    for doc in docs:
+        # Flatten the nested "departureTimeLocalizedSimplified" obj field
+        dep_time_localized_simplified = \
+            doc.pop('departureTimeLocalizedSimplified', None)
+        doc['departureHour'] = \
+            dep_time_localized_simplified['hour']
+        doc['departureMinute'] = \
+            dep_time_localized_simplified['minute']
+
+        # Add a column for the day of the week
+        doc['weekday'] = doc['departureTime'].weekday()
+
+
+    # Create a df with the docs
+    df = pd.DataFrame(docs)
+
+    # Sort the df by the origin and destination
+    df = df.sort_values(by=['origin', 'destination'])
+
+    # Note the time of computation
+    computed_at = datetime.now()
+    computed_at = computed_at.replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0
+    )
+
+    summaries = []
+    for work in LOCATIONS['work'].keys():
+        if work in df['origin'].unique() and work in df['destination'].unique():
+            for home in LOCATIONS['home'].keys():
+                if home in df['origin'].unique() and home in df['destination'].unique():
+                    pairs = [(work, home), (home, work)]  
+
+                    for p in pairs:
+                        for hour in df['departureHour'].unique():
+                            for minute in df['departureMinute'].unique():
+                                stats_by_weekday = {}
+                                # Filter the df
+                                for day_num, day_name in enumerate(WEEKDAYS):
+                                    # Each weekday individually
+                                    if day_num <= 6:
+                                        route_df = df.loc[
+                                            (df['origin']==p[0]) & 
+                                            (df['destination']==p[1]) &
+                                            (df['weekday']==day_num) &
+                                            (df['departureHour']==hour) & 
+                                            (df['departureMinute']==minute)
+                                        ]
+                                    # Business days
+                                    elif day_num == 7:
+                                        route_df = df.loc[
+                                            (df['origin']==p[0]) & 
+                                            (df['destination']==p[1]) &
+                                            (df['weekday'].isin([0, 1, 2, 3, 4])) &
+                                            (df['departureHour']==hour) & 
+                                            (df['departureMinute']==minute)
+                                        ]
+                                    # Weekends
+                                    elif day_num == 8:
+                                        route_df = df.loc[
+                                            (df['origin']==p[0]) & 
+                                            (df['destination']==p[1]) &
+                                            (df['weekday'].isin([5, 6])) &
+                                            (df['departureHour']==hour) & 
+                                            (df['departureMinute']==minute)
+                                        ]
+                                    # All weekdays together
+                                    elif day_num == 9:
+                                        route_df = df.loc[
+                                            (df['origin']==p[0]) & 
+                                            (df['destination']==p[1]) &
+                                            (df['departureHour']==hour) & 
+                                            (df['departureMinute']==minute)
+                                        ]
+
+                                    if not route_df.empty:
+                                        quantiles = route_df['travelTimeInSeconds'].quantile(
+                                            [0.1, 0.25, 0.5, 0.75, 0.9]
+                                        )
+
+                                        stats_by_weekday[day_name] = {
+                                            'count': int(route_df['travelTimeInSeconds'].count()),
+                                            'minInSeconds': int(route_df['travelTimeInSeconds'].min()),
+                                            'maxInSeconds': int(route_df['travelTimeInSeconds'].max()),
+                                            'meanInSeconds': int(route_df['travelTimeInSeconds'].mean()),
+                                            'quantile10InSeconds': int(quantiles[0.10]),
+                                            'quantile25InSeconds': int(quantiles[0.25]),
+                                            'quantile50InSeconds': int(quantiles[0.50]),
+                                            'quantile75InSeconds': int(quantiles[0.75]),
+                                            'quantile90InSeconds': int(quantiles[0.90]),
+                                        }
+
+                                if stats_by_weekday:
+                                    # Append the completed summary to the list of summaries
+                                    summaries.append({
+                                        'computedAt': computed_at,
+                                        'origin': p[0],
+                                        'destination': p[1],
+                                        'departureHour': int(hour),
+                                        'departureMinute': int(minute),
+                                        'statsByWeekday': stats_by_weekday
+                                    })
+
+    return summaries
+
 
 LOCATIONS = {
     'work': {
@@ -147,18 +274,32 @@ LOCATIONS = {
         # },
     }
 }
-
 TZ_LA = pytz.timezone('America/Los_Angeles')
 RECORDING_MINUTES = [0, 15, 30, 45]
 MINUTE_THRESH = 7
+WEEKDAYS = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+    'Business',
+    'Weekend',
+    'All'
+]
 
 if __name__ == "__main__":
     while True:
         now_LA = datetime.now(TZ_LA)
+        weekday = now_LA.weekday()
         hour = now_LA.hour
         minute = now_LA.minute
 
         if 6 <= hour <= 20 and minute in RECORDING_MINUTES:
+            collection = connect_to_db(collection='commutes')
+
             for wkey, wval in LOCATIONS['work'].items():
                 for hkey, hval in LOCATIONS['home'].items():
                     pairs = [
@@ -178,8 +319,8 @@ if __name__ == "__main__":
                                 }
                             )
 
-                            # Save the commute in mongodb
-                            mongodbPOST('commutes', commute)
+                            # POST the commute to mongodb
+                            collection.insert_one(commute)
 
                             # Can't exceed 5 QPS for the TomTom Routing API
                             # https://developer.tomtom.com/default-qps
@@ -191,3 +332,21 @@ if __name__ == "__main__":
 
             # Ensure another set of recordings doesn't immediately run
             time.sleep(60)
+
+        # Summarize the recorded commutes once weekly
+        if weekday == 0 and hour == 0 and minute == 0:
+            try:
+                # Summarize the commutes
+                summaries = compute_summary_stats('commutes')
+
+                # POST the summaries to the db if any summaries are returned
+                if summaries:
+                    collection = connect_to_db('commute_stats')
+                    collection.insert_many(summaries)
+
+                # Ensure this block only runs once
+                time.sleep(60)
+            # Pass and log any exception
+            except Exception as e:
+                logging.error(repr(e))
+                continue
