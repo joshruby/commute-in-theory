@@ -18,18 +18,6 @@
 	
 -->
 
-<script context="module">
-	export async function load({ fetch }) {
-		const res = await fetch('/recorded-commutes/count');
-		const data = await res.json();
-		const totalCommuteCount = data.count;
-
-		return {
-			props: { totalCommuteCount }
-		}
-	}
-</script>
-
 <script>
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
@@ -240,14 +228,14 @@
 	// 	}
 	// )
 
-	getCommuteStats(
-		'SCZ',
-		'CUP',
-		{
-			lower: new Date(2022, 0, 31),
-			upper: new Date(2022, 1, 3) 
-		}
-	)
+	// getCommuteStats(
+	// 	'SCZ',
+	// 	'CUP',
+	// 	{
+	// 		lower: new Date(2022, 0, 31),
+	// 		upper: new Date(2022, 1, 3) 
+	// 	}
+	// )
 
 	$: {
 		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
@@ -257,22 +245,16 @@
 	}
 </script>
 
-<svelte:head>
-	<div class="flex justify-center items-center border-b">
-		<div class="flex justify-between items-center w-full max-w-screen-xl p-4">
-			<span class="text-2xl font-semibold">Commute in Theory</span>
-			<div class="bg-slate-50/50 p-2 border rounded-xl shadow-sm">
-				<span class="mr-1">Commutes Loaded</span>
-				<span class="font-semibold">{$UnprocessedCommutes.length} / {$CommuteCount}</span>
-			</div>
-		</div>
+
+<div class="flex justify-center items-center bg-white border-b">
+	<div class="flex justify-between items-center w-full max-w-screen-xl p-4">
+		<span class="text-2xl font-semibold">Commute in Theory</span>
 	</div>
-</svelte:head>
+</div>
 
-
-<body class="bg-slate-50/50 p-4">
-	<div class="flex justify-center">
-		<div class="container max-w-screen-xl" bind:clientWidth={containerWidth}>
+<div class="bg-slate-50 h-screen">
+	<div class="flex justify-center p-4">
+		<div class="container max-w-screen-xl" border-t bind:clientWidth={containerWidth}>
 			{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
 				<div class="grid grid-cols-1 place-items-center gap-4">
 					{#each $CityPairs as cityPair}
@@ -286,4 +268,4 @@
 			{/if}
 		</div>
 	</div>
-</body>
+</div>
