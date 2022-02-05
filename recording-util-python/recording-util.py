@@ -106,8 +106,18 @@ def compute_summary_stats(collection):
             dep_time_localized_simplified['minute']
 
         # Add a column for the day of the week
-        doc['weekday'] = doc['departureTime'].weekday()
-
+        if doc['departureTime'].hour >= 14:
+            weekday = doc['departureTime'].weekday()
+            doc['departureWeekday'] = doc['departureTime'].weekday()
+        else:
+            # Roll the day back by one since a commute with timestamp
+            # 2022-02-05 04:00 UTC was recorded at 2022-02-04 16:00 PST   
+            weekday = doc['departureTime'].weekday() - 1
+            # If the result of rolling back the day makes the weekday negative,
+            # reset weekday to the highest value (6 == Sunday)
+            if weekday == -1:
+                weekday = 6
+        doc['departureWeekday'] = weekday
 
     # Create a df with the docs
     df = pd.DataFrame(docs)
@@ -142,7 +152,7 @@ def compute_summary_stats(collection):
                                         route_df = df.loc[
                                             (df['origin']==p[0]) & 
                                             (df['destination']==p[1]) &
-                                            (df['weekday']==day_num) &
+                                            (df['departureWeekday']==day_num) &
                                             (df['departureHour']==hour) & 
                                             (df['departureMinute']==minute)
                                         ]
@@ -151,7 +161,7 @@ def compute_summary_stats(collection):
                                         route_df = df.loc[
                                             (df['origin']==p[0]) & 
                                             (df['destination']==p[1]) &
-                                            (df['weekday'].isin([0, 1, 2, 3, 4])) &
+                                            (df['departureWeekday'].isin([0, 1, 2, 3, 4])) &
                                             (df['departureHour']==hour) & 
                                             (df['departureMinute']==minute)
                                         ]
@@ -160,7 +170,7 @@ def compute_summary_stats(collection):
                                         route_df = df.loc[
                                             (df['origin']==p[0]) & 
                                             (df['destination']==p[1]) &
-                                            (df['weekday'].isin([5, 6])) &
+                                            (df['departureWeekday'].isin([5, 6])) &
                                             (df['departureHour']==hour) & 
                                             (df['departureMinute']==minute)
                                         ]
@@ -180,14 +190,16 @@ def compute_summary_stats(collection):
 
                                         stats_by_weekday[day_name] = {
                                             'count': int(route_df['travelTimeInSeconds'].count()),
-                                            'minInSeconds': int(route_df['travelTimeInSeconds'].min()),
-                                            'maxInSeconds': int(route_df['travelTimeInSeconds'].max()),
-                                            'meanInSeconds': int(route_df['travelTimeInSeconds'].mean()),
-                                            'quantile10InSeconds': int(quantiles[0.10]),
-                                            'quantile25InSeconds': int(quantiles[0.25]),
-                                            'quantile50InSeconds': int(quantiles[0.50]),
-                                            'quantile75InSeconds': int(quantiles[0.75]),
-                                            'quantile90InSeconds': int(quantiles[0.90]),
+                                            'min': int(route_df['travelTimeInSeconds'].min()),
+                                            'max': int(route_df['travelTimeInSeconds'].max()),
+                                            'mean': int(route_df['travelTimeInSeconds'].mean()),
+                                            'quantiles': {
+                                                '10': int(quantiles[0.10]),
+                                                '25': int(quantiles[0.25]),
+                                                '50': int(quantiles[0.50]),
+                                                '75': int(quantiles[0.75]),
+                                                '90': int(quantiles[0.90]),
+                                            }
                                         }
 
                                 if stats_by_weekday:
@@ -198,11 +210,10 @@ def compute_summary_stats(collection):
                                         'destination': p[1],
                                         'departureHour': int(hour),
                                         'departureMinute': int(minute),
-                                        'statsByWeekday': stats_by_weekday
+                                        'statsByWeekdayInSeconds': stats_by_weekday
                                     })
 
     return summaries
-
 
 LOCATIONS = {
     'work': {
