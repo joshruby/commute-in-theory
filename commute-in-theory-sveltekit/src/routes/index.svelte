@@ -1,5 +1,7 @@
 <!-- TODO
 
+	- Make the header bar background white
+
 	- Make a section for each city combination
 		- Only draw the plots when each section is opened 
 		- Show all traces but make them somewhat thinner and less opaque and have a darker, thicker trace for the average at each time as well as lines for the 25th/75th and 10th/90th percentiles (like weatherspark)
@@ -29,7 +31,7 @@
 </script>
 
 <script>
-	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount } from '$lib/stores/CommuteStore';
+	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 	import data from './commutes.json'
@@ -140,8 +142,6 @@
 		});
 
 		// Group all of the unprocessed commutes by city pairs
-		// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
-		const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
 		let groupedCommutes = groupBy($UnprocessedCommutes, (ele) => ele.origin + '-' + ele.destination);
 
 		// Make each city pair an obj
@@ -171,22 +171,89 @@
 		ProcessedCommutes.set(groupedCommutes);
 	}
 
+	async function getCommuteStats(cityA, cityB, dateLimits) {
+		// Find the date window length in days
+		// Set the page size
+		const routes = [
+			{
+				origin: cityA,
+				destination: cityB
+			},
+			{
+				origin: cityB,
+				destination: cityA
+			},
+		]
+
+		for (const route of routes) {
+			try {
+				const res = await fetch(`/recorded-commutes/stats`, {
+					method: 'POST',
+					body: JSON.stringify({
+						origin: route.origin,
+						destination: route.destination,
+						lowerDateLimit: dateLimits.lower,
+						upperDateLimit: dateLimits.upper
+					})
+				});
+
+				if (res.ok) {
+					const data = await res.json();
+
+					// Add the new comutes to the Unprocessed commutes store
+					UnprocessedCommuteStats.update((val) => {
+						return val.concat(data.stats);
+					});
+					
+				} else {
+					console.log('res not ok', res);
+				}
+			} catch (err) {
+				console.log(new Error(err));
+			}
+		}
+
+		processCommuteStats();
+	}
+
+	function processCommuteStats() {
+		// Group all of the unprocessed commutes by city pairs
+		const groupedCommuteStats = groupBy($UnprocessedCommuteStats, (ele) => ele.origin + '-' + ele.destination);
+
+		// Set the Processed commutes store
+		ProcessedCommuteStats.set(groupedCommuteStats);
+	}
+
+	// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
+	const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {})
+		
 	let chartWidth = 850;
 	let chartHeight = 600;
 	let containerWidth;
 
-	getCommutes(
+	// getCommutes(
+	// 	'SCZ',
+	// 	'CUP',
+	// 	{
+	// 		lower: new Date(2022, 0, 25, 6),
+	// 		upper: new Date(2022, 0, (26 + 1)) 
+	// 	}
+	// )
+
+	getCommuteStats(
 		'SCZ',
 		'CUP',
 		{
-			lower: new Date(2022, 0, 25, 6),
-			upper: new Date(2022, 0, (26 + 1)) 
+			lower: new Date(2022, 0, 31),
+			upper: new Date(2022, 1, 3) 
 		}
 	)
 
 	$: {
 		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 		// console.log('$ProcessedCommutes: ', $ProcessedCommutes)
+		console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
+		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
 </script>
 
