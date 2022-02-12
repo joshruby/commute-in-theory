@@ -229,9 +229,9 @@
         <div>
             <ChartWeekdaySelector bind:weekdaySelection={weekdaySelection} />
         </div>
-        <div>
+        <!-- <div>
             <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
-        </div>
+        </div> -->
     </div>
     <div id={`plot-${cityPair.home.code}-${cityPair.work.code}`}>
         <!-- Plotly chart will be drawn inside this DIV -->
