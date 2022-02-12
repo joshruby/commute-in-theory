@@ -1,29 +1,22 @@
 import clientPromise from '$lib/db'
-import { ObjectId } from 'mongodb'
 
 // https://stackoverflow.com/questions/31826760/how-to-get-data-in-batches-in-mongodb
 export async function post(request) {
     try {
         // Parse the request
         const body = JSON.parse(request.body);
-        const origin = body.origin;
-        const destination = body.destination;
-        const lowerDateLimit = new Date(body.lowerDateLimit);
-        const upperDateLimit = new Date(body.upperDateLimit);
 
-        // Connect to the db
-        const connectedClient = await clientPromise;
-        const db = connectedClient.db();
-        const collection = db.collection('commute_stats');
-        
         // Define the query
-        const query = {
+        let query = {
             "computedAt": { 
-                "$gte": lowerDateLimit,
-                "$lt": upperDateLimit 
-            },
-            origin: origin,
-            destination: destination
+                "$gte": new Date(body.dateLimit.lower),
+                "$lt": new Date(body.dateLimit.upper) 
+            }
+        }
+        // Limit the query to the passed route
+        if (Object.keys(body.route).length != 0) {
+            query.origin = body.route.origin;
+            query.destination = body.route.destination;
         }
 
         // Project the returned fields to ensure the query is covered
@@ -41,6 +34,11 @@ export async function post(request) {
             departureHour: 1,
             departureMinute: 1
         }
+
+        // Connect to the db
+        const connectedClient = await clientPromise;
+        const db = connectedClient.db();
+        const collection = db.collection('commute_stats');
 
         // Query the db
         const stats = await collection
