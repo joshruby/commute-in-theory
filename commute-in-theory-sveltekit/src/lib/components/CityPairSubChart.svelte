@@ -1,25 +1,30 @@
 <script>
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
-    import { ProcessedCommutes } from '$lib/stores/CommuteStore'
+    import { ProcessedCommutes, ProcessedCommuteStats } from '$lib/stores/CommuteStore'
+    import ChartWeekdaySelector from '$lib/components/ChartWeekdaySelector.svelte';
+    import ToggleBtn from '$lib/components/ToggleBtn.svelte';
 
-    export let cityPair;
     export let chartWidth;
     export let chartHeight;
+    export let cityPair;
+
+    let weekdaySelection = 'All';
+    let showRaw = false;
 
     let titles = {
         forward: `${cityPair.home.name}   \u2b62   ${cityPair.work.name}`,
         reverse: `${cityPair.work.name}   \u2b62   ${cityPair.home.name}`
     };
 
-	function createChart() {
+	function createChart(weekday) {
         // All traces will be pushed into data
         let data = [];
 
+        // Set the chart hovermode
+        let hovermode = 'compare'
+
         for (const [direction, route] of Object.entries(cityPair.routes)) {
-            // Retrive the commutes from the store
-            const commutes = $ProcessedCommutes[route].grouped.byDate
-            
             // Assign plot sub axis labels
             let xaxis;
             let yaxis;
@@ -33,47 +38,89 @@
                     yaxis = 'y2'; 
             }
 
-            // Make a trace for each day of recordings 
-            for (const [date, recordings] of Object.entries(commutes)) {
-                let color;
-                let legendgroup;
-                
-                if (date.includes('Sat') || date.includes('Sun')){
-                    color = 'rgb(200, 200, 200)';
-                    legendgroup = `Weekends - ${route}`;
-                } else {
-                    color = 'rgb(164, 194, 244)';
-                    legendgroup = `Weekdays - ${route}`
-                }
+            // Retrive the commutes from the store
+            const commuteStats = $ProcessedCommuteStats[route]
 
+            for (const quantile in commuteStats[0].statsByWeekdayInSeconds[weekday].quantiles) {
+                // Make a trace for each quantile
                 let trace = {
                     x: [],
                     y: [],
                     mode: 'lines',
-                    // marker: {
-                    //     color: color,
-                    //     size: 5
-                    // },
                     line: {
                         shape: 'spline',
-                        width: 1,
-                        color: color,
+                        width: 2,
                     },
-                    name: `${date}`,
+                    name: `${quantile}th`,
                     hovertemplate: '%{y:.0f} min',
-                    legendgroup: legendgroup,
                     xaxis: xaxis,
                     yaxis: yaxis
                 };
-                recordings.forEach((recording) => {
+
+                commuteStats.forEach((ele) => {
                     trace.x.push(
-                        recording.departureTimeConstDate
+                        // Use a constant date for each departure time
+                        new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
                     );
                     trace.y.push(
-                        recording.travelTimeInSeconds / 60
+                        ele.statsByWeekdayInSeconds[weekday].quantiles[quantile] / 60
                     );
                 });
+
+                // Add the trace to the list of traces
                 data.push(trace);
+            }
+                    
+            if (showRaw === true) {
+                // Retrive the commutes from the store
+                const commutes = $ProcessedCommutes[route].grouped.byDate
+
+                // Make a trace for each day of recordings 
+                for (const [date, recordings] of Object.entries(commutes)) {
+                    let color;
+                    let legendgroup;
+                    
+                    if (date.includes('Sat') || date.includes('Sun')){
+                        color = '#c8c8c8';
+                        legendgroup = `Weekends - ${route}`;
+                    } else {
+                        color = '#a4c2f4';
+                        legendgroup = `Weekdays - ${route}`
+                    }
+
+                    let trace = {
+                        x: [],
+                        y: [],
+                        mode: 'lines',
+                        // marker: {
+                        //     color: color,
+                        //     size: 5
+                        // },
+                        line: {
+                            shape: 'spline',
+                            width: 1,
+                            color: color,
+                        },
+                        opacity: 0.4,
+                        name: `${date}`,
+                        hovertemplate: '%{y:.0f} min',
+                        legendgroup: legendgroup,
+                        xaxis: xaxis,
+                        yaxis: yaxis
+                    };
+                    recordings.forEach((recording) => {
+                        trace.x.push(
+                            recording.departureTimeConstDate
+                        );
+                        trace.y.push(
+                            recording.travelTimeInSeconds / 60
+                        );
+                    });
+                    data.push(trace);
+                }
+                
+                // Change the hovermode
+                hovermode='closest'
             }
         }
 
@@ -158,7 +205,7 @@
                     yref: 'y2 domain'
                 },
             ],
-            hovermode:'closest',
+            hovermode,
 			showlegend: true
 		};
 
@@ -169,20 +216,24 @@
 
         // Give each chart a unique ID
         Plotly.newPlot(`plot-${cityPair.home.code}-${cityPair.work.code}`, data, layout, config);
-	}
+	    
+    }
 
-	afterUpdate(createChart);
+	afterUpdate(() => {
+        createChart(weekdaySelection)
+    });
 </script>
 
-<div 
-    id={`plot-${cityPair.home.code}-${cityPair.work.code}`} 
-    class="plot"
->
-    <!-- Plotly chart will be drawn inside this DIV -->
+<div class="grid place-items-center p-4 bg-white border rounded-3xl shadow-sm">
+    <div class="flex items-center justify-around w-full mb-4">
+        <div>
+            <ChartWeekdaySelector bind:weekdaySelection={weekdaySelection} />
+        </div>
+        <div>
+            <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
+        </div>
+    </div>
+    <div id={`plot-${cityPair.home.code}-${cityPair.work.code}`}>
+        <!-- Plotly chart will be drawn inside this DIV -->
+    </div>
 </div>
-
-<style>
-    .plot {
-        padding: 10px;
-    }
-</style>
