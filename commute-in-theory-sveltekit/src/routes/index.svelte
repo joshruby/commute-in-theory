@@ -1,21 +1,24 @@
 <!-- TODO
 
-	- Make the header bar background white
+	X Make the header bar background white
 
-	- Make a section for each city combination
-		- Only draw the plots when each section is opened 
-		- Show all traces but make them somewhat thinner and less opaque and have a darker, thicker trace for the average at each time as well as lines for the 25th/75th and 10th/90th percentiles (like weatherspark)
-		- Show a dynamic correlation chart between time of day and commute time
-			- Use a slider or series of 7 radio buttons to control the day of the week
+	- Show a dynamic correlation chart between time of day and commute time
+		- Use a slider or series of 7 radio buttons to control the day of the week
 
 	- Multi select comparison tool
 		- Show average of all data for each of the selected city combinations on one chart, each in a different color
 
 	- Investigate data-forge package
 
-	- On a weekly basis, use the recording util to download all of the commutes, compute statistics for each route, and post them to a "commute-stats" collection
-		- Compute the median, average, std, and percentiles (10th, 25, 50th, 75th, 90th) for each route and time
-	
+	-X On a weekly basis, use the recording util to download all of the commutes, compute statistics for each route, and post them to a "commute-stats" collection
+		X Compute the median, average, std, and percentiles (10th, 25, 50th, 75th, 90th) for each route and time
+		X Investigate stat mismatch - something in the day type logic appears to be amiss
+		X Change the document format to be statsByWeekday.<type of day>.[count, max, min, mean, quantiles.[10, 25, 50, 75, 90]]
+
+	X Move "raw data" toggle inside of charts (top right corner)
+		- Check the UnprocessedCommuteStore to see if the raw commutes already exist before fetching them
+
+	- Shade between the CityPairSubChart quantiles
 -->
 
 <script>
@@ -27,7 +30,7 @@
 	export let totalCommuteCount;
 	CommuteCount.set(totalCommuteCount);
 
-	async function getCommutes(cityA, cityB, dateLimits) {
+	async function getCommutes(home, work, dateLimits) {
 		//////   Online   ////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
 		
@@ -37,12 +40,12 @@
 		
 		// const routes = [
 		// 	{
-		// 		origin: cityA,
-		// 		destination: cityB
+		// 		origin: home,
+		// 		destination: work
 		// 	},
 		// 	{
-		// 		origin: cityB,
-		// 		destination: cityA
+		// 		origin: work,
+		// 		destination: home
 		// 	},
 		// ]
 		// let commutes = [];
@@ -159,29 +162,23 @@
 		ProcessedCommutes.set(groupedCommutes);
 	}
 
-	async function getCommuteStats(cityA, cityB, dateLimits) {
-		// Find the date window length in days
-		// Set the page size
-		const routes = [
-			{
-				origin: cityA,
-				destination: cityB
-			},
-			{
-				origin: cityB,
-				destination: cityA
-			},
-		]
+	async function getCommuteStats(home, work, dateLimit) {
+		// If route is empty all routes will be queried for
+		let routes = []
+		if (home === null || work === null) {
+			routes.push({});
+		} else {
+			routes.push({origin: home, destination: work});
+			routes.push({origin: work, destination: home})
+		}
 
 		for (const route of routes) {
 			try {
 				const res = await fetch(`/recorded-commutes/stats`, {
 					method: 'POST',
 					body: JSON.stringify({
-						origin: route.origin,
-						destination: route.destination,
-						lowerDateLimit: dateLimits.lower,
-						upperDateLimit: dateLimits.upper
+						route,
+						dateLimit
 					})
 				});
 
@@ -219,27 +216,32 @@
 	let chartHeight = 600;
 	let containerWidth;
 
+	const upper = new Date();
+	let lower = new Date();
+	lower.setDate(upper.getDate() - 7);
+	getCommuteStats(
+		'SCZ',
+		'CUP',
+		{
+			lower,
+			upper
+		}
+	)
+	
 	// getCommutes(
-	// 	'SCZ',
 	// 	'CUP',
+	// 	'SCZ',
 	// 	{
-	// 		lower: new Date(2022, 0, 25, 6),
-	// 		upper: new Date(2022, 0, (26 + 1)) 
+	// 		lower: new Date(2021, 11, 0, 0),
+	// 		upper: new Date() 
 	// 	}
 	// )
-
-	// getCommuteStats(
-	// 	'SCZ',
-	// 	'CUP',
-	// 	{
-	// 		lower: new Date(2022, 0, 31),
-	// 		upper: new Date(2022, 1, 3) 
-	// 	}
-	// )
-
+	
+	// $: {
+	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
+	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
+	// }
 	$: {
-		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
-		// console.log('$ProcessedCommutes: ', $ProcessedCommutes)
 		console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
 		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
@@ -252,16 +254,14 @@
 	</div>
 </div>
 
-<div class="bg-slate-50 h-screen">
+<div class="bg-slate-50 min-h-screen">
 	<div class="flex justify-center p-4">
 		<div class="container max-w-screen-xl" border-t bind:clientWidth={containerWidth}>
-			{#if containerWidth > chartWidth && Object.entries($ProcessedCommutes).length > 0}
+			{#if containerWidth > chartWidth && Object.entries($ProcessedCommuteStats).length > 0}
 				<div class="grid grid-cols-1 place-items-center gap-4">
 					{#each $CityPairs as cityPair}
-						{#if cityPair.routes.forward in $ProcessedCommutes}
-							<div class="grid place-items-center bg-white border rounded-3xl shadow-sm">
-								<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-							</div>
+						{#if cityPair.routes.forward in $ProcessedCommuteStats}
+							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
 						{/if}
 					{/each}
 				</div>
