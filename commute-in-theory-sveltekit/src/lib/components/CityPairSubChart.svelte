@@ -41,17 +41,36 @@
             // Retrive the commutes from the store
             const commuteStats = $ProcessedCommuteStats[route]
 
-            for (const quantile in commuteStats[0].statsByWeekdayInSeconds[weekday].quantiles) {
+            // Append the traces in logical order so fill "tonexty" can be used
+            const quantiles = [10, 90, 25, 75, 50]
+            for (const q of quantiles) {
+                // Plot a line for the median and shade between the 10-90 and 25-75 quantiles
+                let fill = 'none';
+                let mode = 'none';
+                let line = 'none';
+                let fillcolor = 'none';
+                let color = '#a4c2f4';
+                if (q == 50) {
+                    mode = 'lines';
+                    line = { shape: 'spline', width: 3, color};
+                } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
+                    line = { shape: 'spline', width: 0, color };
+                    
+                    if (q == 75 || q == 90) {
+                        fill = 'tonexty';
+                        fillcolor = color + '50';
+                    }
+                }
+
                 // Make a trace for each quantile
                 let trace = {
                     x: [],
                     y: [],
-                    mode: 'lines',
-                    line: {
-                        shape: 'spline',
-                        width: 2,
-                    },
-                    name: `${quantile}th`,
+                    // mode,
+                    line,
+                    fill,
+                    fillcolor,
+                    name: `${q}th Quantile`,
                     hovertemplate: '%{y:.0f} min',
                     xaxis: xaxis,
                     yaxis: yaxis
@@ -63,7 +82,7 @@
                         new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
                     );
                     trace.y.push(
-                        ele.statsByWeekdayInSeconds[weekday].quantiles[quantile] / 60
+                        ele.statsByWeekdayInSeconds[weekday].quantiles[q.toString()] / 60
                     );
                 });
 
@@ -206,7 +225,7 @@
                 },
             ],
             hovermode,
-			showlegend: true
+			showlegend: false
 		};
 
         var config = {

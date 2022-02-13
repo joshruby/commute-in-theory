@@ -18,7 +18,9 @@
 	X Move "raw data" toggle inside of charts (top right corner)
 		- Check the UnprocessedCommuteStore to see if the raw commutes already exist before fetching them
 
-	- Shade between the CityPairSubChart quantiles
+	X CityPairSubChart: show a solid line for the median and shade between quantiles
+
+	- CityPairSubChart: add dashed traces for the min and max recordings
 -->
 
 <script>
