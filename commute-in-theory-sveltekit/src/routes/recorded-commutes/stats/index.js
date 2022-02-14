@@ -26,7 +26,7 @@ export async function post(request) {
             destination: 1,
             departureHour: 1,
             departureMinute: 1,
-            statsByWeekday: 1
+            statsByWeekdayInSeconds: 1
         }
 
         // Sort the documents prior to returning them

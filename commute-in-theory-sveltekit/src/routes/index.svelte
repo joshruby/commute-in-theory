@@ -221,8 +221,8 @@
 		let lower = new Date();
 		lower.setDate(upper.getDate() - 8);
 		getCommuteStats(
-			null,
-			null,
+			'CUP',
+			'SCZ',
 			{
 				lower,
 				upper
