@@ -21,7 +21,6 @@ export async function get() {
         const commutes = await collection
             .find({})
             .project(projection)
-            .limit(10000)
             .toArray()
 
         return {

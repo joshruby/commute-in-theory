@@ -1,7 +1,3 @@
-// TODO
-// - Figure out how to get around the 10k limit
-
-
 import clientPromise from '$lib/db'
 
 export async function get({ params }) {
@@ -19,7 +15,7 @@ export async function get({ params }) {
         };
 
         // Retrieve the documents and put them into an array
-        const commutes = await collection.find(query).limit(10000).toArray();
+        const commutes = await collection.find(query).toArray();
 
         return {
             status: 200,
