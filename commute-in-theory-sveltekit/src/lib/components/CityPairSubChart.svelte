@@ -9,7 +9,7 @@
     export let chartHeight;
     export let cityPair;
 
-    let weekdaySelection = 'All';
+    let weekdaySelection = 'Business';
     let showRaw = false;
 
     let titles = {
@@ -23,6 +23,9 @@
 
         // Set the chart hovermode
         let hovermode = 'compare'
+
+        // Define a consistent trace color
+        let traceColor = '#a4c2f4';
 
         for (const [direction, route] of Object.entries(cityPair.routes)) {
             // Assign plot sub axis labels
@@ -41,6 +44,7 @@
             // Retrive the commutes from the store
             const commuteStats = $ProcessedCommuteStats[route]
 
+            // Quantile traces
             // Append the traces in logical order so fill "tonexty" can be used
             const quantiles = [10, 90, 25, 75, 50]
             for (const q of quantiles) {
@@ -49,19 +53,18 @@
                 let mode = 'none';
                 let line = 'none';
                 let fillcolor = 'none';
-                let color = '#a4c2f4';
                 if (q == 50) {
                     mode = 'lines';
-                    line = { shape: 'spline', width: 3, color};
+                    line = { shape: 'spline', width: 3, color: traceColor};
                 } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
-                    line = { shape: 'spline', width: 0, color };
+                    line = { shape: 'spline', width: 0, color: traceColor };
                     
                     if (q == 75) {
                         fill = 'tonexty';
-                        fillcolor = color + '60';
+                        fillcolor = traceColor + '60';
                     } else if (q == 90) {
                         fill = 'tonexty';
-                        fillcolor = color + '40';
+                        fillcolor = traceColor + '40';
                     }
                 }
 
@@ -92,21 +95,48 @@
                 // Add the trace to the list of traces
                 data.push(trace);
             }
-                    
+             
+            // Min and max traces
+            for (const extreme of ['min', 'max']) {
+                // Make a trace for each quantile
+                let trace = {
+                    x: [],
+                    y: [],
+                    line: { dash: 'dot', shape: 'spline', width: 1, color: traceColor + 'b0' },
+                    name: `${extreme}`,
+                    hovertemplate: '%{y:.0f} min',
+                    xaxis: xaxis,
+                    yaxis: yaxis
+                };
+
+                commuteStats.forEach((ele) => {
+                    trace.x.push(
+                        // Use a constant date for each departure time
+                        new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
+                    );
+                    trace.y.push(
+                        ele.statsByWeekdayInSeconds[weekday][extreme] / 60
+                    );
+                });
+
+                // Add the trace to the list of traces
+                data.push(trace);
+            }
+
+            // Raw data traces
             if (showRaw === true) {
                 // Retrive the commutes from the store
                 const commutes = $ProcessedCommutes[route].grouped.byDate
 
                 // Make a trace for each day of recordings 
                 for (const [date, recordings] of Object.entries(commutes)) {
-                    let color;
+                    let traceColor;
                     let legendgroup;
                     
                     if (date.includes('Sat') || date.includes('Sun')){
-                        color = '#c8c8c8';
+                        traceColor = '#c8c8c8';
                         legendgroup = `Weekends - ${route}`;
                     } else {
-                        color = '#a4c2f4';
                         legendgroup = `Weekdays - ${route}`
                     }
 
@@ -115,13 +145,13 @@
                         y: [],
                         mode: 'lines',
                         // marker: {
-                        //     color: color,
+                        //     traceColor: traceColor,
                         //     size: 5
                         // },
                         line: {
                             shape: 'spline',
                             width: 1,
-                            color: color,
+                            traceColor: traceColor,
                         },
                         opacity: 0.4,
                         name: `${date}`,
@@ -165,11 +195,11 @@
 			xaxis: {
 				title: xTitle,
                 titlefont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 tickformat: tickFormat,
                 tickfont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 anchor: 'y',
                 domain: [0, 1]
@@ -177,11 +207,11 @@
             xaxis2: {
 				title: xTitle,
                 titlefont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 tickformat: tickFormat,
                 tickfont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 anchor: 'y2',
                 domain: [0, 1]
@@ -189,10 +219,10 @@
 			yaxis: {
 				title: yTitle,
                 titlefont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 tickfont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 anchor: 'x',
                 domain: [domainSplit, 1]
@@ -200,10 +230,10 @@
             yaxis2: {
 				title: yTitle,
                 titlefont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 tickfont: {
-                    color: fontColor,
+                    traceColor: fontColor,
                 },
                 anchor: 'x2',
                 domain: [0, 1 - domainSplit]
