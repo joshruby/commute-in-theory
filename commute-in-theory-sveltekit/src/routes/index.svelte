@@ -24,13 +24,11 @@
 -->
 
 <script>
+	import { onMount } from 'svelte';
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 	import data from './commutes.json'
-
-	export let totalCommuteCount;
-	CommuteCount.set(totalCommuteCount);
 
 	async function getCommutes(home, work, dateLimits) {
 		//////   Online   ////////////////////////////////////////////////////
@@ -167,7 +165,7 @@
 	async function getCommuteStats(home, work, dateLimit) {
 		// If route is empty all routes will be queried for
 		let routes = []
-		if (home === null || work === null) {
+		if (home == null || work == null) {
 			routes.push({});
 		} else {
 			routes.push({origin: home, destination: work});
@@ -218,17 +216,19 @@
 	let chartHeight = 600;
 	let containerWidth;
 
-	const upper = new Date();
-	let lower = new Date();
-	lower.setDate(upper.getDate() - 7);
-	getCommuteStats(
-		'SCZ',
-		'CUP',
-		{
-			lower,
-			upper
-		}
-	)
+	onMount(async() => {
+		const upper = new Date();
+		let lower = new Date();
+		lower.setDate(upper.getDate() - 8);
+		getCommuteStats(
+			null,
+			null,
+			{
+				lower,
+				upper
+			}
+		)
+	});
 	
 	// getCommutes(
 	// 	'CUP',
@@ -239,11 +239,10 @@
 	// 	}
 	// )
 	
-	// $: {
-	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
-	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-	// }
+	// Dubugging
 	$: {
+		console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
+		console.log('$ProcessedCommutes: ', $ProcessedCommutes)
 		console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
 		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
