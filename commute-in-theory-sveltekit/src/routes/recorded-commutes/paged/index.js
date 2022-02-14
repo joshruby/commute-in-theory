@@ -1,5 +1,4 @@
 import clientPromise from '$lib/db'
-import { ObjectId } from 'mongodb'
 
 // https://stackoverflow.com/questions/31826760/how-to-get-data-in-batches-in-mongodb
 export async function post(request) {
@@ -40,7 +39,8 @@ export async function post(request) {
         // Query the db
         let commutes = [];
         commutes = await collection
-            .find(query, projection)
+            .find(query)
+            .project(projection)
             .sort({ "departureTime": -1 })
             .limit(pageSize)
             .toArray()

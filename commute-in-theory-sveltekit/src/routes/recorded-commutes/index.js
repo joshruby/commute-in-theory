@@ -7,9 +7,6 @@ export async function get() {
         const db = connectedClient.db();
         const collection = db.collection('commutes');
 
-        // Define the query
-        const query = {}
-
         // Project the returned fields to ensure the query is covered
         const projection = {
             origin: 1,
@@ -22,7 +19,8 @@ export async function get() {
 
         // Query the db
         const commutes = await collection
-            .find(query, projection)
+            .find({})
+            .project(projection)
             .limit(10000)
             .toArray()
 
