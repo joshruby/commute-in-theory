@@ -56,9 +56,12 @@
                 } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
                     line = { shape: 'spline', width: 0, color };
                     
-                    if (q == 75 || q == 90) {
+                    if (q == 75) {
                         fill = 'tonexty';
-                        fillcolor = color + '50';
+                        fillcolor = color + '60';
+                    } else if (q == 90) {
+                        fill = 'tonexty';
+                        fillcolor = color + '40';
                     }
                 }
 
@@ -143,6 +146,11 @@
             }
         }
 
+        const xTitle = 'Departure Time';
+        const yTitle = 'Travel Time (min)';
+        const fontColor = '#6B6B6B';
+        const tickFormat = '%H:%M'
+        const domainSplit = 0.64;
 		var layout = {
 			width: chartWidth,
 			height: chartHeight,
@@ -155,50 +163,50 @@
             },
             // title: `${title}`,
 			xaxis: {
-				title: 'Departure Time',
+				title: xTitle,
                 titlefont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
-                tickformat: '%H:%M',
+                tickformat: tickFormat,
                 tickfont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 anchor: 'y',
                 domain: [0, 1]
 			},
             xaxis2: {
-				title: 'Departure Time',
+				title: xTitle,
                 titlefont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
-                tickformat: '%H:%M',
+                tickformat: tickFormat,
                 tickfont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 anchor: 'y2',
                 domain: [0, 1]
 			},
 			yaxis: {
-				title: 'Travel Time (min)',
+				title: yTitle,
                 titlefont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 tickfont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 anchor: 'x',
-                domain: [0.64, 1]
+                domain: [domainSplit, 1]
 			},
             yaxis2: {
-				title: 'Travel Time (min)',
+				title: yTitle,
                 titlefont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 tickfont: {
-                    color: 'rgb(107, 107, 107)',
+                    color: fontColor,
                 },
                 anchor: 'x2',
-                domain: [0, 0.36]
+                domain: [0, 1 - domainSplit]
 			},
             annotations: [
                 {
