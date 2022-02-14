@@ -162,7 +162,7 @@
 		ProcessedCommutes.set(groupedCommutes);
 	}
 
-	async function getCommuteStats(home, work, dateLimit) {
+	async function getCommuteStats(home, work) {
 		// If route is empty all routes will be queried for
 		let routes = []
 		if (home == null || work == null) {
@@ -176,10 +176,7 @@
 			try {
 				const res = await fetch(`/recorded-commutes/stats`, {
 					method: 'POST',
-					body: JSON.stringify({
-						route,
-						dateLimit
-					})
+					body: JSON.stringify({route})
 				});
 
 				if (res.ok) {
@@ -217,17 +214,7 @@
 	let containerWidth;
 
 	onMount(async() => {
-		const upper = new Date();
-		let lower = new Date();
-		lower.setDate(upper.getDate() - 8);
-		getCommuteStats(
-			'CUP',
-			'SCZ',
-			{
-				lower,
-				upper
-			}
-		)
+		getCommuteStats('CUP', 'PCA')
 	});
 	
 	// getCommutes(
@@ -239,7 +226,7 @@
 	// 	}
 	// )
 	
-	// Dubugging
+	// Debugging
 	$: {
 		console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 		console.log('$ProcessedCommutes: ', $ProcessedCommutes)

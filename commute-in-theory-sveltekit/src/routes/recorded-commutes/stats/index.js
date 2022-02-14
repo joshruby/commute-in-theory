@@ -6,13 +6,28 @@ export async function post(request) {
         // Parse the request
         const body = JSON.parse(request.body);
 
+        // Connect to the db
+        const connectedClient = await clientPromise;
+        const db = connectedClient.db();
+        const collection = db.collection('commute_stats');
+
         // Define the query
-        let query = {
-            "computedAt": { 
-                "$gte": new Date(body.dateLimit.lower),
-                "$lt": new Date(body.dateLimit.upper) 
-            }
-        }
+        let query = {};
+        // Project the returned fields to ensure the query is covered
+        let projection = { computedAt: 1, _id: 0 };
+        // Sort the documents prior to returning them (last first)
+        let sorting = { computedAt: -1 };
+        // Query the db
+        const res = await collection
+            .find(query)
+            .project(projection)
+            .sort(sorting)
+            .limit(1)
+            .toArray()
+        const lastComputedAt = res[0].computedAt
+
+        // Define the query
+        query = { "computedAt": lastComputedAt }
         // Limit the query to the passed route
         if (Object.keys(body.route).length != 0) {
             query.origin = body.route.origin;
@@ -20,7 +35,7 @@ export async function post(request) {
         }
 
         // Project the returned fields to ensure the query is covered
-        const projection = {
+        projection = {
             computedAt: 1,
             origin: 1,
             destination: 1,
@@ -30,19 +45,15 @@ export async function post(request) {
         }
 
         // Sort the documents prior to returning them
-        const sorting = {
+        sorting = {
             departureHour: 1,
             departureMinute: 1
         }
 
-        // Connect to the db
-        const connectedClient = await clientPromise;
-        const db = connectedClient.db();
-        const collection = db.collection('commute_stats');
-
         // Query the db
         const stats = await collection
-            .find(query, projection)
+            .find(query)
+            .project(projection)
             .sort(sorting)
             .toArray()
 
