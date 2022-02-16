@@ -20,7 +20,9 @@
 
 	X CityPairSubChart: show a solid line for the median and shade between quantiles
 
-	- CityPairSubChart: add dashed traces for the min and max recordings
+	X CityPairSubChart: add dashed traces for the min and max recordings
+
+	- Figure out how to properly scope tailwind classes to individual components
 -->
 
 <script>
@@ -217,16 +219,17 @@
 		getCommuteStats({ home: 'SCZ', work: 'CUP' })
 	});
 	
-	getCommutes(
-		{
-			home: 'SCZ',
-			work: 'CUP'
-		},
-		{
-			lower: new Date(2022, 1, 0, 0),
-			upper: new Date() 
-		}
-	)
+	// getCommutes(
+	// 	{
+	// 		home: 'SCZ',
+	// 		work: 'CUP'
+	// 	},
+	// 	{
+	// 		lower: new Date(2022, 1, 0, 0),
+	// 		upper: new Date() 
+	// 	}
+	// )
+	
 	
 	// Debugging
 	$: {
@@ -236,7 +239,6 @@
 		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
 </script>
-
 
 <div class="flex justify-center items-center bg-white border-b">
 	<div class="flex justify-between items-center w-full max-w-screen-xl p-4">
