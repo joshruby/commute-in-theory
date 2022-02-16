@@ -30,7 +30,7 @@
 	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
 	import data from './commutes.json'
 
-	async function getCommutes(home, work, dateLimits) {
+	async function getCommutes(cityPair, dateLimits) {
 		//////   Online   ////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
 		
@@ -40,12 +40,12 @@
 		
 		// const routes = [
 		// 	{
-		// 		origin: home,
-		// 		destination: work
+		// 		origin: cityPair.home,
+		// 		destination: cityPair.work
 		// 	},
 		// 	{
-		// 		origin: work,
-		// 		destination: home
+		// 		origin: cityPair.work,
+		// 		destination: cityPair.home
 		// 	},
 		// ]
 		// let commutes = [];
@@ -162,21 +162,21 @@
 		ProcessedCommutes.set(groupedCommutes);
 	}
 
-	async function getCommuteStats(home, work) {
+	async function getCommuteStats(cityPair) {
 		// If route is empty all routes will be queried for
 		let routes = []
-		if (home == null || work == null) {
+		if (cityPair.home == null || cityPair.work == null) {
 			routes.push({});
 		} else {
-			routes.push({origin: home, destination: work});
-			routes.push({origin: work, destination: home})
+			routes.push({ origin: cityPair.home, destination: cityPair.work });
+			routes.push({ origin: cityPair.work, destination: cityPair.home })
 		}
 
 		for (const route of routes) {
 			try {
 				const res = await fetch(`/recorded-commutes/stats`, {
 					method: 'POST',
-					body: JSON.stringify({route})
+					body: JSON.stringify({ route })
 				});
 
 				if (res.ok) {
@@ -214,23 +214,25 @@
 	let containerWidth;
 
 	onMount(async() => {
-		getCommuteStats('CUP', 'PCA')
+		getCommuteStats({ home: 'SCZ', work: 'CUP' })
 	});
 	
-	// getCommutes(
-	// 	'CUP',
-	// 	'SCZ',
-	// 	{
-	// 		lower: new Date(2021, 11, 0, 0),
-	// 		upper: new Date() 
-	// 	}
-	// )
+	getCommutes(
+		{
+			home: 'SCZ',
+			work: 'CUP'
+		},
+		{
+			lower: new Date(2022, 1, 0, 0),
+			upper: new Date() 
+		}
+	)
 	
 	// Debugging
 	$: {
-		console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
+		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 		console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-		console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
+		// console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
 		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
 </script>
