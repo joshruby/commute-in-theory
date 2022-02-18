@@ -240,24 +240,14 @@
 	}
 </script>
 
-<div class="flex justify-center items-center bg-white border-b">
-	<div class="flex justify-between items-center w-full max-w-screen-xl p-4">
-		<span class="text-2xl font-semibold">Commute in Theory</span>
-	</div>
-</div>
-
-<div class="bg-slate-50 min-h-screen">
-	<div class="flex justify-center p-4">
-		<div class="container max-w-screen-xl" border-t bind:clientWidth={containerWidth}>
-			{#if containerWidth > chartWidth && Object.entries($ProcessedCommuteStats).length > 0}
-				<div class="grid grid-cols-1 place-items-center gap-4">
-					{#each $CityPairs as cityPair}
-						{#if cityPair.routes.forward in $ProcessedCommuteStats}
-							<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
-						{/if}
-					{/each}
-				</div>
-			{/if}
+<div bind:clientWidth={containerWidth}>
+	{#if containerWidth > chartWidth}
+		<div class="grid grid-cols-1 place-items-center gap-4">
+			{#each $CityPairs as cityPair}
+				{#if cityPair.routes.forward in $ProcessedCommuteStats}
+					<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+				{/if}
+			{/each}
 		</div>
-	</div>
+	{/if}
 </div>

@@ -1,23 +1,14 @@
-<slot></slot>
+<script>
+    import "../app.css"
+</script>
 
-<style>
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
 
-    /* .btn {
-        @apply rounded-full;
-    } */
+<div class="text-2xl font-semibold w-full p-4 border-b">
+    Commute in Theory
+</div>
 
-    :global(h1) {
-        @apply text-3xl;
-    }
-
-    :global(h2) {
-        @apply text-2xl;
-    }
-
-    :global(h3) {
-        @apply text-lg;
-    }
-</style>
+<div class="min-h-screen bg-slate-50 pt-4">
+    <div class="container mx-auto max-w-screen-xl">
+        <slot></slot>
+    </div>
+</div>
