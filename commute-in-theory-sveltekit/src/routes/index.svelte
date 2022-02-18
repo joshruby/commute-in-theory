@@ -110,10 +110,6 @@
 
 		//////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////
-
-
-		// Process all of the commutes
-		processCommutes();
 	};
 
 	function processCommutes() {
@@ -196,8 +192,6 @@
 				console.log(new Error(err));
 			}
 		}
-
-		processCommuteStats();
 	}
 
 	function processCommuteStats() {
@@ -215,8 +209,18 @@
 	let chartHeight = 600;
 	let containerWidth;
 
+	// onMount(async() => {
+	// 	const homes = ['SCZ', 'LGS', 'CAM', 'MLP', 'PCA']
+	// 	for (const home in $Locations.home) {
+	// 		console.log(home)
+	// 		getCommuteStats({ home, work: 'CUP' })
+	// 	}
+	// 	processCommuteStats();
+	// });
+
 	onMount(async() => {
-		getCommuteStats({ home: 'SCZ', work: 'CUP' })
+		await getCommuteStats({ home: 'SCZ', work: 'CUP' })
+		processCommuteStats()
 	});
 	
 	// getCommutes(
@@ -229,6 +233,7 @@
 	// 		upper: new Date() 
 	// 	}
 	// )
+	// processCommutes();
 	
 	
 	// Debugging
