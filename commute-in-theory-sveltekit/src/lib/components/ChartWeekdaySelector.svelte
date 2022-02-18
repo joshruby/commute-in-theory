@@ -4,13 +4,12 @@
     const weekdays = ['All', 'Business', 'Weekend']
     // Generate a random string for this component
     const randStr = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-    
 </script>
 
 <!-- https://dev.to/thomasvanholder/click-label-to-choose-radio-button-tailwindcsss-peer-class-39nb -->
 <div class="w-80 border rounded-xl shadow-sm">
-    <div class="grid grid-cols-1 place-items-center">
-        <div class="absolute top-1.5 px-3 bg-white font-bold">
+    <div class="relative grid grid-cols-1 place-items-center">
+        <div class="absolute -top-3 px-3 bg-white font-semibold text-slate-500">
             Days
         </div>
     </div>
@@ -26,7 +25,7 @@
                 >
                 <label
                     for={weekday + randStr}
-                    class="peer-hover:text-baby-blue peer-checked:font-semibold peer-checked:text-baby-blue ease-in-out duration-150"
+                    class="text-slate-400 peer-hover:text-baby-blue peer-checked:font-bold peer-checked:text-baby-blue ease-in-out duration-150"
                 >
                     {weekday}
                 </label>
