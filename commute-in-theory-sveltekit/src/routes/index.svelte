@@ -209,18 +209,11 @@
 	let chartHeight = 600;
 	let containerWidth;
 
-	// onMount(async() => {
-	// 	const homes = ['SCZ', 'LGS', 'CAM', 'MLP', 'PCA']
-	// 	for (const home in $Locations.home) {
-	// 		console.log(home)
-	// 		getCommuteStats({ home, work: 'CUP' })
-	// 	}
-	// 	processCommuteStats();
-	// });
-
 	onMount(async() => {
-		await getCommuteStats({ home: 'SCZ', work: 'CUP' })
-		processCommuteStats()
+		for (const home of ['SCZ', 'LGS', 'CAM', 'MLP', 'PCA']) {
+			await getCommuteStats({ home, work: 'CUP' })
+		}
+		processCommuteStats();
 	});
 	
 	// getCommutes(
