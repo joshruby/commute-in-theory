@@ -68,7 +68,7 @@
                     }
                 }
 
-                // Make a trace for each quantile
+                // Make a trace for each quantile in the list (really they're percentiles)
                 let trace = {
                     x: [],
                     y: [],
@@ -76,7 +76,7 @@
                     line,
                     fill,
                     fillcolor,
-                    name: `${q}th Quantile`,
+                    name: `${q}th Percentile`,
                     hovertemplate: '%{y:.0f} min',
                     xaxis: xaxis,
                     yaxis: yaxis
