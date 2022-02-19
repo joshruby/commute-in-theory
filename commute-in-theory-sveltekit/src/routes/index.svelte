@@ -29,7 +29,7 @@
 	import { onMount } from 'svelte';
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
-	import CityPairSubChart from '$lib/components/CityPairSubChart.svelte';
+	import CityPairChart from '$lib/components/CityPairChart.svelte';
 	import data from './commutes.json'
 
 	async function getCommutes(cityPair, dateLimits) {
@@ -243,7 +243,7 @@
 		<div class="grid grid-cols-1 place-items-center gap-4">
 			{#each $CityPairs as cityPair}
 				{#if cityPair.routes.forward in $ProcessedCommuteStats}
-					<CityPairSubChart {cityPair} {chartWidth} {chartHeight} />
+					<CityPairChart {cityPair} {chartWidth} {chartHeight} />
 				{/if}
 			{/each}
 		</div>

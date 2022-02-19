@@ -2,8 +2,7 @@
 	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes, ProcessedCommuteStats } from '$lib/stores/CommuteStore'
-    import ChartWeekdaySelector from '$lib/components/ChartWeekdaySelector.svelte';
-    import ToggleBtn from '$lib/components/ToggleBtn.svelte';
+    import WeekdaySelector from '$lib/components/WeekdaySelector.svelte';
 
     export let chartWidth;
     export let chartHeight;
@@ -284,7 +283,7 @@
 <div class="grid place-items-center p-4 bg-white border rounded-3xl shadow-sm">
     <div class="flex items-center justify-around w-full mb-4">
         <div>
-            <ChartWeekdaySelector bind:weekdaySelection={weekdaySelection} />
+            <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
         </div>
         <!-- <div>
             <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
