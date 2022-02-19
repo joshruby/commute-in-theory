@@ -1,28 +1,10 @@
 <!-- TODO
-
-	X Make the header bar background white
-
 	- Show a dynamic correlation chart between time of day and commute time
 		- Use a slider or series of 7 radio buttons to control the day of the week
 
 	- Multi select comparison tool
-		- Show average of all data for each of the selected city combinations on one chart, each in a different color
 
-	- Investigate data-forge package
-
-	-X On a weekly basis, use the recording util to download all of the commutes, compute statistics for each route, and post them to a "commute-stats" collection
-		X Compute the median, average, std, and percentiles (10th, 25, 50th, 75th, 90th) for each route and time
-		X Investigate stat mismatch - something in the day type logic appears to be amiss
-		X Change the document format to be statsByWeekday.<type of day>.[count, max, min, mean, quantiles.[10, 25, 50, 75, 90]]
-
-	X Move "raw data" toggle inside of charts (top right corner)
-		- Check the UnprocessedCommuteStore to see if the raw commutes already exist before fetching them
-
-	X CityPairSubChart: show a solid line for the median and shade between quantiles
-
-	X CityPairSubChart: add dashed traces for the min and max recordings
-
-	- Figure out how to properly scope tailwind classes to individual components
+	- Figure out how to properly scope grouped inputs
 -->
 
 <script>
