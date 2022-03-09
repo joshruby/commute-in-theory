@@ -186,9 +186,10 @@
 	// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
 	const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {})
 		
-	let chartWidth = 850;
-	let chartHeight = 600;
+	
 	let containerWidth;
+	$: chartWidth = containerWidth > 1280 ? 1280: (containerWidth - 60)
+	let chartHeight = 600;
 
 	onMount(async () => {
 		for (const home of ['SCZ', 'LGS', 'PCA', 'CAM']) {
@@ -228,17 +229,15 @@
 </script>
 
 <div bind:clientWidth={containerWidth}>
-	{#if containerWidth > chartWidth}
-		<div class="grid grid-cols-1 place-items-center gap-4">
-			{#if selectedCityPairs.length > 0}
-				<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
-			{/if}
+	<div class="grid grid-cols-1 place-items-center gap-4">
+		{#if selectedCityPairs.length > 0}
+			<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
+		{/if}
 
-			{#each $CityPairs as cityPair}
-				{#if cityPair.routes.forward in $ProcessedCommuteStats}
-					<CityPairChart {cityPair} {chartWidth} {chartHeight} />
-				{/if}
-			{/each}
-		</div>
-	{/if}
+		{#each $CityPairs as cityPair}
+			{#if cityPair.routes.forward in $ProcessedCommuteStats}
+				<CityPairChart {cityPair} {chartWidth} {chartHeight} />
+			{/if}
+		{/each}
+	</div>
 </div>
