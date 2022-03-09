@@ -25,7 +25,7 @@
                 >
                 <label
                     for={weekday + randStr}
-                    class="text-slate-400 peer-hover:text-baby-blue peer-checked:font-bold peer-checked:text-baby-blue ease-in-out duration-150"
+                    class="cursor-pointer text-slate-400 peer-hover:text-baby-blue peer-checked:font-bold peer-checked:text-baby-blue ease-in-out duration-150"
                 >
                     {weekday}
                 </label>
