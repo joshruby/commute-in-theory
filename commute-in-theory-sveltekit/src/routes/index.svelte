@@ -3,6 +3,8 @@
 		- Use a slider or series of 7 radio buttons to control the day of the week
 
 	- Properly scope grouped inputs
+
+	- Display loading spinner while fetching
 -->
 
 <script>
