@@ -12,6 +12,7 @@
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
 	import CityPairChart from '$lib/components/CityPairChart.svelte';
+	import CityPairComparisonChart from '$lib/components/CityPairComparisonChart.svelte';
 	import data from './commutes.json'
 
 	async function getCommutes(cityPair, dateLimits) {
@@ -191,8 +192,8 @@
 	let chartHeight = 600;
 	let containerWidth;
 
-	onMount(async() => {
-		for (const home of ['SCZ', 'LGS', 'CAM', 'MLP', 'PCA']) {
+	onMount(async () => {
+		for (const home of ['SCZ', 'LGS', 'PCA', 'CAM']) {
 			await getCommuteStats({ home, work: 'CUP' })
 		}
 		processCommuteStats();
@@ -209,20 +210,32 @@
 	// 	}
 	// )
 	// processCommutes();
-	
+
+	let selectedCityPairs = [];
+	$: {
+		selectedCityPairs = $CityPairs.filter(
+			cityPair => cityPair.routes.forward in $ProcessedCommuteStats
+		);
+		// Only show the first 6 pairs
+		selectedCityPairs = selectedCityPairs.slice(0, 6)
+	}
 	
 	// Debugging
-	$: {
-		// console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
-		console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-		// console.log('$UnprocessedCommuteStats: ', $UnprocessedCommuteStats)
-		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
-	}
+	// $: {
+	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
+	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
+	// 	console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
+	// 	console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
+	// }
 </script>
 
 <div bind:clientWidth={containerWidth}>
 	{#if containerWidth > chartWidth}
 		<div class="grid grid-cols-1 place-items-center gap-4">
+			{#if selectedCityPairs.length > 0}
+				<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
+			{/if}
+
 			{#each $CityPairs as cityPair}
 				{#if cityPair.routes.forward in $ProcessedCommuteStats}
 					<CityPairChart {cityPair} {chartWidth} {chartHeight} />
