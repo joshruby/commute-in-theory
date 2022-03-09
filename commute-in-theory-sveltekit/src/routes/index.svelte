@@ -190,7 +190,7 @@
 		
 	
 	let containerWidth;
-	$: chartWidth = containerWidth > 1280 ? 1280: (containerWidth - 60)
+	$: chartWidth = containerWidth > 1024 ? 1024 : (containerWidth - 60)
 	let chartHeight = 600;
 
 	onMount(async () => {
@@ -225,8 +225,8 @@
 	// $: {
 	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-		// console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
-		// console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
+	// 	console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
+	// 	console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	// }
 </script>
 
