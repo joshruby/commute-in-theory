@@ -5,15 +5,17 @@
     import WeekdaySelector from '$lib/components/WeekdaySelector.svelte';
 
     export let chartWidth;
+    $: console.log(chartWidth)
     export let chartHeight;
     export let cityPair;
 
     let weekdaySelection = 'Business';
     let showRaw = false;
 
-    let titles = {
-        forward: `${cityPair.home.name}   \u2b62   ${cityPair.work.name}`,
-        reverse: `${cityPair.work.name}   \u2b62   ${cityPair.home.name}`
+    $: titleSelection = chartWidth >= 1024 ? 'name' : 'code';
+    $: titles = {
+        forward: `${cityPair.home[titleSelection]}   \u2b62   ${cityPair.work[titleSelection]}`,
+        reverse: `${cityPair.work[titleSelection]}   \u2b62   ${cityPair.home[titleSelection]}`
     };
 
 	function createChart(weekday) {
