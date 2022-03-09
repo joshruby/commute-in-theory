@@ -7,7 +7,7 @@
     Commute in Theory
 </div>
 
-<div class="min-h-screen bg-slate-50 pt-4">
+<div class="min-h-screen bg-slate-50 py-4">
     <div class="container mx-auto max-w-screen-xl">
         <slot></slot>
     </div>
