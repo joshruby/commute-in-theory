@@ -2,9 +2,7 @@
 	- Show a dynamic correlation chart between time of day and commute time
 		- Use a slider or series of 7 radio buttons to control the day of the week
 
-	- Multi select comparison tool
-
-	- Figure out how to properly scope grouped inputs
+	- Properly scope grouped inputs
 -->
 
 <script>
@@ -224,8 +222,8 @@
 	// $: {
 	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-	// 	console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
-	// 	console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
+		// console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
+		// console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	// }
 </script>
 
