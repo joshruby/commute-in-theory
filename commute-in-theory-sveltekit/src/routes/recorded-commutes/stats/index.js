@@ -5,7 +5,6 @@ export async function post({ request }) {
     try {
         // Parse the request
         const body = await request.json();
-        console.log('body', body)
 
         // Connect to the db
         const connectedClient = await clientPromise;
