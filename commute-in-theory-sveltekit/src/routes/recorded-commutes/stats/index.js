@@ -1,10 +1,11 @@
 import clientPromise from '$lib/db'
 
 // https://stackoverflow.com/questions/31826760/how-to-get-data-in-batches-in-mongodb
-export async function post(request) {
+export async function post({ request }) {
     try {
         // Parse the request
-        const body = JSON.parse(request.body);
+        const body = await request.json();
+        console.log('body', body)
 
         // Connect to the db
         const connectedClient = await clientPromise;

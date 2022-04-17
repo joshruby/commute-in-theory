@@ -1,7 +1,7 @@
-export async function post(request) {
+export async function post({ request }) {
     try {
         // Parse the request
-        const commuteRequest = JSON.parse(request.body);
+        const commuteRequest = await request.json();
 
         // Build the URL
         const url = new URL(`https://api.tomtom.com/routing/1/calculateRoute/${commuteRequest.origin.lat_lon}:${commuteRequest.destination.lat_lon}/json?`);
