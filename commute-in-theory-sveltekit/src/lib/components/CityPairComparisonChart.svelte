@@ -22,7 +22,7 @@
         let hovermode = 'closest'
 
         // Define a consistent trace color
-        let traceColors = ['#a4c2f4', '#b6d7a8', '#d5a6bd', '#d9d9d9', '#f9cb9c', '#95b19a'];
+        let traceColors = ['#a4c2f4', '#b6d7a8', '#d5a6bd', '#adadad', '#f9cb9c', '#95b19a'];
 
         // Make a custom legend with annotations for each route
         let customLegendAnnotations = [];
