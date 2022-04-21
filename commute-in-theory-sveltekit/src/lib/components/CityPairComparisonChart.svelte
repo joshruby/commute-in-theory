@@ -121,32 +121,32 @@
                 }
                 
                 // Min and max traces
-                for (const extreme of ['min', 'max']) {
-                    // Make a trace for each quantile
-                    let trace = {
-                        x: [],
-                        y: [],
-                        line: { dash: 'dot', shape: 'spline', width: 1, color: traceColors[i] + 'b0' },
-                        name: `${route} ${extreme}`,
-                        hovertemplate: '%{y:.0f} min',
-                        legendgroup: `${route}`,
-                        xaxis: xaxis,
-                        yaxis: yaxis
-                    };
+                // for (const extreme of ['min', 'max']) {
+                //     // Make a trace for each quantile
+                //     let trace = {
+                //         x: [],
+                //         y: [],
+                //         line: { dash: 'dot', shape: 'spline', width: 1, color: traceColors[i] + 'b0' },
+                //         name: `${route} ${extreme}`,
+                //         hovertemplate: '%{y:.0f} min',
+                //         legendgroup: `${route}`,
+                //         xaxis: xaxis,
+                //         yaxis: yaxis
+                //     };
 
-                    commuteStats.forEach((ele) => {
-                        trace.x.push(
-                            // Use a constant date for each departure time
-                            new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
-                        );
-                        trace.y.push(
-                            ele.statsByWeekdayInSeconds[weekday][extreme] / 60
-                        );
-                    });
+                //     commuteStats.forEach((ele) => {
+                //         trace.x.push(
+                //             // Use a constant date for each departure time
+                //             new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
+                //         );
+                //         trace.y.push(
+                //             ele.statsByWeekdayInSeconds[weekday][extreme] / 60
+                //         );
+                //     });
 
-                    // Add the trace to the list of traces
-                    data.push(trace);
-                }
+                //     // Add the trace to the list of traces
+                //     data.push(trace);
+                // }
             }
         });
 
