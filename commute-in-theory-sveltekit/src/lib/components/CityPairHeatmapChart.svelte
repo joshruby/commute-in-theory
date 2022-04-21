@@ -47,9 +47,8 @@
                 type: 'heatmap',
                 showscale: showscale,
                 colorscale: [
-                    [0.0, '#6094ec'],
-                    [0.5, '#ffffff'],
-                    [1, '#d5a6bd']
+                    [0.0, '#ffffff'],
+                    [1, '#6094ec']
                 ],
                 colorbar:{
                     title: "Travel Time (min)",
