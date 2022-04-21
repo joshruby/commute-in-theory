@@ -3,6 +3,7 @@
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes, ProcessedCommuteStats } from '$lib/stores/CommuteStore'
     import WeekdaySelector from '$lib/components/WeekdaySelector.svelte';
+    import CityPairHeatmapChart from '$lib/components/CityPairHeatmapChart.svelte';
 
     export let chartWidth;
     $: console.log(chartWidth)
@@ -189,7 +190,7 @@
                 l: 60,
                 r: 0,
                 b: 60,
-                t: 60,
+                t: 30,
                 // pad: 4
             },
             // title: `${title}`,
@@ -273,7 +274,7 @@
         };
 
         // Give each chart a unique ID
-        Plotly.newPlot(`plot-${cityPair.home.code}-${cityPair.work.code}`, data, layout, config);
+        Plotly.newPlot(`scatterplot-${cityPair.home.code}-${cityPair.work.code}`, data, layout, config);
 	    
     }
 
@@ -291,7 +292,9 @@
             <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
         </div> -->
     </div>
-    <div id={`plot-${cityPair.home.code}-${cityPair.work.code}`}>
+    <div id={`scatterplot-${cityPair.home.code}-${cityPair.work.code}`}>
         <!-- Plotly chart will be drawn inside this DIV -->
     </div>
+    <div class="my-8 border-b w-3/4"></div>
+    <CityPairHeatmapChart {cityPair} {chartWidth} {chartHeight} />
 </div>

@@ -184,15 +184,14 @@
 	}
 
 	// https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
-	const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {})
-		
+	const groupBy = (x, f) => x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {})		
 	
 	let containerWidth;
 	$: chartWidth = containerWidth > 1024 ? 1024 : (containerWidth - 60)
-	let chartHeight = 600;
+	let chartHeight = 400;
 
 	onMount(async () => {
-		for (const home of ['SCZ', 'LGS', 'PCA', 'CAM']) {
+		for (const home of ['SCZ', 'LGS', 'PCA', 'SFP']) {
 			await getCommuteStats({ home, work: 'CUP' })
 		}
 		processCommuteStats();
