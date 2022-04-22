@@ -48,7 +48,7 @@
                 showscale: showscale,
                 colorscale: [
                     [0.0, '#ffffff'],
-                    [1, '#6094ec']
+                    [1, '#2b71e6']
                 ],
                 colorbar:{
                     title: "Travel Time (min)",
@@ -74,7 +74,7 @@
 
                 commuteStats.forEach((ele) => {
                     weekdayData.push(
-                        ~~(ele.statsByWeekdayInSeconds[weekday].quantiles[percentile] / 60)
+                        (ele.statsByWeekdayInSeconds[weekday].quantiles[percentile] / 60)
                     );
                 });
 
@@ -88,7 +88,7 @@
                 let min = routeData.x[j].getMinutes().toString().padStart(2, '0')
                 let time = hr + ':' + min
                 return `${weekday} ${time}<br>` 
-                    + `${item} min (${percentile}th Percentile)`
+                    + `${~~item} min (${percentile}th Percentile)`
             }))
 
             data.push(routeData)
