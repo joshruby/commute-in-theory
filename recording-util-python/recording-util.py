@@ -235,9 +235,9 @@ LOCATIONS = {
             'name': 'Campbell, Downtown',
             'lat_lon': '37.28750197556045,-121.94487365182788'
         },
-        'SCU': {
-            'name': 'Santa Clara, SCU',
-            'lat_lon': '37.34887015070597,-121.94401506069336'
+        'OAK': {
+            'name': 'Oakland, West',
+            'lat_lon': '37.812088988762454,-122.29942506950347'
         },
         'SJC': {
             'name': 'Santa Jose, Downtown',
@@ -255,9 +255,9 @@ LOCATIONS = {
             'name': 'Menlo Park, West MP',
             'lat_lon': '37.431029416205284,-122.20217060835637'
         },
-        'BER': {
-            'name': 'Berkeley, Downtown',
-            'lat_lon': '37.87075376688075,-122.27199562287598'
+        'RWC': {
+            'name': 'Redwood City, Oxford',
+            'lat_lon': '37.46947269135535,-122.2284655255091'
         },
         'CPA': {
             'name': 'Capitola, Mall',
@@ -267,6 +267,14 @@ LOCATIONS = {
             'name': 'Pacifica, Linda Mar',
             'lat_lon': '37.594122784571354,-122.5015289019967'
         },
+        # 'BER': {
+        #     'name': 'Berkeley, Downtown',
+        #     'lat_lon': '37.87075376688075,-122.27199562287598'
+        # },
+        # 'SCU': {
+        #     'name': 'Santa Clara, SCU',
+        #     'lat_lon': '37.34887015070597,-121.94401506069336'
+        # },
         # 'FEL': {
         #     'name': 'Felton, Downtown',
         #     'lat_lon': '37.05131035573837,-122.07406272553854'

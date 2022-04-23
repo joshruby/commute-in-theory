@@ -22,16 +22,15 @@ const locations = {
             name: 'Santa Cruz, Downtown',
             lat_lon: '36.974797779340655,-122.0290861946705'
         },
-  
         CAM: {
             code: 'CAM',
             name: 'Campbell, Downtown',
             lat_lon: '37.28750197556045,-121.94487365182788'
         },
-        SCU: {
-            code: 'SCU',
-            name: 'Santa Clara, SCU',
-            lat_lon: '37.34887015070597,-121.94401506069336'
+        OAK: {
+            code: 'OAK',
+            name: 'Oakland, West',
+            lat_lon: '37.812088988762454,-122.29942506950347'
         },
         SJC: {
             code: 'SJC',
@@ -53,10 +52,10 @@ const locations = {
             name: 'Menlo Park, West MP',
             lat_lon: '37.431029416205284,-122.20217060835637'
         },
-        BER: {
-            code: 'BER',
-            name: 'Berkeley, Downtown',
-            lat_lon: '37.87075376688075,-122.27199562287598'
+        RWC: {
+            code: 'RWC',
+            name: 'Redwood City, Oxford',
+            lat_lon: '37.46947269135535,-122.2284655255091'
         },
         CPA: {
             code: 'CPA',
@@ -68,6 +67,16 @@ const locations = {
             name: 'Pacifica, Linda Mar',
             lat_lon: '37.594122784571354,-122.5015289019967'
         },
+        // BER: {
+        //     code: 'BER',
+        //     name: 'Berkeley, Downtown',
+        //     lat_lon: '37.87075376688075,-122.27199562287598'
+        // },
+        // SCU: {
+        //     code: 'SCU',
+        //     name: 'Santa Clara, SCU',
+        //     lat_lon: '37.34887015070597,-121.94401506069336'
+        // },
         // FEL: {
         //     code: 'FEL',
         //     name: 'Felton, Downtown',
