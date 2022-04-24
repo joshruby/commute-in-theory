@@ -1,5 +1,4 @@
 <script>
-	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommuteStats } from '$lib/stores/CommuteStore'
 

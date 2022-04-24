@@ -255,16 +255,14 @@
     });
 </script>
 
-<div class="grid place-items-center p-4 bg-white border rounded-3xl shadow-sm">
-    <div class="flex items-center justify-around w-full mb-4">
-        <div>
-            <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
-        </div>
-        <!-- <div>
-            <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
-        </div> -->
+<div class="flex items-center justify-around w-full mb-4">
+    <div>
+        <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
     </div>
-    <div id="comparison chart">
-        <!-- Plotly chart will be drawn inside this DIV -->
-    </div>
+    <!-- <div>
+        <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
+    </div> -->
+</div>
+<div id="comparison chart">
+    <!-- Plotly chart will be drawn inside this DIV -->
 </div>

@@ -9,9 +9,11 @@
 	import { onMount } from 'svelte';
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
-	import CityPairChart from '$lib/components/CityPairChart.svelte';
+	import ChartCard from '$lib/components/ChartCard.svelte';
 	import CityPairComparisonChart from '$lib/components/CityPairComparisonChart.svelte';
-	import data from './commutes.json'
+	import CityPairScatterChart from '$lib/components/CityPairScatterChart.svelte';
+	import CityPairHeatmapChart from '$lib/components/CityPairHeatmapChart.svelte';
+	// import data from './commutes.json'
 
 	async function getCommutes(cityPair, dateLimits) {
 		//////   Online   ////////////////////////////////////////////////////
@@ -222,13 +224,14 @@
 	$: {
 	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
 	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-		console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
+		// console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
 		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
 	}
 </script>
 
 <div bind:clientWidth={containerWidth}>
 	<div class="grid grid-cols-1 place-items-center gap-4">	
+		<!-- Show a waiting spinner until ProcessedCommuteStats is occupied -->
 		{#if Object($ProcessedCommuteStats).length == 0}
 			<div class="p-4 border rounded-2xl shadow-sm bg-white">
 				<svg role="status" class="inline w-6 h-6 mr-2 text-gray-200 fill-baby-blue animate-spin" viewBox="0 0 100 101" fill="black">
@@ -240,12 +243,18 @@
 		{/if}
 
 		{#if selectedCityPairs.length > 0}
-			<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
+			<ChartCard>
+				<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
+			</ChartCard>	
 		{/if}
 
 		{#each $CityPairs as cityPair}
 			{#if cityPair.routes.forward in $ProcessedCommuteStats}
-				<CityPairChart {cityPair} {chartWidth} {chartHeight} />
+				<ChartCard>
+					<CityPairScatterChart {cityPair} {chartWidth} {chartHeight} />
+					<div class="my-8 border-b w-3/4"></div>
+					<CityPairHeatmapChart {cityPair} {chartWidth} {chartHeight} />
+				</ChartCard>	
 			{/if}
 		{/each}
 	</div>

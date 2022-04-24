@@ -1,12 +1,9 @@
 <script>
-	// import Plotly from 'plotly.js-dist';
 	import { afterUpdate } from 'svelte';
     import { ProcessedCommutes, ProcessedCommuteStats } from '$lib/stores/CommuteStore'
     import WeekdaySelector from '$lib/components/WeekdaySelector.svelte';
-    import CityPairHeatmapChart from '$lib/components/CityPairHeatmapChart.svelte';
 
     export let chartWidth;
-    $: console.log(chartWidth)
     export let chartHeight;
     export let cityPair;
 
@@ -283,18 +280,15 @@
     });
 </script>
 
-<div class="grid place-items-center p-4 bg-white border rounded-3xl shadow-sm">
-    <div class="flex items-center justify-around w-full mb-4">
-        <div>
-            <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
-        </div>
-        <!-- <div>
-            <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
-        </div> -->
+<div class="flex items-center justify-around w-full mb-4">
+    <div>
+        <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
     </div>
-    <div id={`scatterplot-${cityPair.home.code}-${cityPair.work.code}`}>
-        <!-- Plotly chart will be drawn inside this DIV -->
-    </div>
-    <div class="my-8 border-b w-3/4"></div>
-    <CityPairHeatmapChart {cityPair} {chartWidth} {chartHeight} />
+    <!-- <div>
+        <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
+    </div> -->
 </div>
+<div id={`scatterplot-${cityPair.home.code}-${cityPair.work.code}`}>
+    <!-- Plotly chart will be drawn inside this DIV -->
+</div>
+
