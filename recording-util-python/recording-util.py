@@ -71,13 +71,11 @@ def recordCommute(commute_request):
         'travelTimeInSeconds': summary['travelTimeInSeconds']
     }
 
-
 def connect_to_db(collection):
     client = MongoClient(config.MONGODB_URI)
     db = client.get_database()
 
     return db[collection]
-
 
 def compute_summary_stats(collection):
     collection = connect_to_db(collection)
@@ -89,35 +87,20 @@ def compute_summary_stats(collection):
             '_id': 0,
             'origin': 1,
             'destination': 1,
-            "departureTime": 1,
-            "departureTimeLocalizedSimplified.hour": 1,
-            "departureTimeLocalizedSimplified.minute": 1,
+            'departureTime': 1,
             'travelTimeInSeconds': 1
         }
     ))
 
     for doc in docs:
         # Flatten the nested "departureTimeLocalizedSimplified" obj field
-        dep_time_localized_simplified = \
-            doc.pop('departureTimeLocalizedSimplified', None)
         doc['departureHour'] = \
-            dep_time_localized_simplified['hour']
+            TZ_LA.fromutc(doc['departureTime']).hour
         doc['departureMinute'] = \
-            dep_time_localized_simplified['minute']
+            TZ_LA.fromutc(doc['departureTime']).minute
 
         # Add a column for the day of the week
-        if doc['departureTime'].hour >= 14:
-            weekday = doc['departureTime'].weekday()
-            doc['departureWeekday'] = doc['departureTime'].weekday()
-        else:
-            # Roll the day back by one since a commute with timestamp
-            # 2022-02-05 04:00 UTC was recorded at 2022-02-04 16:00 PST   
-            weekday = doc['departureTime'].weekday() - 1
-            # If the result of rolling back the day makes the weekday negative,
-            # reset weekday to the highest value (6 == Sunday)
-            if weekday == -1:
-                weekday = 6
-        doc['departureWeekday'] = weekday
+        doc['departureWeekday'] = TZ_LA.fromutc(doc['departureTime']).weekday()
 
     # Create a df with the docs
     df = pd.DataFrame(docs)
