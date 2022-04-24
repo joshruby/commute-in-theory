@@ -344,6 +344,9 @@ if __name__ == "__main__":
                 # POST the summaries to the db if any summaries are returned
                 if summaries:
                     collection = connect_to_db('commute_stats')
+                    # Delete the previous statistics
+                    collection.drop()
+                    # Insert the new statistics
                     collection.insert_many(summaries)
 
                 # Ensure this block only runs once
