@@ -347,7 +347,7 @@ if __name__ == "__main__":
             time.sleep(60)
 
         # Summarize the recorded commutes once weekly
-        if weekday == 0 and hour == 0 and minute == 0:
+        if weekday == 6 and hour == 21 and minute == 30:
             try:
                 # Summarize the commutes
                 summaries = compute_summary_stats('commutes')
