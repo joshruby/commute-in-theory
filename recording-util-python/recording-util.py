@@ -80,9 +80,20 @@ def connect_to_db(collection):
 def compute_summary_stats(collection):
     collection = connect_to_db(collection)
 
-    # Query all of the documents
+    # Query the documents recorded in the last n months
+    limit_month = datetime.now().month - 3
+    limit_year = datetime.now().year
+    # Handle wrapping around from Jan to the previous year
+    if limit_month < 1:
+        # E.g. is limit_month == -1 it should be redefined as 11
+        limit_month = 12 + limit_month
+        # Roll back the year
+        limit_year = limit_year - 1
+    limit_date = datetime.now().replace(year=limit_year, month=limit_month)
     docs = list(collection.find(
-        {},
+        {
+            'departureTime': {'$gte': limit_date}
+        },
         {
             '_id': 0,
             'origin': 1,
