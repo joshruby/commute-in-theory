@@ -1,14 +1,13 @@
 <!-- TODO
-	- Show a dynamic correlation chart between time of day and commute time
-		- Use a slider or series of 7 radio buttons to control the day of the week
-
+	- 3D time series: travel time by departure time by week
 	- Properly scope grouped inputs
 -->
 
 <script>
-	import { onMount } from 'svelte';
+	import { beforeUpdate } from 'svelte';
 	import { ProcessedCommutes, UnprocessedCommutes, CommuteCount, UnprocessedCommuteStats, ProcessedCommuteStats } from '$lib/stores/CommuteStore';
 	import { CityPairs } from '$lib/stores/LocationStore';
+	import HomeCitySelector from '$lib/components/HomeCitySelector.svelte';
 	import ChartCard from '$lib/components/ChartCard.svelte';
 	import CityPairComparisonChart from '$lib/components/CityPairComparisonChart.svelte';
 	import CityPairScatterChart from '$lib/components/CityPairScatterChart.svelte';
@@ -192,70 +191,63 @@
 	$: chartWidth = containerWidth > 1024 ? 1024 : (containerWidth - 60)
 	let chartHeight = 400;
 
-	onMount(async () => {
-		for (const home of ['SCZ', 'LGS', 'PCA', 'SFP']) {
-			await getCommuteStats({ home, work: 'CUP' })
-		}
-		processCommuteStats();
-	});
-	
-	// getCommutes(
-	// 	{
-	// 		home: 'SCZ',
-	// 		work: 'CUP'
-	// 	},
-	// 	{
-	// 		lower: new Date(2022, 1, 0, 0),
-	// 		upper: new Date() 
-	// 	}
-	// )
-	// processCommutes();
-
 	let selectedCityPairs = [];
-	$: {
-		selectedCityPairs = $CityPairs.filter(
-			cityPair => cityPair.routes.forward in $ProcessedCommuteStats
+	let selectedHomeCityCodes = [];
+	let prevSelectedHomeCityCodes = [];
+	let newSelectedHomeCityCodes = [];
+	beforeUpdate(() => {
+		// console.log('selectedHomeCityCodes', selectedHomeCityCodes)
+		// Determine which of the home city code selections is new
+		newSelectedHomeCityCodes = selectedHomeCityCodes.filter(
+			ele => !prevSelectedHomeCityCodes.includes(ele)
 		);
-		// Only show the first 6 pairs
-		selectedCityPairs = selectedCityPairs.slice(0, 6)
-	}
-	
-	// Debugging
-	$: {
-	// 	console.log('$UnprocessedCommutes: ', $UnprocessedCommutes)
-	// 	console.log('$ProcessedCommutes: ', $ProcessedCommutes)
-		// console.log('$UnprocessedCommuteStats length: ', $UnprocessedCommuteStats.length)
-		console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
-	}
+		// console.log('newSelectedHomeCityCodes', newSelectedHomeCityCodes)
+		prevSelectedHomeCityCodes = selectedHomeCityCodes;
+
+		selectedCityPairs = $CityPairs.filter(
+			cityPair => cityPair.work.code === 'CUP' 
+						&& selectedHomeCityCodes.includes(cityPair.home.code)
+		);
+		// console.log('selectedCityPairs', selectedCityPairs)
+
+		const work = 'CUP';
+		for (const home of newSelectedHomeCityCodes) {
+			// Fetch commute stats for this cityPair if they aren't already
+			// in the stats store
+			if (!$ProcessedCommuteStats.hasOwnProperty(`${home}-${work}`)) {
+				// console.log('Getting stats for', home);
+				getCommuteStats({ home, work })
+			}
+
+			// Remove the current home code from the new home codes array
+			// so it doesn't get processed multiple times before its promise is resolved
+			newSelectedHomeCityCodes = newSelectedHomeCityCodes.filter(
+				ele => ele !== home
+			)
+		}
+
+		processCommuteStats();
+		// console.log('$ProcessedCommuteStats: ', $ProcessedCommuteStats)
+		// console.log('')
+	})
 </script>
 
 <div bind:clientWidth={containerWidth}>
 	<div class="grid grid-cols-1 place-items-center gap-4">	
-		<!-- Show a waiting spinner until ProcessedCommuteStats is occupied -->
-		{#if Object($ProcessedCommuteStats).length == 0}
-			<div class="p-4 border rounded-2xl shadow-sm bg-white">
-				<svg role="status" class="inline w-6 h-6 mr-2 text-gray-200 fill-baby-blue animate-spin" viewBox="0 0 100 101" fill="black">
-					<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-					<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-				</svg>
-				<span class="text-lg text-gray-400 align-top">Loading...</span>
-			</div>
-		{/if}
+		<HomeCitySelector bind:selectedCities={selectedHomeCityCodes} />
 
 		{#if selectedCityPairs.length > 0}
 			<ChartCard>
 				<CityPairComparisonChart cityPairs={selectedCityPairs} {chartWidth} {chartHeight} />
 			</ChartCard>	
-		{/if}
 
-		{#each $CityPairs as cityPair}
-			{#if cityPair.routes.forward in $ProcessedCommuteStats}
+			{#each selectedCityPairs as cityPair}
 				<ChartCard>
 					<CityPairScatterChart {cityPair} {chartWidth} {chartHeight} />
 					<div class="my-8 border-b w-3/4"></div>
 					<CityPairHeatmapChart {cityPair} {chartWidth} {chartHeight} />
 				</ChartCard>	
-			{/if}
-		{/each}
+			{/each}
+		{/if}
 	</div>
 </div>

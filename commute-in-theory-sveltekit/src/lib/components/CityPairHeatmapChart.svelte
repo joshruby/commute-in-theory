@@ -55,42 +55,54 @@
                 hoverinfo: 'text',
             };
 
-            // Retrive the commutes from the store
-            const commuteStats = $ProcessedCommuteStats[route]
+            if (route in $ProcessedCommuteStats === false) {
+                    console.log(route, 'continued (data not available yet)');
+                    continue;
+            } else {
+                // Retrive the commutes from the store
+                const commuteStats = $ProcessedCommuteStats[route];
 
-            // Create a list of departure times for the x axis
-            commuteStats.forEach((ele) => {
-                routeData.x.push(
-                    // Use a constant date for each departure time
-                    new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
-                );
-            });
-
-            // Build up the data
-            weekdays.forEach((weekday) => {
-                // Make a row for each day of the week
-                let weekdayData = []
-
+                // Create a list of departure times for the x axis
                 commuteStats.forEach((ele) => {
-                    weekdayData.push(
-                        (ele.statsByWeekdayInSeconds[weekday].quantiles[percentile] / 60)
+                    routeData.x.push(
+                        // Use a constant date for each departure time
+                        new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
                     );
                 });
 
-                // Push the weekday row onto data
-                routeData.z.push(weekdayData)
-            });
+                // Build up the data
+                weekdays.forEach((weekday) => {
+                    // Make a row for each day of the week
+                    let weekdayData = []
 
-            routeData.text = routeData.z.map((row, i) => row.map((item, j) => {
-                let weekday = routeData.y[i]
-                let hr = routeData.x[j].getHours().toString().padStart(2, '0')
-                let min = routeData.x[j].getMinutes().toString().padStart(2, '0')
-                let time = hr + ':' + min
-                return `${weekday} ${time}<br>` 
-                    + `${~~item} min (${percentile}th Percentile)`
-            }))
+                    commuteStats.forEach((ele) => {
+                        try {
+                            weekdayData.push(
+                                (ele.statsByWeekdayInSeconds[weekday].quantiles[percentile] / 60)
+                            );
+                        } catch {
+                            // Account for missing data
+                            weekdayData.push(null)
+                            console.log(ele)
+                        }
+                    });
 
-            data.push(routeData)
+                    // Push the weekday row onto data
+                    routeData.z.push(weekdayData)
+                });
+
+                // Generate a 2D array of hover labels
+                routeData.text = routeData.z.map((row, i) => row.map((item, j) => {
+                    let weekday = routeData.y[i]
+                    let hr = routeData.x[j].getHours().toString().padStart(2, '0')
+                    let min = routeData.x[j].getMinutes().toString().padStart(2, '0')
+                    let time = hr + ':' + min
+                    return `${weekday} ${time}<br>` 
+                        + `${~~item} min (${percentile}th Percentile)`
+                }))
+
+                data.push(routeData)
+            }
         }
 
         const xTitle = 'Departure Time';

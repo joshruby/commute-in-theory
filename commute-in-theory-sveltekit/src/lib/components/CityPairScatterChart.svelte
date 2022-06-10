@@ -27,151 +27,157 @@
         let traceColor = '#a4c2f4';
 
         for (const [direction, route] of Object.entries(cityPair.routes)) {
-            // Assign plot sub axis labels
-            let xaxis;
-            let yaxis;
-            switch (direction) {
-                case 'forward':
-                    xaxis = 'x';
-                    yaxis = 'y';
-                    break;
-                case 'reverse':
-                    xaxis = 'x2';
-                    yaxis = 'y2'; 
-            }
-
             // Retrive the commutes from the store
-            const commuteStats = $ProcessedCommuteStats[route]
-
-            // Quantile traces
-            // Append the traces in logical order so fill "tonexty" can be used
-            const quantiles = [10, 90, 25, 75, 50]
-            for (const q of quantiles) {
-                // Plot a line for the median and shade between the 10-90 and 25-75 quantiles
-                let fill = 'none';
-                let mode = 'none';
-                let line = 'none';
-                let fillcolor = 'none';
-                if (q == 50) {
-                    mode = 'lines';
-                    line = { shape: 'spline', width: 3, color: traceColor};
-                } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
-                    line = { shape: 'spline', width: 0, color: traceColor };
-                    
-                    if (q == 75) {
-                        fill = 'tonexty';
-                        fillcolor = traceColor + '60';
-                    } else if (q == 90) {
-                        fill = 'tonexty';
-                        fillcolor = traceColor + '40';
-                    }
+            if (route in $ProcessedCommuteStats === false) {
+                    console.log(route, 'continued (data not available yet)');
+                    continue;
+            } else {
+                const commuteStats = $ProcessedCommuteStats[route]
+            
+                // Assign plot sub axis labels
+                let xaxis;
+                let yaxis;
+                switch (direction) {
+                    case 'forward':
+                        xaxis = 'x';
+                        yaxis = 'y';
+                        break;
+                    case 'reverse':
+                        xaxis = 'x2';
+                        yaxis = 'y2'; 
                 }
 
-                // Make a trace for each quantile in the list (really they're percentiles)
-                let trace = {
-                    x: [],
-                    y: [],
-                    // mode,
-                    line,
-                    fill,
-                    fillcolor,
-                    name: `${q}th Percentile`,
-                    hovertemplate: '%{y:.0f} min',
-                    xaxis: xaxis,
-                    yaxis: yaxis
-                };
 
-                commuteStats.forEach((ele) => {
-                    trace.x.push(
-                        // Use a constant date for each departure time
-                        new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
-                    );
-                    trace.y.push(
-                        ele.statsByWeekdayInSeconds[weekday].quantiles[q.toString()] / 60
-                    );
-                });
-
-                // Add the trace to the list of traces
-                data.push(trace);
-            }
-             
-            // Min and max traces
-            // for (const extreme of ['min', 'max']) {
-            //     // Make a trace for each quantile
-            //     let trace = {
-            //         x: [],
-            //         y: [],
-            //         line: { dash: 'dot', shape: 'spline', width: 1, color: traceColor + 'b0' },
-            //         name: `${extreme}`,
-            //         hovertemplate: '%{y:.0f} min',
-            //         xaxis: xaxis,
-            //         yaxis: yaxis
-            //     };
-
-            //     commuteStats.forEach((ele) => {
-            //         trace.x.push(
-            //             // Use a constant date for each departure time
-            //             new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
-            //         );
-            //         trace.y.push(
-            //             ele.statsByWeekdayInSeconds[weekday][extreme] / 60
-            //         );
-            //     });
-
-            //     // Add the trace to the list of traces
-            //     data.push(trace);
-            // }
-
-            // Raw data traces
-            if (showRaw === true) {
-                // Retrive the commutes from the store
-                const commutes = $ProcessedCommutes[route].grouped.byDate
-
-                // Make a trace for each day of recordings 
-                for (const [date, recordings] of Object.entries(commutes)) {
-                    let traceColor;
-                    let legendgroup;
-                    
-                    if (date.includes('Sat') || date.includes('Sun')){
-                        traceColor = '#c8c8c8';
-                        legendgroup = `Weekends - ${route}`;
-                    } else {
-                        legendgroup = `Weekdays - ${route}`
+                // Quantile traces
+                // Append the traces in logical order so fill "tonexty" can be used
+                const quantiles = [10, 90, 25, 75, 50]
+                for (const q of quantiles) {
+                    // Plot a line for the median and shade between the 10-90 and 25-75 quantiles
+                    let fill = 'none';
+                    let mode = 'none';
+                    let line = 'none';
+                    let fillcolor = 'none';
+                    if (q == 50) {
+                        mode = 'lines';
+                        line = { shape: 'spline', width: 3, color: traceColor};
+                    } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
+                        line = { shape: 'spline', width: 0, color: traceColor };
+                        
+                        if (q == 75) {
+                            fill = 'tonexty';
+                            fillcolor = traceColor + '60';
+                        } else if (q == 90) {
+                            fill = 'tonexty';
+                            fillcolor = traceColor + '40';
+                        }
                     }
 
+                    // Make a trace for each quantile in the list (really they're percentiles)
                     let trace = {
                         x: [],
                         y: [],
-                        mode: 'lines',
-                        // marker: {
-                        //     traceColor: traceColor,
-                        //     size: 5
-                        // },
-                        line: {
-                            shape: 'spline',
-                            width: 1,
-                            traceColor: traceColor,
-                        },
-                        opacity: 0.4,
-                        name: `${date}`,
+                        // mode,
+                        line,
+                        fill,
+                        fillcolor,
+                        name: `${q}th Percentile`,
                         hovertemplate: '%{y:.0f} min',
-                        legendgroup: legendgroup,
                         xaxis: xaxis,
                         yaxis: yaxis
                     };
-                    recordings.forEach((recording) => {
+
+                    commuteStats.forEach((ele) => {
                         trace.x.push(
-                            recording.departureTimeConstDate
+                            // Use a constant date for each departure time
+                            new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
                         );
                         trace.y.push(
-                            recording.travelTimeInSeconds / 60
+                            ele.statsByWeekdayInSeconds[weekday].quantiles[q.toString()] / 60
                         );
                     });
+
+                    // Add the trace to the list of traces
                     data.push(trace);
                 }
                 
-                // Change the hovermode
-                hovermode='closest'
+                // Min and max traces
+                // for (const extreme of ['min', 'max']) {
+                //     // Make a trace for each quantile
+                //     let trace = {
+                //         x: [],
+                //         y: [],
+                //         line: { dash: 'dot', shape: 'spline', width: 1, color: traceColor + 'b0' },
+                //         name: `${extreme}`,
+                //         hovertemplate: '%{y:.0f} min',
+                //         xaxis: xaxis,
+                //         yaxis: yaxis
+                //     };
+
+                //     commuteStats.forEach((ele) => {
+                //         trace.x.push(
+                //             // Use a constant date for each departure time
+                //             new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
+                //         );
+                //         trace.y.push(
+                //             ele.statsByWeekdayInSeconds[weekday][extreme] / 60
+                //         );
+                //     });
+
+                //     // Add the trace to the list of traces
+                //     data.push(trace);
+                // }
+
+                // Raw data traces
+                if (showRaw === true) {
+                    // Retrive the commutes from the store
+                    const commutes = $ProcessedCommutes[route].grouped.byDate
+
+                    // Make a trace for each day of recordings 
+                    for (const [date, recordings] of Object.entries(commutes)) {
+                        let traceColor;
+                        let legendgroup;
+                        
+                        if (date.includes('Sat') || date.includes('Sun')){
+                            traceColor = '#c8c8c8';
+                            legendgroup = `Weekends - ${route}`;
+                        } else {
+                            legendgroup = `Weekdays - ${route}`
+                        }
+
+                        let trace = {
+                            x: [],
+                            y: [],
+                            mode: 'lines',
+                            // marker: {
+                            //     traceColor: traceColor,
+                            //     size: 5
+                            // },
+                            line: {
+                                shape: 'spline',
+                                width: 1,
+                                traceColor: traceColor,
+                            },
+                            opacity: 0.4,
+                            name: `${date}`,
+                            hovertemplate: '%{y:.0f} min',
+                            legendgroup: legendgroup,
+                            xaxis: xaxis,
+                            yaxis: yaxis
+                        };
+                        recordings.forEach((recording) => {
+                            trace.x.push(
+                                recording.departureTimeConstDate
+                            );
+                            trace.y.push(
+                                recording.travelTimeInSeconds / 60
+                            );
+                        });
+                        data.push(trace);
+                    }
+                    
+                    // Change the hovermode
+                    hovermode='closest'
+                }
             }
         }
 
