@@ -22,6 +22,7 @@ def recordCommute(commute_request):
     origin = commute_request['origin'][1]
     destination_id = commute_request['destination'][0]
     destination = commute_request['destination'][1]
+    locality = commute_request['locality']
     hour = commute_request['hour']
     minute = commute_request['minute']
 
@@ -66,6 +67,7 @@ def recordCommute(commute_request):
     return {
         'origin': origin_id,
         'destination': destination_id,
+        'locality': locality,
         'departureTime': departure_time,
         'departureTimeLocalizedSimplified': {'hour': hour, 'minute': minute},
         'travelTimeInSeconds': summary['travelTimeInSeconds']
@@ -98,6 +100,7 @@ def compute_summary_stats(collection):
             '_id': 0,
             'origin': 1,
             'destination': 1,
+            'locality': 1,
             'departureTime': 1,
             'travelTimeInSeconds': 1
         }
@@ -129,162 +132,204 @@ def compute_summary_stats(collection):
     )
 
     summaries = []
-    for work in LOCATIONS['work'].keys():
-        if work in df['origin'].unique() and work in df['destination'].unique():
-            for home in LOCATIONS['home'].keys():
-                if home in df['origin'].unique() and home in df['destination'].unique():
-                    pairs = [(work, home), (home, work)]  
+    for locality in LOCATIONS.keys():
+        for work in LOCATIONS[locality]['work'].keys():
+            if work in df['origin'].unique() and work in df['destination'].unique():
+                for home in LOCATIONS[locality]['home'].keys():
+                    if home in df['origin'].unique() and home in df['destination'].unique():
+                        pairs = [(work, home), (home, work)]
 
-                    for p in pairs:
-                        for hour in df['departureHour'].unique():
-                            for minute in df['departureMinute'].unique():
-                                stats_by_weekday = {}
-                                # Filter the df
-                                for day_num, day_name in enumerate(WEEKDAYS):
-                                    # Each weekday individually
-                                    if day_num <= 6:
-                                        route_df = df.loc[
-                                            (df['origin']==p[0]) & 
-                                            (df['destination']==p[1]) &
-                                            (df['departureWeekday']==day_num) &
-                                            (df['departureHour']==hour) & 
-                                            (df['departureMinute']==minute)
-                                        ]
-                                    # Business days
-                                    elif day_num == 7:
-                                        route_df = df.loc[
-                                            (df['origin']==p[0]) & 
-                                            (df['destination']==p[1]) &
-                                            (df['departureWeekday'].isin([0, 1, 2, 3, 4])) &
-                                            (df['departureHour']==hour) & 
-                                            (df['departureMinute']==minute)
-                                        ]
-                                    # Weekends
-                                    elif day_num == 8:
-                                        route_df = df.loc[
-                                            (df['origin']==p[0]) & 
-                                            (df['destination']==p[1]) &
-                                            (df['departureWeekday'].isin([5, 6])) &
-                                            (df['departureHour']==hour) & 
-                                            (df['departureMinute']==minute)
-                                        ]
-                                    # All weekdays together
-                                    elif day_num == 9:
-                                        route_df = df.loc[
-                                            (df['origin']==p[0]) & 
-                                            (df['destination']==p[1]) &
-                                            (df['departureHour']==hour) & 
-                                            (df['departureMinute']==minute)
-                                        ]
+                        for p in pairs:
+                            for hour in df['departureHour'].unique():
+                                for minute in df['departureMinute'].unique():
+                                    stats_by_weekday = {}
+                                    # Filter the df
+                                    for day_num, day_name in enumerate(WEEKDAYS):
+                                        # Each weekday individually
+                                        if day_num <= 6:
+                                            route_df = df.loc[
+                                                (df['origin']==p[0]) & 
+                                                (df['destination']==p[1]) &
+                                                (df['departureWeekday']==day_num) &
+                                                (df['departureHour']==hour) & 
+                                                (df['departureMinute']==minute)
+                                            ]
+                                        # Business days
+                                        elif day_num == 7:
+                                            route_df = df.loc[
+                                                (df['origin']==p[0]) & 
+                                                (df['destination']==p[1]) &
+                                                (df['departureWeekday'].isin([0, 1, 2, 3, 4])) &
+                                                (df['departureHour']==hour) & 
+                                                (df['departureMinute']==minute)
+                                            ]
+                                        # Weekends
+                                        elif day_num == 8:
+                                            route_df = df.loc[
+                                                (df['origin']==p[0]) & 
+                                                (df['destination']==p[1]) &
+                                                (df['departureWeekday'].isin([5, 6])) &
+                                                (df['departureHour']==hour) & 
+                                                (df['departureMinute']==minute)
+                                            ]
+                                        # All weekdays together
+                                        elif day_num == 9:
+                                            route_df = df.loc[
+                                                (df['origin']==p[0]) & 
+                                                (df['destination']==p[1]) &
+                                                (df['departureHour']==hour) & 
+                                                (df['departureMinute']==minute)
+                                            ]
 
-                                    if not route_df.empty:
-                                        quantiles = route_df['travelTimeInSeconds'].quantile(
-                                            [0.1, 0.25, 0.5, 0.75, 0.9]
-                                        )
+                                        if not route_df.empty:
+                                            quantiles = route_df['travelTimeInSeconds'].quantile(
+                                                [0.1, 0.25, 0.5, 0.75, 0.9]
+                                            )
 
-                                        stats_by_weekday[day_name] = {
-                                            'count': int(route_df['travelTimeInSeconds'].count()),
-                                            'min': int(route_df['travelTimeInSeconds'].min()),
-                                            'max': int(route_df['travelTimeInSeconds'].max()),
-                                            'mean': int(route_df['travelTimeInSeconds'].mean()),
-                                            'quantiles': {
-                                                '10': int(quantiles[0.10]),
-                                                '25': int(quantiles[0.25]),
-                                                '50': int(quantiles[0.50]),
-                                                '75': int(quantiles[0.75]),
-                                                '90': int(quantiles[0.90]),
+                                            stats_by_weekday[day_name] = {
+                                                'count': int(route_df['travelTimeInSeconds'].count()),
+                                                'min': int(route_df['travelTimeInSeconds'].min()),
+                                                'max': int(route_df['travelTimeInSeconds'].max()),
+                                                'mean': int(route_df['travelTimeInSeconds'].mean()),
+                                                'quantiles': {
+                                                    '10': int(quantiles[0.10]),
+                                                    '25': int(quantiles[0.25]),
+                                                    '50': int(quantiles[0.50]),
+                                                    '75': int(quantiles[0.75]),
+                                                    '90': int(quantiles[0.90]),
+                                                }
                                             }
-                                        }
 
-                                if stats_by_weekday:
-                                    # Append the completed summary to the list of summaries
-                                    summaries.append({
-                                        'computedAt': computed_at,
-                                        'origin': p[0],
-                                        'destination': p[1],
-                                        'departureHour': int(hour),
-                                        'departureMinute': int(minute),
-                                        'statsByWeekdayInSeconds': stats_by_weekday
-                                    })
+                                    if stats_by_weekday:
+                                        # Append the completed summary to the list of summaries
+                                        summaries.append({
+                                            'computedAt': computed_at,
+                                            'origin': p[0],
+                                            'destination': p[1],
+                                            'locality': locality,
+                                            'departureHour': int(hour),
+                                            'departureMinute': int(minute),
+                                            'statsByWeekdayInSeconds': stats_by_weekday
+                                        })
 
     return summaries
 
 LOCATIONS = {
-    'work': {
-        'CUP': {
-            'name': 'Cupertino, MA',
-            'lat_lon': '37.330227595678146,-122.03281591229046'
+    'Bay Area': {
+        'work': {
+            'CUP': {
+                'name': 'Cupertino, MA',
+                'lat_lon': '37.330227595678146,-122.03281591229046'
+            }
         },
-        'STA': {
-            'name': 'Stanford, Roble Field',
-            'lat_lon': '37.42666339942809,-122.17649144765893'
-        },
+        'home': {
+            'SCZ': {
+                'name': 'Santa Cruz, Downtown',
+                'lat_lon': '36.974797779340655,-122.0290861946705'
+            },
+            'OAK': {
+                'name': 'Oakland, West',
+                'lat_lon': '37.812088988762454,-122.29942506950347'
+            },
+            'SJC': {
+                'name': 'Santa Jose, Downtown',
+                'lat_lon': '37.33481534485126,-121.88822099401446'
+            },
+            'SFP': {
+                'name': 'San Francisco, Pacific Heights',
+                'lat_lon': '37.79427344559132,-122.43493160658136'
+            },
+            'LGS': {
+                'name': 'Los Gatos, Downtown',
+                'lat_lon': '37.22473891235269,-121.98375589032867'
+            },
+            'RWC': {
+                'name': 'Redwood City, Oxford',
+                'lat_lon': '37.46947269135535,-122.2284655255091'
+            },
+            'PCA': {
+                'name': 'Pacifica, Linda Mar',
+                'lat_lon': '37.594122784571354,-122.5015289019967'
+            },
+            # 'CAM': {
+            #     'name': 'Campbell, Downtown',
+            #     'lat_lon': '37.28750197556045,-121.94487365182788'
+            # },
+            # 'MLP': {
+            #     'name': 'Menlo Park, West MP',
+            #     'lat_lon': '37.431029416205284,-122.20217060835637'
+            # },
+            # 'CPA': {
+            #     'name': 'Capitola, Mall',
+            #     'lat_lon': '36.97371780004841,-121.95931307716036'
+            # },
+            # 'BER': {
+            #     'name': 'Berkeley, Downtown',
+            #     'lat_lon': '37.87075376688075,-122.27199562287598'
+            # },
+            # 'SCU': {
+            #     'name': 'Santa Clara, SCU',
+            #     'lat_lon': '37.34887015070597,-121.94401506069336'
+            # },
+            # 'FEL': {
+            #     'name': 'Felton, Downtown',
+            #     'lat_lon': '37.05131035573837,-122.07406272553854'
+            # },
+            # 'WLG': {
+            #     'name': 'Willow Glen, Doerr Park',
+            #     'lat_lon': '37.2739703906996,-121.91368527984521'
+            # },
+            # 'SFM': {
+            #     'name': 'San Francisco, Mission District',
+            #     'lat_lon': '37.75870633260038,-122.41794365829263'
+            # },
+            # 'MTV': {
+            #     'name': 'Mountain View, Shoreline',
+            #     'lat_lon': '37.403712687363814,-122.07814772790742'
+            # },
+        }
     },
-    'home': {
-        'SCZ': {
-            'name': 'Santa Cruz, Downtown',
-            'lat_lon': '36.974797779340655,-122.0290861946705'
+    'San Diego': {
+        'work': {
+            'RBO': {
+                'name': 'Rancho Bernardo, VF',
+                'lat_lon': '33.01199872926068,-117.09188697836275'
+            }
         },
-        'CAM': {
-            'name': 'Campbell, Downtown',
-            'lat_lon': '37.28750197556045,-121.94487365182788'
-        },
-        'OAK': {
-            'name': 'Oakland, West',
-            'lat_lon': '37.812088988762454,-122.29942506950347'
-        },
-        'SJC': {
-            'name': 'Santa Jose, Downtown',
-            'lat_lon': '37.33481534485126,-121.88822099401446'
-        },
-        'SFP': {
-            'name': 'San Francisco, Pacific Heights',
-            'lat_lon': '37.79427344559132,-122.43493160658136'
-        },
-        'LGS': {
-            'name': 'Los Gatos, Downtown',
-            'lat_lon': '37.22473891235269,-121.98375589032867'
-        },
-        'MLP': {
-            'name': 'Menlo Park, West MP',
-            'lat_lon': '37.431029416205284,-122.20217060835637'
-        },
-        'RWC': {
-            'name': 'Redwood City, Oxford',
-            'lat_lon': '37.46947269135535,-122.2284655255091'
-        },
-        'CPA': {
-            'name': 'Capitola, Mall',
-            'lat_lon': '36.97371780004841,-121.95931307716036'
-        },
-        'PCA': {
-            'name': 'Pacifica, Linda Mar',
-            'lat_lon': '37.594122784571354,-122.5015289019967'
-        },
-        # 'BER': {
-        #     'name': 'Berkeley, Downtown',
-        #     'lat_lon': '37.87075376688075,-122.27199562287598'
-        # },
-        # 'SCU': {
-        #     'name': 'Santa Clara, SCU',
-        #     'lat_lon': '37.34887015070597,-121.94401506069336'
-        # },
-        # 'FEL': {
-        #     'name': 'Felton, Downtown',
-        #     'lat_lon': '37.05131035573837,-122.07406272553854'
-        # },
-        # 'WLG': {
-        #     'name': 'Willow Glen, Doerr Park',
-        #     'lat_lon': '37.2739703906996,-121.91368527984521'
-        # },
-        # 'SFM': {
-        #     'name': 'San Francisco, Mission District',
-        #     'lat_lon': '37.75870633260038,-122.41794365829263'
-        # },
-        # 'MTV': {
-        #     'name': 'Mountain View, Shoreline',
-        #     'lat_lon': '37.403712687363814,-122.07814772790742'
-        # },
+        'home': {
+            'SAN': {
+                'name': 'San Diego Airport, T1 Ride Share',
+                'lat_lon': '32.73183061880728,-117.19766417435267'
+            },
+            'CLM': {
+                'name': 'Clairemont, Town Square',
+                'lat_lon': '32.8265288909409,-117.20598237549127'
+            },
+            'CBD': {
+                'name': 'Carlsbad, Village',
+                'lat_lon': '33.160773694686696,-117.34669932279765'
+            },
+            'NPK': {
+                'name': 'North Park',
+                'lat_lon': '32.750866591339886,-117.13018958965476'
+            },
+            'CDO': {
+                'name': 'Casa de Oro-Mount Helix',
+                'lat_lon': '32.767445120760335,-116.97276250515775'
+            },
+            'DMH': {
+                'name': 'Del Mar Heights',
+                'lat_lon': '32.95442922821245,-117.23444297327268'
+            },
+            'RPO': {
+                'name': 'Rancho Ponderosa',
+                'lat_lon': '33.070781939107064,-117.24470653655378'
+            },
+            'FBK': {
+                'name': 'Fallbrook, South',
+                'lat_lon': '33.317818161062206,-117.21989626093905'
+            }
+        }
     }
 }
 TZ_LA = pytz.timezone('America/Los_Angeles')
@@ -313,35 +358,37 @@ if __name__ == "__main__":
         if 6 <= hour <= 20 and minute in RECORDING_MINUTES:
             collection = connect_to_db(collection='commutes')
 
-            for wkey, wval in LOCATIONS['work'].items():
-                for hkey, hval in LOCATIONS['home'].items():
-                    pairs = [
-                        ((hkey, hval), (wkey, wval)),
-                        ((wkey, wval), (hkey, hval))
-                    ]
+            for locality in LOCATIONS.keys():
+                for wkey, wval in LOCATIONS[locality]['work'].items():
+                    for hkey, hval in LOCATIONS[locality]['home'].items():
+                        pairs = [
+                            ((hkey, hval), (wkey, wval)),
+                            ((wkey, wval), (hkey, hval))
+                        ]
 
-                    for p in pairs:
-                        try:
-                            # Retreive the commute info
-                            commute = recordCommute(
-                                {
-                                    'origin': p[0],
-                                    'destination': p[1],
-                                    'hour': hour,
-                                    'minute': minute
-                                }
-                            )
+                        for p in pairs:
+                            try:
+                                # Retreive the commute info
+                                commute = recordCommute(
+                                    {
+                                        'origin': p[0],
+                                        'destination': p[1],
+                                        'locality': locality,
+                                        'hour': hour,
+                                        'minute': minute
+                                    }
+                                )
 
-                            # POST the commute to mongodb
-                            collection.insert_one(commute)
+                                # POST the commute to mongodb
+                                collection.insert_one(commute)
 
-                            # Can't exceed 5 QPS for the TomTom Routing API
-                            # https://developer.tomtom.com/default-qps
-                            time.sleep(0.5)
-                        # Pass and log any exception
-                        except Exception as e:
-                            logging.error(repr(e))
-                            continue
+                                # Can't exceed 5 QPS for the TomTom Routing API
+                                # https://developer.tomtom.com/default-qps
+                                time.sleep(0.5)
+                            # Pass and log any exception
+                            except Exception as e:
+                                logging.error(repr(e))
+                                continue
 
             # Ensure another set of recordings doesn't immediately run
             time.sleep(60)
