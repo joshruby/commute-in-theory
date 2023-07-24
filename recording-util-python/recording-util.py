@@ -7,13 +7,14 @@ import requests
 from pymongo import MongoClient
 import config
 import pandas as pd
+import psutil
 
 FORMAT = "%(levelname)s - %(asctime)s - %(message)s"
 logging.basicConfig(
         filename='cit.log',
         filemode='w',
         format=FORMAT,
-        level=logging.ERROR)
+        level=logging.INFO)
 LOGGER = logging.getLogger()
 
 def recordCommute(commute_request):
@@ -104,6 +105,7 @@ def compute_summary_stats(collection):
             'travelTimeInSeconds': 1
         }
     ))
+    LOGGER.info(f'Number of docs received: {len(docs)}')
 
     for doc in docs:
         # Flatten the nested "departureTimeLocalizedSimplified" obj field
@@ -120,9 +122,11 @@ def compute_summary_stats(collection):
 
     # Sort the df by the origin and destination
     df = df.sort_values(by=['origin', 'destination'])
+    LOGGER.info(f'df memory usage: {df.memory_usage(deep=True).sum()}')
 
     # Note the time of computation
     computed_at = datetime.now()
+    LOGGER.info(f'Computed at (raw, local): {str(computed_at)}')
     computed_at = computed_at.replace(
         hour=0,
         minute=0,
@@ -136,6 +140,7 @@ def compute_summary_stats(collection):
             if work in df['origin'].unique() and work in df['destination'].unique():
                 for home in LOCATIONS[locality]['home'].keys():
                     if home in df['origin'].unique() and home in df['destination'].unique():
+                        ti_home = time.perf_counter()
                         pairs = [(work, home), (home, work)]
 
                         for p in pairs:
@@ -210,7 +215,13 @@ def compute_summary_stats(collection):
                                             'departureMinute': int(minute),
                                             'statsByWeekdayInSeconds': stats_by_weekday
                                         })
+                    
+                    tf_home = time.perf_counter()
+                    dt_home = round(tf_home - ti_home, 2)
+                    LOGGER.info(f'Time to compute {pairs}: {dt_home} s')
 
+
+    LOGGER.info(f'Process memory (rss): {psutil.Process().memory_info().rss}')
     return summaries
 
 LOCATIONS = {
