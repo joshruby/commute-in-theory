@@ -140,7 +140,7 @@ def compute_summary_stats(collection):
             if work in df['origin'].unique() and work in df['destination'].unique():
                 for home in LOCATIONS[locality]['home'].keys():
                     if home in df['origin'].unique() and home in df['destination'].unique():
-                        ti_home = time.perf_counter()
+                        ti_pairs = time.perf_counter()
                         pairs = [(work, home), (home, work)]
 
                         for p in pairs:
@@ -216,9 +216,9 @@ def compute_summary_stats(collection):
                                             'statsByWeekdayInSeconds': stats_by_weekday
                                         })
                     
-                    tf_home = time.perf_counter()
-                    dt_home = round(tf_home - ti_home, 2)
-                    LOGGER.info(f'Time to compute {pairs}: {dt_home} s')
+                        tf_pairs = time.perf_counter()
+                        dt_pairs = round(tf_pairs - ti_pairs, 2)
+                        LOGGER.info(f'Time to compute {pairs}: {dt_pairs} s')
 
 
     LOGGER.info(f'Process memory (rss): {psutil.Process().memory_info().rss}')
