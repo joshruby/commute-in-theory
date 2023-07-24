@@ -100,7 +100,6 @@ def compute_summary_stats(collection):
             '_id': 0,
             'origin': 1,
             'destination': 1,
-            'locality': 1,
             'departureTime': 1,
             'travelTimeInSeconds': 1
         }
