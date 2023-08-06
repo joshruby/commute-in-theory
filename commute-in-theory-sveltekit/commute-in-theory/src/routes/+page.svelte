@@ -1,2 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+
+<script>
+    import { ProcessedCommuteStats } from '$lib/Stores/CommuteStore';
+	export let data;
+
+    // Fetch the commute stats on load(), process them, and then
+    // set the ProcessedCommuteStats store
+    ProcessedCommuteStats.set(data.processedCommuteStats);
+</script>
+
+<h1>Hi</h1>
+
+{#each Object.keys($ProcessedCommuteStats) as key}
+    <li>{key}</li>
+{/each}
