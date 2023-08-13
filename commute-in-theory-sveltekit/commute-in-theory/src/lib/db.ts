@@ -68,7 +68,7 @@ export async function getStats() {
             .sort(sorting)
             .toArray()
 
-        return json({ stats }, { status: 201 });
+        return json(stats, { status: 201 });
     } catch(err) {
         return json(null, { status: 500 });
     }
