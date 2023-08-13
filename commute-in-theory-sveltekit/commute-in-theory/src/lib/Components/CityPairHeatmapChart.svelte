@@ -117,7 +117,6 @@
                 r: 0,
                 b: 60,
                 t: 30,
-                // pad: 4
             },
             xaxis: {
 				title: xTitle,

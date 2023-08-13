@@ -8,7 +8,6 @@
     export let cityPair;
 
     let weekdaySelection = 'Business';
-    let showRaw = false;
 
     $: titleSelection = chartWidth >= 1024 ? 'name' : 'code';
     $: titles = {
@@ -98,31 +97,31 @@
                 }
                 
                 // Min and max traces
-                // for (const extreme of ['min', 'max']) {
-                //     // Make a trace for each quantile
-                //     let trace = {
-                //         x: [],
-                //         y: [],
-                //         line: { dash: 'dot', shape: 'spline', width: 1, color: traceColor + 'b0' },
-                //         name: `${extreme}`,
-                //         hovertemplate: '%{y:.0f} min',
-                //         xaxis: xaxis,
-                //         yaxis: yaxis
-                //     };
+                for (const extreme of ['min', 'max']) {
+                    // Make a trace for each quantile
+                    let trace = {
+                        x: [],
+                        y: [],
+                        line: { dash: 'dot', shape: 'spline', width: 1, color: cityPair.home.color + 'b0' },
+                        name: `${extreme}`,
+                        hovertemplate: '%{y:.0f} min',
+                        xaxis: xaxis,
+                        yaxis: yaxis
+                    };
 
-                //     commuteStats.forEach((ele) => {
-                //         trace.x.push(
-                //             // Use a constant date for each departure time
-                //             new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
-                //         );
-                //         trace.y.push(
-                //             ele.statsByWeekdayInSeconds[weekday][extreme] / 60
-                //         );
-                //     });
+                    commuteStats.forEach((ele) => {
+                        trace.x.push(
+                            // Use a constant date for each departure time
+                            new Date(2021, 5, 21, ele.departureHour, ele.departureMinute)
+                        );
+                        trace.y.push(
+                            ele.statsByWeekdayInSeconds[weekday][extreme] / 60
+                        );
+                    });
 
-                //     // Add the trace to the list of traces
-                //     data.push(trace);
-                // }
+                    // Add the trace to the list of traces
+                    data.push(trace);
+                }
             }
         }
 
@@ -139,9 +138,7 @@
                 r: 0,
                 b: 60,
                 t: 30,
-                // pad: 4
             },
-            // title: `${title}`,
 			xaxis: {
 				title: xTitle,
                 titlefont: {
@@ -235,11 +232,7 @@
     <div>
         <WeekdaySelector bind:weekdaySelection={weekdaySelection} />
     </div>
-    <!-- <div>
-        <ToggleBtn bind:toggleChecked={showRaw} name="showRaw" label="Show Raw Data" />
-    </div> -->
 </div>
 <div id={`scatterplot-${cityPair.home.code}-${cityPair.work.code}`}>
     <!-- Plotly chart will be drawn inside this DIV -->
 </div>
-
