@@ -29,7 +29,7 @@
                 case 'forward':
                     xaxis = 'x';
                     yaxis = 'y';
-                    showscale = true;
+                    showscale = false;
                     break;
                 case 'reverse':
                     xaxis = 'x2';
@@ -49,9 +49,6 @@
                     [0.0, '#ffffff'],
                     [1, cityPair.home.color]
                 ],
-                colorbar:{
-                    title: "Travel Time (min)",
-                },
                 hoverinfo: 'text',
             };
 
