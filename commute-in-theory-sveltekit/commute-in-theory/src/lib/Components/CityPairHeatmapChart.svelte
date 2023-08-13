@@ -47,7 +47,7 @@
                 showscale: showscale,
                 colorscale: [
                     [0.0, '#ffffff'],
-                    [1, '#2b71e6']
+                    [1, cityPair.home.color]
                 ],
                 colorbar:{
                     title: "Travel Time (min)",

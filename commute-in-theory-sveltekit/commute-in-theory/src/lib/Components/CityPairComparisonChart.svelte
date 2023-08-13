@@ -20,20 +20,6 @@
         // Set the chart hovermode
         let hovermode = 'closest'
 
-        // Define a consistent trace color
-        let traceColors = [
-            '#a4c2f4',
-            '#b6d7a8',
-            '#c4bcdc',
-            '#ffcdb2',
-            '#d5a6bd',
-            '#adadad',
-            '#95b19a',
-            '#f9cb9c',
-            'e3dbd8',
-            'e3d8b8',
-        ];
-
         // Make a custom legend with annotations for each route
         let customLegendAnnotations = [];
 
@@ -49,12 +35,12 @@
                         text: `${cityPair.home.code} \u2B82 ${cityPair.work.code}`,
                         font: {
                             size: '14',
-                            color: traceColors[i]
+                            color: cityPair.home.color
                         },
                         showarrow: false,
                         align: 'center',
                         // bgcolor: 'white',
-                        // bordercolor: traceColors[i],
+                        // bordercolor: cityPair.home.color,
                         // borderwidth: 2,
                         borderpad: 2,
                         
@@ -92,16 +78,16 @@
                         let fillcolor = 'none';
                         if (q == 50) {
                             mode = 'lines';
-                            line = { shape: 'spline', width: 3, color: traceColors[i]};
+                            line = { shape: 'spline', width: 3, color: cityPair.home.color};
                         } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
-                            line = { shape: 'spline', width: 0, color: traceColors[i] };
+                            line = { shape: 'spline', width: 0, color: cityPair.home.color };
                             
                             if (q == 75) {
                                 fill = 'tonexty';
-                                fillcolor = traceColors[i] + '60';
+                                fillcolor = cityPair.home.color + '60';
                             } else if (q == 90) {
                                 fill = 'tonexty';
-                                fillcolor = traceColors[i] + '40';
+                                fillcolor = cityPair.home.color + '40';
                             }
                         }
 
@@ -140,7 +126,7 @@
                     //     let trace = {
                     //         x: [],
                     //         y: [],
-                    //         line: { dash: 'dot', shape: 'spline', width: 1, color: traceColors[i] + 'b0' },
+                    //         line: { dash: 'dot', shape: 'spline', width: 1, color: cityPair.home.color + 'b0' },
                     //         name: `${route} ${extreme}`,
                     //         hovertemplate: '%{y:.0f} min',
                     //         legendgroup: `${route}`,
@@ -184,11 +170,11 @@
 			xaxis: {
 				title: xTitle,
                 titlefont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 tickformat: tickFormat,
                 tickfont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 anchor: 'y',
                 domain: [0, 1]
@@ -196,11 +182,11 @@
             xaxis2: {
 				title: xTitle,
                 titlefont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 tickformat: tickFormat,
                 tickfont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 anchor: 'y2',
                 domain: [0, 1]
@@ -208,10 +194,10 @@
 			yaxis: {
 				title: yTitle,
                 titlefont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 tickfont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 anchor: 'x',
                 domain: [domainSplit, 1]
@@ -219,10 +205,10 @@
             yaxis2: {
 				title: yTitle,
                 titlefont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 tickfont: {
-                    traceColor: fontColor,
+                    color: fontColor,
                 },
                 anchor: 'x2',
                 domain: [0, 1 - domainSplit]

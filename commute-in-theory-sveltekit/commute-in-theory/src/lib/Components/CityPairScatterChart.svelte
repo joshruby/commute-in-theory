@@ -23,9 +23,6 @@
         // Set the chart hovermode
         let hovermode = 'compare'
 
-        // Define a consistent trace color
-        let traceColor = '#a4c2f4';
-
         for (const [direction, route] of Object.entries(cityPair.routes)) {
             // Retrive the commutes from the store
             if (route in $ProcessedCommuteStats === false) {
@@ -59,16 +56,16 @@
                     let fillcolor = 'none';
                     if (q == 50) {
                         mode = 'lines';
-                        line = { shape: 'spline', width: 3, color: traceColor};
+                        line = { shape: 'spline', width: 3, color: cityPair.home.color};
                     } else if (q == 10 || q == 90 ||q == 25 ||q == 75) {
-                        line = { shape: 'spline', width: 0, color: traceColor };
+                        line = { shape: 'spline', width: 0, color: cityPair.home.color };
                         
                         if (q == 75) {
                             fill = 'tonexty';
-                            fillcolor = traceColor + '60';
+                            fillcolor = cityPair.home.color + '60';
                         } else if (q == 90) {
                             fill = 'tonexty';
-                            fillcolor = traceColor + '40';
+                            fillcolor = cityPair.home.color + '40';
                         }
                     }
 
