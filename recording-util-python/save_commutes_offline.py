@@ -15,8 +15,8 @@ for doc in docs:
     doc['departureTime'] = pytz.utc.localize(doc['departureTime']).isoformat()
 
 commutes = {
-    'saveTime': datetime.now().isoformat(),
-    'commutes': docs
+    "saveTime": datetime.now().isoformat(),
+    "commutes": docs
 }
 
 with open('commutes.json', 'w', encoding='utf-8') as f:
